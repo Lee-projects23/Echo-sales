@@ -49,8 +49,12 @@ interface PortalContextType {
   attendance: AttendanceRecord[];
   todayAttendance: AttendanceRecord;
   handleCheckIn: () => void;
-  handleCheckOut: () => void;
+  handleCheckOut: () => boolean;
   regularTasks: RegularTask[];
+  todayRegularTasks: RegularTask[];
+  regularTasksCompletedToday: number;
+  regularTasksTotalToday: number;
+  canCheckOut: boolean;
   startRegularTask: (id: string) => void;
   completeRegularTask: (id: string) => void;
   assignedTasks: AssignedTask[];
@@ -91,7 +95,7 @@ const STORAGE_KEYS = {
   AUTH: 'echo_portal_auth',
   ENTERED: 'echo_portal_entered',
   ATTENDANCE: 'echo_portal_attendance',
-  REG_TASKS: 'echo_portal_reg_tasks',
+  REG_TASKS: 'echo_portal_reg_tasks_v2',
   ASSIGNED_TASKS: 'echo_portal_assigned_tasks',
   ACTIVITIES: 'echo_portal_activities',
   VOUCHERS: 'echo_portal_vouchers',
@@ -293,7 +297,9 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     });
   };
 
-  const handleCheckOut = () => {
+  const handleCheckOut = (): boolean => {
+    if (!canCheckOut) return false;
+
     const now = new Date();
     const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     
@@ -317,6 +323,8 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       type: 'attendance',
       targetPage: 'attendance',
     });
+
+    return true;
   };
 
   // Regular Tasks
@@ -359,6 +367,22 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       targetPage: 'home',
     });
   };
+
+  // Regular tasks scheduled for today (Wednesday, 23 Sep 2026)
+  const todayDayOfWeek = 3;
+  const todayDayOfMonth = 23;
+
+  const todayRegularTasks = regularTasks.filter((task) => {
+    if (task.frequency === 'daily') return true;
+    if (task.frequency === 'weekly' && task.scheduledDays?.includes(todayDayOfWeek)) return true;
+    if (task.frequency === 'monthly' && task.scheduledDates?.includes(todayDayOfMonth)) return true;
+    return false;
+  });
+
+  const regularTasksCompletedToday = todayRegularTasks.filter((x) => x.status === 'Completed').length;
+  const regularTasksTotalToday = todayRegularTasks.length;
+  const canCheckOut =
+    regularTasksTotalToday > 0 && regularTasksCompletedToday >= regularTasksTotalToday;
 
   // Assigned Tasks
   const [assignedTasks, setAssignedTasks] = useState<AssignedTask[]>(() => {
@@ -701,6 +725,10 @@ export const PortalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         handleCheckIn,
         handleCheckOut,
         regularTasks,
+        todayRegularTasks,
+        regularTasksCompletedToday,
+        regularTasksTotalToday,
+        canCheckOut,
         startRegularTask,
         completeRegularTask,
         assignedTasks,

@@ -54,8 +54,8 @@ class PortalErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySta
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-[#0a0a09] text-neutral-100 flex items-center justify-center p-6">
-          <div className="max-w-md w-full border border-white/10 p-10 text-center space-y-6">
+        <div className="min-h-screen bg-[#f7f5f0] dark:bg-[#0a0a09] text-neutral-900 dark:text-neutral-100 flex items-center justify-center p-6">
+          <div className="max-w-md w-full border border-neutral-900/10 dark:border-white/10 p-10 text-center space-y-6">
             <div className="text-neutral-400 flex items-center justify-center">
               <AlertTriangle className="w-5 h-5" />
             </div>

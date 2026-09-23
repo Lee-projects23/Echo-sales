@@ -4,12 +4,23 @@ import {
   ChevronLeft,
   ChevronRight,
   CheckCircle,
+  ShieldAlert,
+  Lock,
 } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
 
 export const AttendancePage: React.FC = () => {
-  const { todayAttendance, attendance, handleCheckIn, handleCheckOut, t } = usePortal();
+  const {
+    todayAttendance,
+    attendance,
+    handleCheckIn,
+    handleCheckOut,
+    regularTasksCompletedToday,
+    regularTasksTotalToday,
+    canCheckOut,
+    t,
+  } = usePortal();
 
   const [currentMonth, setCurrentMonth] = useState('September 2026');
 
@@ -94,17 +105,53 @@ export const AttendancePage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-8 flex items-center justify-end">
+        <div className="mt-8 flex flex-col items-end gap-4">
           {todayAttendance.status === 'Not Checked In' ? (
             <button onClick={handleCheckIn} className="ed-btn">
               <Clock className="w-3.5 h-3.5" />
               <span>Record Check In (8:58 AM)</span>
             </button>
           ) : todayAttendance.status === 'Checked In' || todayAttendance.status === 'Late' ? (
-            <button onClick={handleCheckOut} className="ed-btn">
-              <Clock className="w-3.5 h-3.5" />
-              <span>Record Check Out (6:04 PM)</span>
-            </button>
+            <>
+              {canCheckOut ? (
+                <>
+                  <div className="flex items-center gap-2 ed-mono">
+                    <CheckCircle className="w-3.5 h-3.5 text-neutral-700 dark:text-neutral-300" />
+                    <span className="text-neutral-700 dark:text-neutral-300">
+                      Regular Tasks: {regularTasksCompletedToday} / {regularTasksTotalToday} completed
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleCheckOut()}
+                    className="ed-btn"
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Check Out — Available (6:04 PM)</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-md text-right leading-relaxed">
+                    Complete all required tasks before checking out.
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <span className="ed-tag text-neutral-500 dark:text-neutral-400">
+                      <Lock className="w-3.5 h-3.5" />
+                      Regular Tasks: {regularTasksCompletedToday} / {regularTasksTotalToday} completed
+                    </span>
+                    <button
+                      onClick={() => handleCheckOut()}
+                      disabled
+                      className="ed-btn"
+                      title="Check Out — Locked"
+                    >
+                      <ShieldAlert className="w-3.5 h-3.5" />
+                      <span>Check Out — Locked</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </>
           ) : (
             <div className="ed-tag text-neutral-500 dark:text-neutral-400">
               <CheckCircle className="w-3.5 h-3.5" />

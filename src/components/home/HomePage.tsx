@@ -4,6 +4,8 @@ import {
   CheckCircle2,
   PlayCircle,
   ArrowRight,
+  ShieldAlert,
+  Lock,
 } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 
@@ -14,6 +16,10 @@ export const HomePage: React.FC<HomePageHookProps> = () => {
     handleCheckIn,
     handleCheckOut,
     regularTasks,
+    todayRegularTasks,
+    regularTasksCompletedToday,
+    regularTasksTotalToday,
+    canCheckOut,
     startRegularTask,
     completeRegularTask,
     assignedTasks,
@@ -91,17 +97,40 @@ export const HomePage: React.FC<HomePageHookProps> = () => {
             <p className="ed-sub mt-3 max-w-lg">{attendanceDetailText()}</p>
           </div>
 
-          <div className="shrink-0">
+          <div className="shrink-0 flex flex-col items-end gap-2">
             {todayAttendance.status === 'Not Checked In' ? (
               <button onClick={handleCheckIn} className="ed-btn">
                 <Clock className="w-3.5 h-3.5" />
                 <span>{t('checkIn')}</span>
               </button>
             ) : todayAttendance.status === 'Checked In' || todayAttendance.status === 'Late' ? (
-              <button onClick={handleCheckOut} className="ed-btn">
-                <Clock className="w-3.5 h-3.5" />
-                <span>{t('checkOut')}</span>
-              </button>
+              canCheckOut ? (
+                <>
+                  <button onClick={() => handleCheckOut()} className="ed-btn">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{t('checkOut')}</span>
+                  </button>
+                  <span className="ed-mono">
+                    {regularTasksCompletedToday} / {regularTasksTotalToday} Regular Tasks · Available
+                  </span>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleCheckOut()}
+                    disabled
+                    className="ed-btn"
+                    title="Complete all required tasks before checking out."
+                  >
+                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <span>{t('checkOut')} — Locked</span>
+                  </button>
+                  <span className="ed-mono">
+                    <Lock className="w-3 h-3 inline mr-1" />
+                    {regularTasksCompletedToday} / {regularTasksTotalToday} Regular Tasks · Complete all required tasks
+                  </span>
+                </>
+              )
             ) : (
               <div className="ed-tag text-neutral-500 dark:text-neutral-400">
                 <CheckCircle2 className="w-3.5 h-3.5" />
