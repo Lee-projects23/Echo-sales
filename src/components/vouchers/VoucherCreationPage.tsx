@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, ArrowRight, Clock, CheckCircle2, AlertCircle, X, Receipt } from 'lucide-react';
+import { Plus, ArrowRight, X } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
 import { Voucher } from '../../types';
@@ -32,136 +32,102 @@ export const VoucherCreationPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6 space-y-6 animate-in fade-in duration-150">
-      <GlobalBackButton />
-
+    <div className="w-full max-w-6xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
-            {t('voucherCreation')}
-          </h1>
-          <p className="text-xs text-neutral-500 mt-1">
-            Formal requests for shift permissions, leave approvals, expense advances, or incident notices
-          </p>
-        </div>
+      <div className="mb-8">
+        <GlobalBackButton />
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+          <div>
+            <p className="ed-label mb-4">Formal Requests</p>
+            <h1 className="ed-h1">{t('voucherCreation')}</h1>
+            <p className="ed-sub mt-3 max-w-xl">
+              Formal requests for shift permissions, leave approvals, expense advances, or incident notices.
+            </p>
+          </div>
 
-        <button
-          onClick={() => setShowModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-sm cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create New Voucher</span>
-        </button>
+          <button onClick={() => setShowModal(true)} className="ed-btn shrink-0">
+            <Plus className="w-3.5 h-3.5" />
+            <span>Create New Voucher</span>
+          </button>
+        </div>
       </div>
 
       {/* Table of Vouchers */}
-      <div className="apple-card rounded-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50/60 dark:bg-neutral-900/60 text-neutral-500 font-semibold uppercase tracking-wider text-[11px]">
-              <tr>
-                <th className="py-3.5 px-4 w-12 text-center">No.</th>
-                <th className="py-3.5 px-4">Code</th>
-                <th className="py-3.5 px-4">Reason</th>
-                <th className="py-3.5 px-4">Date</th>
-                <th className="py-3.5 px-4">Time</th>
-                <th className="py-3.5 px-4">Status</th>
-                <th className="py-3.5 px-4 text-right">Action</th>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left">
+          <thead>
+            <tr className="border-t border-b border-neutral-900/10 dark:border-white/10">
+              <th className="ed-th w-12 text-center">No.</th>
+              <th className="ed-th">Code</th>
+              <th className="ed-th">Reason</th>
+              <th className="ed-th">Date</th>
+              <th className="ed-th">Time</th>
+              <th className="ed-th">Status</th>
+              <th className="ed-th text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-900/10 dark:divide-white/10">
+            {vouchers.map((vch, index) => (
+              <tr key={vch.id} className="hover:bg-neutral-900/[0.02] dark:hover:bg-white/[0.02] transition-colors">
+                <td className="ed-td text-center font-mono text-xs text-neutral-400 dark:text-neutral-500">
+                  {index + 1}
+                </td>
+
+                <td className="ed-td font-mono font-medium">{vch.voucherCode}</td>
+
+                <td className="ed-td">
+                  <div className="font-medium">{vch.reason === 'Other' && vch.customReason ? vch.customReason : vch.reason}</div>
+                  <div className="ed-mono truncate max-w-xs">{vch.description}</div>
+                </td>
+
+                <td className="ed-td font-mono text-xs text-neutral-500 dark:text-neutral-400">
+                  {vch.date}
+                </td>
+
+                <td className="ed-td font-mono text-xs text-neutral-500 dark:text-neutral-400">
+                  {vch.time}
+                </td>
+
+                <td className="ed-td">
+                  <span className="ed-tag text-neutral-700 dark:text-neutral-300">{vch.status}</span>
+                </td>
+
+                <td className="ed-td text-right">
+                  <button
+                    onClick={() => {
+                      setSelectedVoucherId(vch.id);
+                      setActiveTab('voucher-detail');
+                    }}
+                    className="ed-link"
+                  >
+                    <span>{t('viewDetails')}</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
-              {vouchers.map((vch, index) => (
-                <tr
-                  key={vch.id}
-                  className="hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors"
-                >
-                  <td className="py-3.5 px-4 text-center font-mono font-bold text-neutral-500">
-                    {index + 1}
-                  </td>
-
-                  <td className="py-3.5 px-4 font-mono font-semibold text-neutral-900 dark:text-white">
-                    {vch.voucherCode}
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="font-semibold text-neutral-900 dark:text-white">
-                      {vch.reason === 'Other' && vch.customReason ? vch.customReason : vch.reason}
-                    </div>
-                    <div className="text-[11px] text-neutral-500 truncate max-w-xs">
-                      {vch.description}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4 font-mono tabular-nums text-neutral-600 dark:text-neutral-400">
-                    {vch.date}
-                  </td>
-
-                  <td className="py-3.5 px-4 font-mono tabular-nums text-neutral-600 dark:text-neutral-400">
-                    {vch.time}
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
-                        vch.status === 'Approved'
-                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                          : vch.status === 'Rejected'
-                          ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
-                          : 'bg-sky-500/10 text-sky-600 dark:text-sky-400'
-                      }`}
-                    >
-                      {vch.status}
-                    </span>
-                  </td>
-
-                  <td className="py-3.5 px-4 text-right">
-                    <button
-                      onClick={() => {
-                        setSelectedVoucherId(vch.id);
-                        setActiveTab('voucher-detail');
-                      }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-xs cursor-pointer"
-                    >
-                      <span>{t('viewDetails')}</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* Create Voucher Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="relative w-full max-w-md bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-7 shadow-2xl border border-neutral-200 dark:border-neutral-800 space-y-4">
-            <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
-              <div className="flex items-center gap-2">
-                <Receipt className="w-4 h-4 text-sky-500" />
-                <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
-                  Create Operational Voucher
-                </h3>
-              </div>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-neutral-400 hover:text-neutral-600"
-              >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+          <div className="relative w-full max-w-md bg-[#f7f5f0] dark:bg-[#0a0a09] border border-neutral-900/10 dark:border-white/10 p-8 space-y-6">
+            <div className="flex items-center justify-between border-b border-neutral-900/10 dark:border-white/10 pb-4">
+              <h3 className="ed-h3">Create Operational Voucher</h3>
+              <button onClick={() => setShowModal(false)} className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                  Voucher Reason
-                </label>
+                <label className="ed-label block mb-2">Voucher Reason</label>
                 <select
                   value={reason}
                   onChange={(e) => setReason(e.target.value as Voucher['reason'])}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-neutral-900"
+                  className="ed-input"
                 >
                   <option value="Late">Late</option>
                   <option value="Permission Request">Permission Request</option>
@@ -174,75 +140,60 @@ export const VoucherCreationPage: React.FC = () => {
 
               {reason === 'Other' && (
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                    Custom Reason
-                  </label>
+                  <label className="ed-label block mb-2">Custom Reason</label>
                   <input
                     type="text"
                     required
                     value={customReason}
                     onChange={(e) => setCustomReason(e.target.value)}
                     placeholder="Specify custom reason..."
-                    className="w-full px-3.5 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-neutral-900"
+                    className="ed-input"
                   />
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                    Date
-                  </label>
+                  <label className="ed-label block mb-2">Date</label>
                   <input
                     type="date"
                     required
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-neutral-900 font-mono"
+                    className="ed-input font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                    Time (12-hour AM/PM)
-                  </label>
+                  <label className="ed-label block mb-2">Time (AM/PM)</label>
                   <input
                     type="text"
                     required
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
                     placeholder="e.g. 02:30 PM"
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-neutral-900 font-mono"
+                    className="ed-input font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                  Explanation / Justification
-                </label>
+                <label className="ed-label block mb-2">Explanation / Justification</label>
                 <textarea
                   rows={3}
                   required
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Provide full operational justification for Operations Director review..."
-                  className="w-full p-3 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900"
+                  className="ed-input"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                >
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setShowModal(false)} className="ed-btn-ghost">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-sm"
-                >
+                <button type="submit" className="ed-btn">
                   Submit Voucher
                 </button>
               </div>

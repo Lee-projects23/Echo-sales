@@ -54,22 +54,20 @@ class PortalErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySta
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-neutral-950 text-white flex items-center justify-center p-6">
-          <div className="max-w-md w-full bg-neutral-900 border border-neutral-800 rounded-3xl p-8 text-center space-y-5 shadow-2xl">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20">
-              <AlertTriangle className="w-6 h-6" />
+        <div className="min-h-screen bg-[#0a0a09] text-neutral-100 flex items-center justify-center p-6">
+          <div className="max-w-md w-full border border-white/10 p-10 text-center space-y-6">
+            <div className="text-neutral-400 flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-white">ECHO Portal Recovery</h2>
-              <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+              <span className="ed-label block">ECHO — Recovery</span>
+              <h2 className="ed-h2 mt-2">Portal Recovery</h2>
+              <p className="ed-sub mt-3">
                 The portal encountered an unexpected display issue. Your saved operational state is intact.
               </p>
             </div>
-            <button
-              onClick={this.handleReset}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white text-neutral-950 font-semibold text-xs hover:bg-neutral-100 transition-all shadow-lg cursor-pointer"
-            >
-              <RotateCcw className="w-4 h-4" />
+            <button onClick={this.handleReset} className="ed-btn">
+              <RotateCcw className="w-3.5 h-3.5" />
               <span>Reload Workspace</span>
             </button>
           </div>
@@ -126,7 +124,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-[#f7f5f0] dark:bg-[#0a0a09] text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
       {/* Top Navbar */}
       <Navbar
         isSidebarOpen={isSidebarOpen}
@@ -144,11 +142,11 @@ const AppContent: React.FC = () => {
         {renderCurrentPage()}
       </main>
 
-      {/* Minimal Footer */}
-      <footer className="border-t border-neutral-200/80 dark:border-neutral-800/80 py-4 text-center text-xs text-neutral-400">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      {/* Editorial Footer */}
+      <footer className="border-t border-neutral-900/10 dark:border-white/10">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 ed-mono">
           <span>ECHO Operational Companion · Synchronized with Admin Core</span>
-          <span className="font-mono text-[11px]">Secure Connection · 2026</span>
+          <span>Secure Connection · 2026</span>
         </div>
       </footer>
     </div>

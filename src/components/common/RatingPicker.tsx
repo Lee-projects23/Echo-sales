@@ -9,13 +9,11 @@ interface RatingPickerProps {
 
 export const RatingPicker: React.FC<RatingPickerProps> = ({ value, onChange, disabled = false }) => {
   return (
-    <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900/60 p-5 space-y-3">
-      <div className="flex items-center justify-between">
-        <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
-          Rate Completion
-        </label>
-        <span className="text-xs text-neutral-500 dark:text-neutral-400">
-          Employee Submitted Mark: <strong className="text-neutral-900 dark:text-white font-mono">{value || 0} / 5</strong>
+    <div className="border border-neutral-900/10 dark:border-white/10 p-5 space-y-4">
+      <div className="flex items-center justify-between border-b border-neutral-900/10 dark:border-white/10 pb-3">
+        <label className="ed-label">Rate Completion</label>
+        <span className="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
+          Submitted Mark: <strong className="text-neutral-950 dark:text-white">{value || 0} / 5</strong>
         </span>
       </div>
 
@@ -26,19 +24,21 @@ export const RatingPicker: React.FC<RatingPickerProps> = ({ value, onChange, dis
             type="button"
             disabled={disabled}
             onClick={() => onChange(star)}
-            className={`p-2 rounded-xl transition-all ${
-              disabled ? 'cursor-not-allowed opacity-80' : 'cursor-pointer hover:scale-110 active:scale-95'
+            className={`w-10 h-10 border flex items-center justify-center transition-all ${
+              disabled
+                ? 'cursor-not-allowed opacity-60'
+                : 'cursor-pointer hover:-translate-y-0.5'
             } ${
               star <= value
-                ? 'text-amber-400 bg-amber-500/10'
-                : 'text-neutral-300 dark:text-neutral-700 bg-neutral-200 dark:bg-neutral-800 hover:text-amber-300'
+                ? 'bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 border-neutral-950 dark:border-white'
+                : 'border-neutral-900/15 dark:border-white/15 text-neutral-400 dark:text-neutral-600 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
-            <Star className={`w-6 h-6 ${star <= value ? 'fill-amber-400' : ''}`} />
+            <Star className={`w-4 h-4 ${star <= value ? 'fill-current' : ''}`} />
           </button>
         ))}
       </div>
-      <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
+      <p className="text-[11px] leading-relaxed text-neutral-500 dark:text-neutral-400">
         Rate your completion thoroughness on a 1–5 scale. This score is recorded directly into your task submission log.
       </p>
     </div>

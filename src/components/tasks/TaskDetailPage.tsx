@@ -1,19 +1,11 @@
 import React, { useState } from 'react';
 import {
-  CheckCircle2,
   Clock,
-  MapPin,
-  Calendar,
   AlertTriangle,
-  Upload,
-  Camera,
   Video,
   FileCheck,
   Check,
   AlertCircle,
-  RotateCcw,
-  Sparkles,
-  Info,
 } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
@@ -35,21 +27,18 @@ export const TaskDetailPage: React.FC = () => {
     t,
   } = usePortal();
 
-  const task = assignedTasks.find((t) => t.id === selectedTaskId) || assignedTasks[0];
+  const task = assignedTasks.find((x) => x.id === selectedTaskId) || assignedTasks[0];
 
   const isSubmittedOrApproved =
     task.status === 'Submitted' || task.status === 'Approved' || task.status === 'Rejected';
   const isReupload = task.status === 'Re-upload Requested';
 
-  // Submissions state shorthand
   const { submissions, requiredChecklist } = task;
 
-  // Local state for interactive upload of 4 photos + 1 video
   const [photoCountWarning, setPhotoCountWarning] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [narrativeInput, setNarrativeInput] = useState(submissions.narrativeNote || '');
 
-  // Handlers
   const handleBeforePhotoCapture = (dataUrl: string, location: string) => {
     updateTaskSubmissions(task.id, { beforePhoto: dataUrl });
   };
@@ -119,7 +108,6 @@ export const TaskDetailPage: React.FC = () => {
     }
   };
 
-  // Checklist completion flags
   const isBeforeAfterComplete = !requiredChecklist.beforeAfterPhotos || (!!submissions.beforePhoto && !!submissions.afterPhoto);
   const isVoiceComplete = !requiredChecklist.voiceReply || !!submissions.voiceNoteUrl;
   const isFourPhotosOneVideoComplete = !requiredChecklist.fourPhotosOneVideo || (submissions.photos.length === 4 && !!submissions.video);
@@ -134,125 +122,90 @@ export const TaskDetailPage: React.FC = () => {
     isMarkComplete;
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-8 px-4 sm:px-6 space-y-8 animate-in fade-in duration-150">
+    <div className="w-full max-w-4xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
       <GlobalBackButton onBack={() => setActiveTab('new-task')} label="Back to Tasks" />
 
-      {/* Admin Review Banner if Re-upload Requested */}
+      {/* Re-upload banner */}
       {isReupload && (
-        <div className="rounded-2xl p-5 bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-500" />
-          <div className="space-y-1 text-xs leading-relaxed">
-            <div className="font-bold">Admin Requested Re-upload</div>
+        <div className="mt-6 mb-10 flex items-start gap-3 border border-neutral-900/20 dark:border-white/20 p-5">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-neutral-500" />
+          <div className="space-y-1 text-xs leading-relaxed text-neutral-700 dark:text-neutral-300">
+            <div className="font-semibold uppercase tracking-[0.14em]">Admin Requested Re-upload</div>
             <p>{task.adminFeedback}</p>
-            <div className="text-[11px] text-amber-600/80 dark:text-amber-400/80">
-              Reviewed by Operations Lead at {task.adminReviewedAt}
-            </div>
+            <div className="ed-mono">Reviewed by Operations Lead at {task.adminReviewedAt}</div>
           </div>
         </div>
       )}
 
-      {/* Submission Status Banner if Already Submitted */}
+      {/* Submitted banner */}
       {task.status === 'Submitted' && (
-        <div className="rounded-2xl p-5 bg-sky-500/10 border border-sky-500/20 text-sky-800 dark:text-sky-300 flex items-start gap-3">
-          <Clock className="w-5 h-5 shrink-0 mt-0.5 text-sky-500" />
-          <div className="space-y-1 text-xs leading-relaxed">
-            <div className="font-bold text-sm">Submitted — Awaiting Admin Review</div>
+        <div className="mt-6 mb-10 flex items-start gap-3 border border-neutral-900/20 dark:border-white/20 p-5">
+          <Clock className="w-4 h-4 shrink-0 mt-0.5 text-neutral-500" />
+          <div className="space-y-1 text-xs leading-relaxed text-neutral-700 dark:text-neutral-300">
+            <div className="font-semibold uppercase tracking-[0.14em]">Submitted — Awaiting Admin Review</div>
             <p>
               Your evidence checklist has been compiled and dispatched to the Admin Employee Monitor.
               This task is currently locked from further edits while pending Operations Director sign-off.
             </p>
-            <div className="text-[11px] text-sky-600/80 dark:text-sky-400/80 font-mono">
-              Submitted at: {task.submittedAt}
-            </div>
+            <div className="ed-mono">Submitted at: {task.submittedAt}</div>
           </div>
         </div>
       )}
 
-      {/* Top Header Card */}
-      <div className="apple-card rounded-3xl p-6 sm:p-8 space-y-6">
+      {/* Header */}
+      <header className="mb-10 border-b border-neutral-900/10 dark:border-white/10 pb-8">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
-                Task #{task.taskNumber}
-              </span>
-              <span className="text-neutral-300 dark:text-neutral-700">·</span>
-              <span className="text-xs text-neutral-500 font-mono">{task.clientName}</span>
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <span className="ed-label">Task #{task.taskNumber}</span>
+              <span className="h-px w-6 bg-neutral-900/20 dark:bg-white/20" />
+              <span className="ed-mono">{task.clientName}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
-              {task.taskTitle}
-            </h1>
-            <p className="text-xs text-neutral-500">{task.companyName}</p>
+            <h1 className="ed-h1">{task.taskTitle}</h1>
+            <p className="ed-sub">{task.companyName}</p>
           </div>
 
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold self-start ${
-              task.status === 'Approved'
-                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                : task.status === 'Submitted'
-                ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400'
-                : task.status === 'Re-upload Requested'
-                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
-            }`}
-          >
+          <span className="ed-tag text-neutral-700 dark:text-neutral-300 self-start">
             {task.status}
           </span>
         </div>
 
-        {/* Task Description */}
-        <div className="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-100 dark:border-neutral-800">
-          <div className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1.5">
-            Task Description
-          </div>
-          <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed">
+        {/* Description */}
+        <div className="mt-8">
+          <div className="ed-label mb-2">Task Description</div>
+          <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
             {task.description}
           </p>
         </div>
+      </header>
 
-        {/* Schedule & Check-in Details */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-          <div className="p-3.5 rounded-xl bg-neutral-100 dark:bg-neutral-800/60">
-            <span className="text-[11px] text-neutral-500 block mb-0.5">Date</span>
-            <span className="font-semibold text-neutral-900 dark:text-white font-mono">
-              {task.scheduledDate}
-            </span>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-neutral-100 dark:bg-neutral-800/60">
-            <span className="text-[11px] text-neutral-500 block mb-0.5">Scheduled Time</span>
-            <span className="font-semibold text-neutral-900 dark:text-white font-mono">
-              {task.scheduledTime}
-            </span>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-neutral-100 dark:bg-neutral-800/60">
-            <span className="text-[11px] text-neutral-500 block mb-0.5">Check-In Window</span>
-            <span className="font-semibold text-neutral-900 dark:text-white font-mono text-[11px]">
-              {task.checkInWindow}
-            </span>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-neutral-100 dark:bg-neutral-800/60">
-            <span className="text-[11px] text-neutral-500 block mb-0.5">Check-Out Window</span>
-            <span className="font-semibold text-neutral-900 dark:text-white font-mono text-[11px]">
-              {task.checkOutWindow}
-            </span>
-          </div>
+      {/* Schedule & Windows */}
+      <section className="mb-12 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
+        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-3">
+          <div className="ed-label mb-1.5">Date</div>
+          <div className="font-mono text-sm text-neutral-950 dark:text-neutral-50">{task.scheduledDate}</div>
         </div>
-      </div>
+        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-3">
+          <div className="ed-label mb-1.5">Scheduled Time</div>
+          <div className="font-mono text-sm text-neutral-950 dark:text-neutral-50">{task.scheduledTime}</div>
+        </div>
+        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-3">
+          <div className="ed-label mb-1.5">Check-In Window</div>
+          <div className="font-mono text-sm text-neutral-950 dark:text-neutral-50">{task.checkInWindow}</div>
+        </div>
+        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-3">
+          <div className="ed-label mb-1.5">Check-Out Window</div>
+          <div className="font-mono text-sm text-neutral-950 dark:text-neutral-50">{task.checkOutWindow}</div>
+        </div>
+      </section>
 
-      {/* Admin Voice Message (If available) */}
+      {/* Admin Voice Message */}
       {task.adminVoiceNote && (
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-              <span>{t('adminVoiceMessage')}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
-            </h2>
-            <span className="text-[11px] text-neutral-500">Audio Briefing</span>
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="ed-h2">{t('adminVoiceMessage')}</h2>
+            <span className="ed-mono">Audio Briefing</span>
           </div>
-
           <AudioPlayer
             title={task.adminVoiceNote.audioTitle}
             durationString={task.adminVoiceNote.duration}
@@ -262,41 +215,34 @@ export const TaskDetailPage: React.FC = () => {
         </section>
       )}
 
-      {/* REQUIRED TASK CHECKLIST SECTION */}
-      <section className="space-y-6">
-        <div>
-          <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
-            {t('requiredChecklist')}
-          </h2>
-          <p className="text-xs text-neutral-500 mt-0.5">
-            Admin has configured the following mandatory evidence requirements for this work order:
+      {/* Required Checklist */}
+      <section className="space-y-12">
+        <div className="mb-2">
+          <h2 className="ed-h2">{t('requiredChecklist')}</h2>
+          <p className="ed-sub mt-2">
+            Admin has configured the following mandatory evidence requirements for this work order.
           </p>
         </div>
 
         {/* 1. Before & After Photos */}
         {requiredChecklist.beforeAfterPhotos && (
-          <div className="apple-card rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold">
-                  1
-                </span>
-                <span className="text-sm font-bold text-neutral-900 dark:text-white">
-                  Upload Before & After Photos
-                </span>
-                <span className="text-[10px] text-red-500 font-semibold">*Required</span>
+          <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-baseline gap-3">
+                <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">01</span>
+                <h3 className="ed-h3">Upload Before &amp; After Photos</h3>
+                <span className="ed-tag text-neutral-400 dark:text-neutral-500">Required</span>
               </div>
-
               {submissions.beforePhoto && submissions.afterPhoto && (
-                <span className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Both Photos Completed
+                <span className="ed-tag text-neutral-600 dark:text-neutral-300">
+                  <FileCheck className="w-3.5 h-3.5" /> Completed
                 </span>
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <MockCamera
-                label="1. Upload Before Photo"
+                label="Before Photo"
                 defaultLocation="ECR Site · Chennai, Tamil Nadu"
                 existingImage={submissions.beforePhoto}
                 onCapture={handleBeforePhotoCapture}
@@ -304,15 +250,15 @@ export const TaskDetailPage: React.FC = () => {
 
               {submissions.beforePhoto ? (
                 <MockCamera
-                  label="2. Upload After Photo"
+                  label="After Photo"
                   defaultLocation="ECR Site · Chennai, Tamil Nadu"
                   existingImage={submissions.afterPhoto}
                   onCapture={handleAfterPhotoCapture}
                 />
               ) : (
-                <div className="rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 p-6 flex flex-col items-center justify-center text-center aspect-4/3 sm:aspect-16/9 text-neutral-400">
-                  <Info className="w-6 h-6 mb-2 opacity-50" />
-                  <p className="text-xs font-medium">
+                <div className="flex flex-col items-center justify-center text-center p-8 border border-dashed border-neutral-900/20 dark:border-white/20 min-h-full">
+                  <AlertCircle className="w-5 h-5 mb-2 opacity-40" />
+                  <p className="text-xs text-neutral-500">
                     Upload Before Photo first to unlock After Photo capture.
                   </p>
                 </div>
@@ -323,21 +269,16 @@ export const TaskDetailPage: React.FC = () => {
 
         {/* 2. Voice Upload */}
         {requiredChecklist.voiceReply && (
-          <div className="apple-card rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold">
-                  2
-                </span>
-                <span className="text-sm font-bold text-neutral-900 dark:text-white">
-                  Upload Voice Response
-                </span>
-                <span className="text-[10px] text-red-500 font-semibold">*Required</span>
+          <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-baseline gap-3">
+                <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">02</span>
+                <h3 className="ed-h3">Upload Voice Response</h3>
+                <span className="ed-tag text-neutral-400 dark:text-neutral-500">Required</span>
               </div>
-
               {submissions.voiceNoteUrl && (
-                <span className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Voice Recorded
+                <span className="ed-tag text-neutral-600 dark:text-neutral-300">
+                  <FileCheck className="w-3.5 h-3.5" /> Recorded
                 </span>
               )}
             </div>
@@ -352,40 +293,31 @@ export const TaskDetailPage: React.FC = () => {
 
         {/* 3. 4 Photos + 1 Video */}
         {requiredChecklist.fourPhotosOneVideo && (
-          <div className="apple-card rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold">
-                  3
-                </span>
-                <span className="text-sm font-bold text-neutral-900 dark:text-white">
-                  Upload 4 Photos + 1 Video
-                </span>
-                <span className="text-[10px] text-red-500 font-semibold">*Required</span>
+          <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-baseline gap-3">
+                <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">03</span>
+                <h3 className="ed-h3">Upload 4 Photos + 1 Video</h3>
+                <span className="ed-tag text-neutral-400 dark:text-neutral-500">Required</span>
               </div>
-
-              <span className="text-xs font-mono text-neutral-500">
-                Photos: <strong>{submissions.photos.length}/4</strong> · Video:{' '}
-                <strong>{submissions.video ? '1/1' : '0/1'}</strong>
+              <span className="ed-mono">
+                Photos: {submissions.photos.length}/4 · Video: {submissions.video ? 1 : 0}/1
               </span>
             </div>
 
-            {/* Photos Sub-grid */}
-            <div className="space-y-3">
-              <div className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
-                Inspection Photos (Strictly 4 Required)
-              </div>
+            <div className="space-y-4">
+              <div className="ed-label">Inspection Photos (Strictly 4 Required)</div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {submissions.photos.map((p, idx) => (
                   <div
                     key={idx}
-                    className="relative rounded-xl overflow-hidden aspect-square border border-neutral-200 dark:border-neutral-800 bg-neutral-900 group"
+                    className="relative aspect-square overflow-hidden border border-neutral-900/10 dark:border-white/10 bg-neutral-950 group"
                   >
                     <img
                       src={p.url}
                       alt={`Photo ${idx + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover grayscale"
                       referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-black/50 p-2 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity">
@@ -394,7 +326,7 @@ export const TaskDetailPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleRemoveBatchPhoto(idx)}
-                          className="self-end px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-semibold"
+                          className="self-end px-2 py-0.5 border border-white/40 text-white text-[10px] font-semibold"
                         >
                           Remove
                         </button>
@@ -416,33 +348,22 @@ export const TaskDetailPage: React.FC = () => {
             </div>
 
             {/* Video Sub-section */}
-            <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-              <div className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
-                Audit Video Walkthrough (1 Required)
-              </div>
+            <div className="pt-5 mt-6 border-t border-neutral-900/10 dark:border-white/10 space-y-3">
+              <div className="ed-label">Audit Video Walkthrough (1 Required)</div>
 
               {submissions.video ? (
-                <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-between text-xs">
+                <div className="flex items-center justify-between text-xs border border-neutral-900/10 dark:border-white/10 p-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                      <Video className="w-4 h-4" />
-                    </div>
+                    <Video className="w-4 h-4 text-neutral-500" />
                     <div>
-                      <div className="font-semibold text-neutral-900 dark:text-white">
+                      <div className="font-medium text-neutral-950 dark:text-neutral-50">
                         {submissions.video.title}
                       </div>
-                      <div className="text-[11px] text-neutral-500 font-mono">
-                        Duration: {submissions.video.duration} · High-Def Walkthrough Attached
-                      </div>
+                      <div className="ed-mono">Duration: {submissions.video.duration} · High-Def Walkthrough</div>
                     </div>
                   </div>
-
                   {!isSubmittedOrApproved && (
-                    <button
-                      type="button"
-                      onClick={handleRemoveVideo}
-                      className="text-xs text-red-500 hover:underline"
-                    >
+                    <button type="button" onClick={handleRemoveVideo} className="ed-textbtn text-neutral-500">
                       Delete
                     </button>
                   )}
@@ -452,7 +373,7 @@ export const TaskDetailPage: React.FC = () => {
                   type="button"
                   onClick={handleAddVideo}
                   disabled={isSubmittedOrApproved}
-                  className="w-full py-4 rounded-xl border border-dashed border-neutral-300 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 hover:bg-neutral-100 dark:hover:bg-neutral-800/40 text-xs font-medium text-neutral-600 dark:text-neutral-400 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  className="w-full py-5 border border-dashed border-neutral-900/20 dark:border-white/20 text-xs font-medium text-neutral-500 dark:text-neutral-400 flex items-center justify-center gap-2 hover:border-neutral-900 dark:hover:border-white transition-colors cursor-pointer"
                 >
                   <Video className="w-4 h-4" />
                   <span>Attach Video Walkthrough (Mock Capture / Upload)</span>
@@ -464,19 +385,12 @@ export const TaskDetailPage: React.FC = () => {
 
         {/* 4. Signature */}
         {requiredChecklist.signature && (
-          <div className="apple-card rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold">
-                  4
-                </span>
-                <span className="text-sm font-bold text-neutral-900 dark:text-white">
-                  Signature Confirmation
-                </span>
-                <span className="text-[10px] text-red-500 font-semibold">*Required</span>
-              </div>
+          <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
+            <div className="flex items-baseline gap-3 mb-4">
+              <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">04</span>
+              <h3 className="ed-h3">Signature Confirmation</h3>
+              <span className="ed-tag text-neutral-400 dark:text-neutral-500">Required</span>
             </div>
-
             <SignaturePad
               initialName={submissions.signatureName}
               isConfirmed={submissions.confirmedSignature}
@@ -487,70 +401,55 @@ export const TaskDetailPage: React.FC = () => {
 
         {/* 5. Mark / Rating */}
         {requiredChecklist.markRating && (
-          <div className="apple-card rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold">
-                  5
-                </span>
-                <span className="text-sm font-bold text-neutral-900 dark:text-white">
-                  Employee Self-Assessment Mark
-                </span>
-                <span className="text-[10px] text-red-500 font-semibold">*Required</span>
-              </div>
+          <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
+            <div className="flex items-baseline gap-3 mb-4">
+              <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">05</span>
+              <h3 className="ed-h3">Employee Self-Assessment Mark</h3>
+              <span className="ed-tag text-neutral-400 dark:text-neutral-500">Required</span>
             </div>
-
-            <RatingPicker
-              value={submissions.markRating || 0}
-              onChange={handleRatingChange}
-              disabled={isSubmittedOrApproved}
-            />
+            <RatingPicker value={submissions.markRating || 0} onChange={handleRatingChange} disabled={isSubmittedOrApproved} />
           </div>
         )}
 
-        {/* Additional Note / Narrative */}
-        <div className="apple-card rounded-2xl p-6 space-y-3">
-          <div className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider">
-            {t('additionalNote')}
-          </div>
+        {/* Additional Note */}
+        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
+          <div className="ed-label mb-3">{t('additionalNote')}</div>
           <textarea
             rows={4}
             value={narrativeInput}
             onChange={handleNarrativeChange}
             disabled={isSubmittedOrApproved}
             placeholder="Document work completed, site anomalies encountered, parts required, or instructions given to client representative..."
-            className="w-full p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/60 text-xs text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all disabled:opacity-70"
+            className="ed-input disabled:opacity-60"
           />
         </div>
 
-        {/* Validation Summary List */}
-        <div className="p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800/60 space-y-2">
-          <div className="text-xs font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
-            Submission Checklist Validation
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+        {/* Validation Summary */}
+        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6 space-y-3">
+          <div className="ed-label">Submission Checklist Validation</div>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-y-2 text-xs">
             {requiredChecklist.beforeAfterPhotos && (
-              <span className={`flex items-center gap-1.5 ${isBeforeAfterComplete ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-neutral-400'}`}>
-                {isBeforeAfterComplete ? '✓' : '○'} Before & After
+              <span className={`flex items-center gap-1.5 ${isBeforeAfterComplete ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-400'}`}>
+                {isBeforeAfterComplete ? '✓' : '○'} Before &amp; After
               </span>
             )}
             {requiredChecklist.voiceReply && (
-              <span className={`flex items-center gap-1.5 ${isVoiceComplete ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-neutral-400'}`}>
+              <span className={`flex items-center gap-1.5 ${isVoiceComplete ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-400'}`}>
                 {isVoiceComplete ? '✓' : '○'} Voice Note
               </span>
             )}
             {requiredChecklist.fourPhotosOneVideo && (
-              <span className={`flex items-center gap-1.5 ${isFourPhotosOneVideoComplete ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-neutral-400'}`}>
+              <span className={`flex items-center gap-1.5 ${isFourPhotosOneVideoComplete ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-400'}`}>
                 {isFourPhotosOneVideoComplete ? '✓' : '○'} 4 Photos + 1 Video
               </span>
             )}
             {requiredChecklist.signature && (
-              <span className={`flex items-center gap-1.5 ${isSignatureComplete ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-neutral-400'}`}>
+              <span className={`flex items-center gap-1.5 ${isSignatureComplete ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-400'}`}>
                 {isSignatureComplete ? '✓' : '○'} Signature
               </span>
             )}
             {requiredChecklist.markRating && (
-              <span className={`flex items-center gap-1.5 ${isMarkComplete ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-neutral-400'}`}>
+              <span className={`flex items-center gap-1.5 ${isMarkComplete ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-400'}`}>
                 {isMarkComplete ? '✓' : '○'} Mark / Rating
               </span>
             )}
@@ -558,30 +457,20 @@ export const TaskDetailPage: React.FC = () => {
         </div>
 
         {validationError && (
-          <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-600 dark:text-red-400 flex items-center gap-2">
+          <div className="p-4 border border-neutral-900/20 dark:border-white/20 text-xs text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{validationError}</span>
           </div>
         )}
 
-        {/* Action Buttons: Save Draft & Submit Task */}
+        {/* Actions */}
         {!isSubmittedOrApproved && (
-          <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={handleSaveDraft}
-              className="px-5 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-            >
+          <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-neutral-900/10 dark:border-white/10">
+            <button type="button" onClick={handleSaveDraft} className="ed-btn-ghost">
               {t('saveDraft')}
             </button>
-
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!allMandatoryMet}
-              className="px-6 py-2.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 disabled:opacity-40 transition-colors shadow-sm cursor-pointer flex items-center gap-2"
-            >
-              <Check className="w-4 h-4" />
+            <button type="button" onClick={handleSubmit} disabled={!allMandatoryMet} className="ed-btn">
+              <Check className="w-3.5 h-3.5" />
               <span>{t('submitTask')}</span>
             </button>
           </div>

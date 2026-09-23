@@ -50,25 +50,19 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const percent = (currentSeconds / Math.max(1, durationSeconds)) * 100;
 
   return (
-    <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/80 p-4 sm:p-5 shadow-sm space-y-3">
+    <div className="border border-neutral-900/10 dark:border-white/10 p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 border border-neutral-900/20 dark:border-white/20 flex items-center justify-center text-neutral-500 dark:text-neutral-400">
             <Radio className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-xs font-semibold text-neutral-900 dark:text-white leading-tight">
-              {title}
-            </div>
-            {recordedDate && (
-              <div className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                {recordedDate}
-              </div>
-            )}
+            <div className="text-xs font-medium text-neutral-950 dark:text-neutral-50">{title}</div>
+            {recordedDate && <div className="ed-mono">{recordedDate}</div>}
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-mono tabular-nums text-neutral-600 dark:text-neutral-400">
+        <div className="ed-mono flex items-center gap-1.5 tabular-nums">
           <span>{formatTime(currentSeconds)}</span>
           <span>/</span>
           <span>{durationString}</span>
@@ -79,7 +73,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         <button
           type="button"
           onClick={togglePlay}
-          className="w-10 h-10 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex items-center justify-center shrink-0 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
+          className="w-10 h-10 bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity cursor-pointer"
         >
           {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
         </button>
@@ -91,7 +85,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             max={durationSeconds}
             value={currentSeconds}
             onChange={handleSeek}
-            className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-neutral-900 dark:accent-white"
+            className="w-full h-1 bg-neutral-900/10 dark:bg-white/10 appearance-none cursor-pointer accent-neutral-950 dark:accent-white"
           />
         </div>
 

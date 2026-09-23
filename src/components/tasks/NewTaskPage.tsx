@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  CheckSquare,
-  Clock,
-  ArrowRight,
-  Filter,
-  AlertCircle,
-  FileCheck,
-  CheckCircle2,
-  AlertTriangle,
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
 import { TaskStatus } from '../../types';
@@ -27,190 +18,125 @@ export const NewTaskPage: React.FC = () => {
     return true;
   });
 
-  const getStatusBadge = (status: TaskStatus) => {
+  const getStatusLabel = (status: TaskStatus) => {
     switch (status) {
       case 'Approved':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-            <CheckCircle2 className="w-3 h-3" /> Approved
-          </span>
-        );
       case 'Submitted':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-sky-500/10 text-sky-600 dark:text-sky-400">
-            <Clock className="w-3 h-3" /> Submitted
-          </span>
-        );
       case 'In Progress':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-            In Progress
-          </span>
-        );
       case 'Re-upload Requested':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400">
-            <AlertTriangle className="w-3 h-3" /> Re-upload Requested
-          </span>
-        );
       case 'Rejected':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400">
-            <AlertCircle className="w-3 h-3" /> Rejected
-          </span>
+          <span className="ed-tag text-neutral-700 dark:text-neutral-300">{status}</span>
         );
       default:
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
-            Pending
-          </span>
-        );
+        return <span className="ed-tag text-neutral-400 dark:text-neutral-500">Pending</span>;
     }
   };
 
+  const filters: { key: typeof activeFilter; label: string }[] = [
+    { key: 'all', label: `All (${assignedTasks.length})` },
+    { key: 'pending', label: 'Pending' },
+    { key: 'submitted', label: 'Submitted' },
+    { key: 'approved', label: 'Approved' },
+    { key: 'reupload', label: 'Re-upload' },
+  ];
+
   return (
-    <div className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6 space-y-6 animate-in fade-in duration-150">
-      <GlobalBackButton />
-
+    <div className="w-full max-w-6xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
-            {t('newTask')}
-          </h1>
-          <p className="text-xs text-neutral-500 mt-1">
-            Assigned client field tasks, required evidence verification, and review statuses
+      <div className="mb-8">
+        <GlobalBackButton />
+        <div className="mt-4">
+          <p className="ed-label mb-4">Work Orders</p>
+          <h1 className="ed-h1">{t('newTask')}</h1>
+          <p className="ed-sub mt-3 max-w-xl">
+            Assigned client field tasks, required evidence verification, and review statuses.
           </p>
-        </div>
-
-        {/* Task History Filters (Tabs) */}
-        <div className="flex items-center gap-1 p-1 bg-neutral-100 dark:bg-neutral-800 rounded-xl overflow-x-auto">
-          <button
-            onClick={() => setActiveFilter('all')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
-              activeFilter === 'all'
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs font-semibold'
-                : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
-            }`}
-          >
-            All Tasks ({assignedTasks.length})
-          </button>
-          <button
-            onClick={() => setActiveFilter('pending')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
-              activeFilter === 'pending'
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs font-semibold'
-                : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
-            }`}
-          >
-            Pending
-          </button>
-          <button
-            onClick={() => setActiveFilter('submitted')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
-              activeFilter === 'submitted'
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs font-semibold'
-                : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
-            }`}
-          >
-            Submitted
-          </button>
-          <button
-            onClick={() => setActiveFilter('approved')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
-              activeFilter === 'approved'
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs font-semibold'
-                : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
-            }`}
-          >
-            Approved
-          </button>
-          <button
-            onClick={() => setActiveFilter('reupload')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
-              activeFilter === 'reupload'
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs font-semibold'
-                : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
-            }`}
-          >
-            Re-upload
-          </button>
         </div>
       </div>
 
-      {/* Numbered Table matching specifications */}
-      <div className="apple-card rounded-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50/60 dark:bg-neutral-900/60 text-neutral-500 font-semibold uppercase tracking-wider text-[11px]">
+      {/* Filter Tabs */}
+      <div className="mb-8 flex flex-wrap items-center gap-6 border-b border-neutral-900/10 dark:border-white/10">
+        {filters.map((f) => (
+          <button
+            key={f.key}
+            onClick={() => setActiveFilter(f.key)}
+            className={`pb-3 -mb-px text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors cursor-pointer border-b-2 ${
+              activeFilter === f.key
+                ? 'text-neutral-950 dark:text-white border-neutral-950 dark:border-white'
+                : 'text-neutral-400 dark:text-neutral-500 border-transparent hover:text-neutral-950 dark:hover:text-white'
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Task Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left">
+          <thead>
+            <tr className="border-t border-b border-neutral-900/10 dark:border-white/10">
+              <th className="ed-th w-12 text-center">No.</th>
+              <th className="ed-th">Client</th>
+              <th className="ed-th">Task</th>
+              <th className="ed-th">Date</th>
+              <th className="ed-th">Time</th>
+              <th className="ed-th">Status</th>
+              <th className="ed-th text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-900/10 dark:divide-white/10">
+            {filteredTasks.length === 0 ? (
               <tr>
-                <th className="py-3.5 px-4 w-12 text-center">No.</th>
-                <th className="py-3.5 px-4">Client</th>
-                <th className="py-3.5 px-4">Task</th>
-                <th className="py-3.5 px-4">Date</th>
-                <th className="py-3.5 px-4">Time</th>
-                <th className="py-3.5 px-4">Status</th>
-                <th className="py-3.5 px-4 text-right">Action</th>
+                <td colSpan={7} className="ed-td py-10 text-center text-neutral-500">
+                  No tasks found matching current filter.
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
-              {filteredTasks.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-8 text-center text-xs text-neutral-500">
-                    No tasks found matching current filter.
+            ) : (
+              filteredTasks.map((task) => (
+                <tr
+                  key={task.id}
+                  className="hover:bg-neutral-900/[0.02] dark:hover:bg-white/[0.02] transition-colors"
+                >
+                  <td className="ed-td text-center font-mono text-xs text-neutral-400 dark:text-neutral-500">
+                    {task.taskNumber}
+                  </td>
+
+                  <td className="ed-td">
+                    <div className="font-medium">{task.clientName}</div>
+                    <div className="ed-mono">{task.companyName}</div>
+                  </td>
+
+                  <td className="ed-td max-w-xs truncate font-medium">{task.taskTitle}</td>
+
+                  <td className="ed-td font-mono text-xs text-neutral-500 dark:text-neutral-400">
+                    {task.scheduledDate}
+                  </td>
+
+                  <td className="ed-td font-mono text-xs text-neutral-500 dark:text-neutral-400">
+                    {task.scheduledTime}
+                  </td>
+
+                  <td className="ed-td">{getStatusLabel(task.status)}</td>
+
+                  <td className="ed-td text-right">
+                    <button
+                      onClick={() => {
+                        setSelectedTaskId(task.id);
+                        setActiveTab('task-detail');
+                      }}
+                      className="ed-link"
+                    >
+                      <span>{t('viewFullDetails')}</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
                   </td>
                 </tr>
-              ) : (
-                filteredTasks.map((task) => (
-                  <tr
-                    key={task.id}
-                    className="hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors"
-                  >
-                    <td className="py-3.5 px-4 text-center font-mono font-bold text-neutral-500">
-                      {task.taskNumber}
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-neutral-900 dark:text-white">
-                        {task.clientName}
-                      </div>
-                      <div className="text-[11px] text-neutral-500">{task.companyName}</div>
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <div className="font-medium text-neutral-900 dark:text-white max-w-xs truncate">
-                        {task.taskTitle}
-                      </div>
-                    </td>
-
-                    <td className="py-3.5 px-4 font-mono tabular-nums text-neutral-600 dark:text-neutral-400">
-                      {task.scheduledDate}
-                    </td>
-
-                    <td className="py-3.5 px-4 font-mono tabular-nums text-neutral-600 dark:text-neutral-400">
-                      {task.scheduledTime}
-                    </td>
-
-                    <td className="py-3.5 px-4">{getStatusBadge(task.status)}</td>
-
-                    <td className="py-3.5 px-4 text-right">
-                      <button
-                        onClick={() => {
-                          setSelectedTaskId(task.id);
-                          setActiveTab('task-detail');
-                        }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-xs cursor-pointer"
-                      >
-                        <span>{t('viewFullDetails')}</span>
-                        <ArrowRight className="w-3 h-3" />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

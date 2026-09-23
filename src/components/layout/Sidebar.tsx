@@ -45,10 +45,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const navItemClass = (tab: NavigationTab, isRestricted = false) => {
     const isActive = activeTab === tab;
-    return `w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+    return `group w-full flex items-center justify-between py-2.5 text-[13px] transition-colors cursor-pointer border-l-2 pl-6 ${
       isActive
-        ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 shadow-sm'
-        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50'
+        ? 'border-neutral-950 dark:border-white font-medium text-neutral-950 dark:text-white'
+        : 'border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'
     } ${isRestricted ? 'opacity-80' : ''}`;
   };
 
@@ -59,98 +59,92 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 transition-opacity"
+        className="fixed inset-0 bg-black/40 z-50 transition-opacity"
       />
 
       {/* Drawer */}
-      <aside className="fixed top-0 right-0 sm:left-0 sm:right-auto w-72 sm:w-80 h-full bg-white dark:bg-neutral-900 border-l sm:border-l-0 sm:border-r border-neutral-200 dark:border-neutral-800 z-50 flex flex-col shadow-2xl animate-in slide-in-from-right sm:slide-in-from-left duration-200">
+      <aside className="fixed top-0 right-0 sm:left-0 sm:right-auto w-72 sm:w-80 h-full bg-[#f7f5f0] dark:bg-[#0a0a09] border-l sm:border-l-0 sm:border-r border-neutral-900/10 dark:border-white/10 z-50 flex flex-col">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-neutral-100 dark:border-neutral-800/80 flex items-center justify-between">
+        <div className="px-6 py-5 border-b border-neutral-900/10 dark:border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
               src={currentEmployee.avatarUrl}
               alt={currentEmployee.name}
-              className="w-10 h-10 rounded-xl object-cover ring-1 ring-neutral-200 dark:ring-neutral-700"
+              className="w-9 h-9 rounded-full object-cover ring-1 ring-neutral-900/10 dark:ring-white/20 grayscale"
               referrerPolicy="no-referrer"
             />
             <div className="min-w-0">
-              <div className="text-xs font-bold text-neutral-900 dark:text-white truncate">
+              <div className="font-serif text-sm text-neutral-950 dark:text-white truncate">
                 {currentEmployee.name}
               </div>
-              <div className="text-[11px] text-neutral-500 font-mono truncate">
-                {currentEmployee.employeeCode}
-              </div>
+              <div className="ed-mono truncate">{currentEmployee.employeeCode}</div>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-neutral-700 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            className="p-1.5 text-neutral-400 dark:text-neutral-500 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Navigation Groups */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div className="flex-1 overflow-y-auto py-6">
           {/* Main */}
-          <div className="space-y-1">
-            <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-              Main
-            </div>
+          <div className="mb-8">
+            <div className="ed-label pl-6 pr-4 pb-2">Index</div>
 
             <button onClick={() => handleNav('home')} className={navItemClass('home')}>
               <div className="flex items-center gap-3">
-                <Home className="w-4 h-4" />
+                <Home className="w-4 h-4 opacity-60" />
                 <span>{t('home')}</span>
               </div>
             </button>
 
             <button onClick={() => handleNav('dashboard')} className={navItemClass('dashboard')}>
               <div className="flex items-center gap-3">
-                <LayoutDashboard className="w-4 h-4" />
+                <LayoutDashboard className="w-4 h-4 opacity-60" />
                 <span>{t('dashboard')}</span>
               </div>
             </button>
 
             <button onClick={() => handleNav('new-task')} className={navItemClass('new-task')}>
               <div className="flex items-center gap-3">
-                <CheckSquare className="w-4 h-4" />
+                <CheckSquare className="w-4 h-4 opacity-60" />
                 <span>{t('newTask')}</span>
               </div>
             </button>
 
             <button onClick={() => handleNav('new-activity')} className={navItemClass('new-activity')}>
               <div className="flex items-center gap-3">
-                <AlertCircle className="w-4 h-4" />
+                <AlertCircle className="w-4 h-4 opacity-60" />
                 <span>{t('newActivity')}</span>
               </div>
             </button>
 
             <button onClick={() => handleNav('attendance')} className={navItemClass('attendance')}>
               <div className="flex items-center gap-3">
-                <CalendarCheck className="w-4 h-4" />
+                <CalendarCheck className="w-4 h-4 opacity-60" />
                 <span>{t('attendance')}</span>
               </div>
             </button>
           </div>
 
           {/* Personal */}
-          <div className="space-y-1">
-            <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-              Personal
-            </div>
+          <div className="mb-8">
+            <div className="ed-label pl-6 pr-4 pb-2">Personal</div>
 
             <button
               onClick={() => handleNav('personal-vault')}
               className={navItemClass('personal-vault', !currentEmployee.permissions.personalVault)}
             >
               <div className="flex items-center gap-3">
-                <FolderLock className="w-4 h-4" />
+                <FolderLock className="w-4 h-4 opacity-60" />
                 <span>{t('personalVault')}</span>
               </div>
               {!currentEmployee.permissions.personalVault && (
-                <Lock className="w-3 h-3 text-neutral-400" />
+                <Lock className="w-3 h-3 opacity-40" />
               )}
             </button>
 
@@ -159,11 +153,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               className={navItemClass('photo-gallery', !currentEmployee.permissions.photoGallery)}
             >
               <div className="flex items-center gap-3">
-                <ImageIcon className="w-4 h-4" />
+                <ImageIcon className="w-4 h-4 opacity-60" />
                 <span>{t('photoGallery')}</span>
               </div>
               {!currentEmployee.permissions.photoGallery && (
-                <Lock className="w-3 h-3 text-neutral-400" />
+                <Lock className="w-3 h-3 opacity-40" />
               )}
             </button>
 
@@ -172,11 +166,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               className={navItemClass('company-group', !currentEmployee.permissions.companyGroup)}
             >
               <div className="flex items-center gap-3">
-                <Users className="w-4 h-4" />
+                <Users className="w-4 h-4 opacity-60" />
                 <span>{t('companyGroup')}</span>
               </div>
               {!currentEmployee.permissions.companyGroup && (
-                <Lock className="w-3 h-3 text-neutral-400" />
+                <Lock className="w-3 h-3 opacity-40" />
               )}
             </button>
 
@@ -185,21 +179,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               className={navItemClass('voucher-creation', !currentEmployee.permissions.voucherCreation)}
             >
               <div className="flex items-center gap-3">
-                <Receipt className="w-4 h-4" />
+                <Receipt className="w-4 h-4 opacity-60" />
                 <span>{t('voucherCreation')}</span>
               </div>
             </button>
           </div>
 
           {/* Settings */}
-          <div className="space-y-1">
-            <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-              Settings
-            </div>
+          <div className="mb-8">
+            <div className="ed-label pl-6 pr-4 pb-2">Settings</div>
 
             <button onClick={() => handleNav('language')} className={navItemClass('language')}>
               <div className="flex items-center gap-3">
-                <Globe className="w-4 h-4" />
+                <Globe className="w-4 h-4 opacity-60" />
                 <span>{t('language')}</span>
               </div>
             </button>
@@ -209,7 +201,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               className={navItemClass('profile-settings')}
             >
               <div className="flex items-center gap-3">
-                <UserCheck className="w-4 h-4" />
+                <UserCheck className="w-4 h-4 opacity-60" />
                 <span>{t('profileSettings')}</span>
               </div>
             </button>
@@ -219,16 +211,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 onClose();
                 signOut();
               }}
-              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
+              className="w-full flex items-center gap-3 py-2.5 pl-6 text-[13px] text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white border-l-2 border-transparent transition-colors cursor-pointer"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4 opacity-60" />
               <span>{t('signOut')}</span>
             </button>
           </div>
         </div>
 
-        {/* Footer info */}
-        <div className="p-4 border-t border-neutral-100 dark:border-neutral-800 text-[11px] text-neutral-400 flex items-center justify-between">
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-neutral-900/10 dark:border-white/10 ed-mono flex items-center justify-between">
           <span>ECHO OS v3.2</span>
           <span>Companion to Admin</span>
         </div>

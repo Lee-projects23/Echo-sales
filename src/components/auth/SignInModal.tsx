@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Lock, Mail, X, Check, ArrowRight, ShieldCheck, User } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, X, ArrowRight, ShieldCheck } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 
 interface SignInModalProps {
@@ -23,7 +23,6 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
     e.preventDefault();
     setErrorMessage('');
 
-    // Check credentials against mock employees
     const matchedEmployee = allEmployees.find(
       (emp) => emp.email.toLowerCase() === email.trim().toLowerCase()
     );
@@ -45,41 +44,36 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-150">
-      <div className="relative w-full max-w-md bg-white dark:bg-neutral-900 rounded-3xl shadow-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden text-neutral-900 dark:text-neutral-100 p-6 sm:p-8">
-        {/* Close Button */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+      <div className="relative w-full max-w-md bg-[#f7f5f0] dark:bg-[#0a0a09] border border-neutral-900/10 dark:border-white/10 overflow-hidden text-neutral-900 dark:text-neutral-100 p-8 sm:p-10">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+          className="absolute top-5 right-5 p-1.5 text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
 
         {!showForgotPassword ? (
           <div>
-            <div className="mb-6">
-              <span className="text-[11px] font-bold tracking-widest uppercase text-neutral-400">
-                ECHO Authentication
-              </span>
-              <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white mt-1">
-                Employee Sign In
-              </h2>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+            <div className="mb-8">
+              <span className="ed-label">ECHO Authentication</span>
+              <h2 className="ed-h1 text-3xl mt-2">Employee Sign In</h2>
+              <p className="ed-sub mt-3 text-xs">
                 Sign in to your operational field workspace.
               </p>
             </div>
 
-            {/* Quick Demo Switcher Tabs */}
-            <div className="mb-5 p-1 bg-neutral-100 dark:bg-neutral-800/80 rounded-xl flex items-center gap-1 text-[11px]">
+            {/* Quick Demo Switcher */}
+            <div className="mb-6 flex items-center gap-4 text-[11px]">
               {allEmployees.map((emp) => (
                 <button
                   key={emp.id}
                   type="button"
                   onClick={() => selectQuickAccount(emp.email)}
-                  className={`flex-1 py-1.5 px-2 rounded-lg font-medium transition-all text-center truncate ${
+                  className={`uppercase tracking-[0.14em] font-semibold transition-colors cursor-pointer ${
                     email === emp.email
-                      ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs font-semibold'
-                      : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
+                      ? 'text-neutral-950 dark:text-white underline underline-offset-4'
+                      : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
                   }`}
                 >
                   {emp.name.split(' ')[0]}
@@ -87,54 +81,50 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
               ))}
             </div>
 
-            <form onSubmit={handleSignIn} className="space-y-4">
+            <form onSubmit={handleSignIn} className="space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
-                  Email / Login Identifier
-                </label>
+                <label className="ed-label block mb-2">Email / Login Identifier</label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 absolute left-3.5 top-3 text-neutral-400 pointer-events-none" />
+                  <Mail className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@echo.demo"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all"
+                    className="ed-input pl-10"
                   />
                 </div>
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
-                    Password
-                  </label>
+                <div className="flex items-baseline justify-between mb-2">
+                  <label className="ed-label">Password</label>
                   <button
                     type="button"
                     onClick={() => {
                       setForgotEmail(email);
                       setShowForgotPassword(true);
                     }}
-                    className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:underline cursor-pointer"
+                    className="text-[11px] text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:underline cursor-pointer"
                   >
                     Forgot password?
                   </button>
                 </div>
                 <div className="relative">
-                  <Lock className="w-4 h-4 absolute left-3.5 top-3 text-neutral-400 pointer-events-none" />
+                  <Lock className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all font-mono"
+                    className="ed-input pl-10 pr-10 font-mono"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -142,27 +132,24 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
               </div>
 
               {errorMessage && (
-                <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-600 dark:text-red-400">
+                <div className="p-3 text-xs border border-neutral-900/20 dark:border-white/20 text-neutral-700 dark:text-neutral-300">
                   {errorMessage}
                 </div>
               )}
 
-              <div className="flex items-center justify-between pt-1">
-                <label className="flex items-center gap-2 cursor-pointer text-xs text-neutral-600 dark:text-neutral-400 select-none">
+              <div className="pt-1">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-neutral-500 dark:text-neutral-400 select-none">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="rounded border-neutral-300 dark:border-neutral-700 text-neutral-900 focus:ring-neutral-900"
+                    className="rounded-none border-neutral-400 text-neutral-900 focus:ring-neutral-900"
                   />
                   <span>Remember me</span>
                 </label>
               </div>
 
-              <button
-                type="submit"
-                className="w-full py-3 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 active:scale-[0.99] transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
-              >
+              <button type="submit" className="ed-btn w-full">
                 <span>Sign In</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -170,33 +157,29 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
           </div>
         ) : (
           <div>
-            <div className="mb-6">
-              <span className="text-[11px] font-bold tracking-widest uppercase text-neutral-400">
-                Password Recovery
-              </span>
-              <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white mt-1">
-                Reset Password
-              </h2>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+            <div className="mb-8">
+              <span className="ed-label">Password Recovery</span>
+              <h2 className="ed-h1 text-3xl mt-2">Reset Password</h2>
+              <p className="ed-sub mt-3 text-xs">
                 Enter your registered employee email to request an admin password reset token.
               </p>
             </div>
 
             {forgotSent ? (
-              <div className="space-y-4">
-                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs leading-relaxed flex items-start gap-2.5">
-                  <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" />
+              <div className="space-y-5">
+                <div className="p-4 border border-neutral-900/10 dark:border-white/10 text-xs leading-relaxed flex items-start gap-3">
+                  <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-neutral-500" />
                   <div>
                     Password reset notification dispatched to Operations Admin for employee account{' '}
                     <strong>{forgotEmail}</strong>. Default test credentials remain{' '}
-                    <code className="bg-emerald-500/20 px-1 py-0.5 rounded font-mono">Echo@123</code>.
+                    <code className="font-mono">Echo@123</code>.
                   </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setShowForgotPassword(false)}
-                  className="w-full py-2.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
+                  className="ed-btn w-full"
                 >
                   Return to Sign In
                 </button>
@@ -207,19 +190,17 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
                   e.preventDefault();
                   setForgotSent(true);
                 }}
-                className="space-y-4"
+                className="space-y-5"
               >
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
-                    Employee Email
-                  </label>
+                  <label className="ed-label block mb-2">Employee Email</label>
                   <input
                     type="email"
                     required
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="name@echo.demo"
-                    className="w-full px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-neutral-900"
+                    className="ed-input"
                   />
                 </div>
 
@@ -227,14 +208,11 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
                   <button
                     type="button"
                     onClick={() => setShowForgotPassword(false)}
-                    className="flex-1 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                    className="ed-btn-ghost flex-1"
                   >
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    className="flex-1 py-2.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
-                  >
+                  <button type="submit" className="ed-btn flex-1">
                     Send Request
                   </button>
                 </div>

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Camera, Upload, RotateCcw, Check, MapPin, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Camera, Upload, RotateCcw, Check, MapPin } from 'lucide-react';
 
 interface MockCameraProps {
   label: string;
@@ -20,26 +20,22 @@ export const MockCamera: React.FC<MockCameraProps> = ({
   const [isShutterActive, setIsShutterActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Mock photo capture simulation
   const handleMockSnap = () => {
     setIsShutterActive(true);
     setTimeout(() => {
       setIsShutterActive(false);
-      // Generate a clean stylized canvas snapshot representing the field inspection photo
       const canvas = document.createElement('canvas');
       canvas.width = 800;
       canvas.height = 600;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        // Subtle gradient background
         const grad = ctx.createLinearGradient(0, 0, 800, 600);
-        grad.addColorStop(0, '#1c1917');
-        grad.addColorStop(0.5, '#292524');
-        grad.addColorStop(1, '#0c0a09');
+        grad.addColorStop(0, '#1c1c1a');
+        grad.addColorStop(0.5, '#2a2825');
+        grad.addColorStop(1, '#0c0b0a');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, 800, 600);
 
-        // Grid lines overlay
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.lineWidth = 1;
         for (let x = 0; x < 800; x += 80) {
@@ -55,8 +51,7 @@ export const MockCamera: React.FC<MockCameraProps> = ({
           ctx.stroke();
         }
 
-        // Crosshair / focal reticle in center
-        ctx.strokeStyle = '#38bdf8';
+        ctx.strokeStyle = '#c8c5bd';
         ctx.lineWidth = 2;
         ctx.strokeRect(320, 220, 160, 160);
         ctx.beginPath();
@@ -66,12 +61,11 @@ export const MockCamera: React.FC<MockCameraProps> = ({
         ctx.lineTo(500, 300);
         ctx.stroke();
 
-        // Watermark text
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 24px -apple-system, sans-serif';
         ctx.fillText(`ECHO FIELD AUDIT: ${label.toUpperCase()}`, 40, 60);
 
-        ctx.fillStyle = '#94a3b8';
+        ctx.fillStyle = '#b8b4ac';
         ctx.font = '16px -apple-system, sans-serif';
         const now = new Date();
         ctx.fillText(`LOCATION: ${defaultLocation}`, 40, 95);
@@ -105,15 +99,15 @@ export const MockCamera: React.FC<MockCameraProps> = ({
   return (
     <div className={`space-y-3 ${className}`}>
       <div className="flex items-center justify-between text-xs">
-        <span className="font-semibold text-neutral-800 dark:text-neutral-200">{label}</span>
-        <div className="flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400">
-          <MapPin className="w-3 h-3 text-sky-500" />
+        <span className="font-medium text-neutral-900 dark:text-neutral-100">{label}</span>
+        <div className="ed-mono flex items-center gap-1.5">
+          <MapPin className="w-3 h-3" />
           <span>{defaultLocation}</span>
         </div>
       </div>
 
       {capturedImage ? (
-        <div className="relative rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-900 group aspect-4/3 sm:aspect-16/9 flex items-center justify-center">
+        <div className="relative border border-neutral-900/10 dark:border-white/10 bg-neutral-950 group aspect-4/3 sm:aspect-16/9 flex items-center justify-center overflow-hidden">
           <img
             src={capturedImage}
             alt={label}
@@ -121,15 +115,15 @@ export const MockCamera: React.FC<MockCameraProps> = ({
             referrerPolicy="no-referrer"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-between p-4">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent flex flex-col justify-between p-4">
             <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/90 text-white text-[11px] font-medium tracking-tight backdrop-blur-sm">
+              <span className="ed-tag text-white/90">
                 <Check className="w-3 h-3" /> Captured
               </span>
               <button
                 type="button"
                 onClick={handleRetake}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white text-xs font-medium backdrop-blur-md transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-white/30 text-white text-[11px] font-medium hover:bg-white hover:text-neutral-950 transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-3 h-3" /> Retake
               </button>
@@ -142,24 +136,21 @@ export const MockCamera: React.FC<MockCameraProps> = ({
           </div>
         </div>
       ) : (
-        <div className="relative rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900/60 p-6 flex flex-col items-center justify-center text-center overflow-hidden aspect-4/3 sm:aspect-16/9 transition-all">
-          {/* Shutter flash animation overlay */}
+        <div className="relative border border-dashed border-neutral-900/20 dark:border-white/20 p-6 flex flex-col items-center justify-center text-center overflow-hidden aspect-4/3 sm:aspect-16/9 transition-all">
           {isShutterActive && (
-            <div className="absolute inset-0 bg-white dark:bg-white z-20 animate-ping opacity-90 pointer-events-none" />
+            <div className="absolute inset-0 bg-white z-20 animate-ping opacity-90 pointer-events-none" />
           )}
 
-          {/* Viewfinder brackets */}
-          <div className="absolute top-4 left-4 w-5 h-5 border-t-2 border-l-2 border-neutral-400 dark:border-neutral-600 rounded-tl-sm pointer-events-none" />
-          <div className="absolute top-4 right-4 w-5 h-5 border-t-2 border-r-2 border-neutral-400 dark:border-neutral-600 rounded-tr-sm pointer-events-none" />
-          <div className="absolute bottom-4 left-4 w-5 h-5 border-b-2 border-l-2 border-neutral-400 dark:border-neutral-600 rounded-bl-sm pointer-events-none" />
-          <div className="absolute bottom-4 right-4 w-5 h-5 border-b-2 border-r-2 border-neutral-400 dark:border-neutral-600 rounded-br-sm pointer-events-none" />
+          <div className="absolute top-4 left-4 w-5 h-5 border-t border-l border-neutral-400 dark:border-neutral-600 pointer-events-none" />
+          <div className="absolute top-4 right-4 w-5 h-5 border-t border-r border-neutral-400 dark:border-neutral-600 pointer-events-none" />
+          <div className="absolute bottom-4 left-4 w-5 h-5 border-b border-l border-neutral-400 dark:border-neutral-600 pointer-events-none" />
+          <div className="absolute bottom-4 right-4 w-5 h-5 border-b border-r border-neutral-400 dark:border-neutral-600 pointer-events-none" />
 
-          {/* Center focus indicator */}
-          <div className="w-12 h-12 rounded-2xl bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 dark:text-neutral-400 mb-3 shadow-inner">
+          <div className="w-12 h-12 border border-neutral-900/15 dark:border-white/15 flex items-center justify-center text-neutral-400 mb-3">
             <Camera className="w-6 h-6" />
           </div>
 
-          <div className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-1">
+          <div className="font-serif text-lg text-neutral-950 dark:text-neutral-50 mb-1">
             Camera Viewfinder
           </div>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-xs mb-5">
@@ -170,7 +161,7 @@ export const MockCamera: React.FC<MockCameraProps> = ({
             <button
               type="button"
               onClick={handleMockSnap}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-sm cursor-pointer"
+              className="ed-btn"
             >
               <Camera className="w-3.5 h-3.5" />
               <span>Take Photo</span>
@@ -179,7 +170,7 @@ export const MockCamera: React.FC<MockCameraProps> = ({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-xs font-semibold hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
+              className="ed-btn-ghost"
             >
               <Upload className="w-3.5 h-3.5" />
               <span>Upload from Device</span>

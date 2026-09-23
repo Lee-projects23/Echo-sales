@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, ArrowRight, CheckCircle2, Clock } from 'lucide-react';
+import { AlertCircle, ArrowRight } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
 
@@ -7,109 +7,86 @@ export const NewActivityPage: React.FC = () => {
   const { activities, setSelectedActivityId, setActiveTab, t } = usePortal();
 
   return (
-    <div className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6 space-y-6 animate-in fade-in duration-150">
-      <GlobalBackButton />
-
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
-          {t('newActivity')}
-        </h1>
-        <p className="text-xs text-neutral-500 mt-1">
-          Site incidents, urgent client repairs, and field activity resolution orders
-        </p>
+    <div className="w-full max-w-6xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
+      <div className="mb-8">
+        <GlobalBackButton />
+        <div className="mt-4">
+          <p className="ed-label mb-4">Incidents &amp; Repairs</p>
+          <h1 className="ed-h1">{t('newActivity')}</h1>
+          <p className="ed-sub mt-3 max-w-xl">
+            Site incidents, urgent client repairs, and field activity resolution orders.
+          </p>
+        </div>
       </div>
 
       {activities.length === 0 ? (
-        <div className="apple-card rounded-2xl p-12 text-center flex flex-col items-center justify-center">
-          <div className="w-12 h-12 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-neutral-400 flex items-center justify-center mb-3">
-            <AlertCircle className="w-6 h-6" />
-          </div>
-          <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-            Sorry, no new activity was assigned.
+        <div className="py-20 border-t border-b border-neutral-900/10 dark:border-white/10 text-center">
+          <AlertCircle className="w-6 h-6 mx-auto mb-4 text-neutral-300 dark:text-neutral-600" />
+          <p className="font-serif text-xl text-neutral-950 dark:text-neutral-50">
+            No new activity has been assigned.
           </p>
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="ed-sub mt-2 max-w-md mx-auto">
             When your Operations Coordinator raises an emergency ticket or incident, it will appear here.
           </p>
         </div>
       ) : (
-        <div className="apple-card rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50/60 dark:bg-neutral-900/60 text-neutral-500 font-semibold uppercase tracking-wider text-[11px]">
-                <tr>
-                  <th className="py-3.5 px-4 w-12 text-center">No.</th>
-                  <th className="py-3.5 px-4">Client</th>
-                  <th className="py-3.5 px-4">Problem</th>
-                  <th className="py-3.5 px-4">Date</th>
-                  <th className="py-3.5 px-4">Time</th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4 text-right">Action</th>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-t border-b border-neutral-900/10 dark:border-white/10">
+                <th className="ed-th w-12 text-center">No.</th>
+                <th className="ed-th">Client</th>
+                <th className="ed-th">Problem</th>
+                <th className="ed-th">Date</th>
+                <th className="ed-th">Time</th>
+                <th className="ed-th">Status</th>
+                <th className="ed-th text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-900/10 dark:divide-white/10">
+              {activities.map((act) => (
+                <tr key={act.id} className="hover:bg-neutral-900/[0.02] dark:hover:bg-white/[0.02] transition-colors">
+                  <td className="ed-td text-center font-mono text-xs text-neutral-400 dark:text-neutral-500">
+                    {act.activityNumber}
+                  </td>
+
+                  <td className="ed-td">
+                    <div className="font-medium">{act.clientName}</div>
+                    <div className="ed-mono">{act.siteName}</div>
+                  </td>
+
+                  <td className="ed-td max-w-xs truncate font-medium">{act.problem}</td>
+
+                  <td className="ed-td font-mono text-xs text-neutral-500 dark:text-neutral-400">
+                    {act.date}
+                  </td>
+
+                  <td className="ed-td font-mono text-xs text-neutral-500 dark:text-neutral-400">
+                    {act.time}
+                  </td>
+
+                  <td className="ed-td">
+                    <span className="ed-tag text-neutral-700 dark:text-neutral-300">
+                      {act.status}
+                    </span>
+                  </td>
+
+                  <td className="ed-td text-right">
+                    <button
+                      onClick={() => {
+                        setSelectedActivityId(act.id);
+                        setActiveTab('activity-detail');
+                      }}
+                      className="ed-link"
+                    >
+                      <span>{t('viewDetails')}</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
-                {activities.map((act) => (
-                  <tr
-                    key={act.id}
-                    className="hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors"
-                  >
-                    <td className="py-3.5 px-4 text-center font-mono font-bold text-neutral-500">
-                      {act.activityNumber}
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-neutral-900 dark:text-white">
-                        {act.clientName}
-                      </div>
-                      <div className="text-[11px] text-neutral-500">{act.siteName}</div>
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <div className="font-medium text-neutral-900 dark:text-white max-w-xs truncate">
-                        {act.problem}
-                      </div>
-                    </td>
-
-                    <td className="py-3.5 px-4 font-mono tabular-nums text-neutral-600 dark:text-neutral-400">
-                      {act.date}
-                    </td>
-
-                    <td className="py-3.5 px-4 font-mono tabular-nums text-neutral-600 dark:text-neutral-400">
-                      {act.time}
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
-                          act.status === 'Work Completed'
-                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                            : act.status === 'Awaiting Admin Verification'
-                            ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400'
-                            : act.status === 'In Progress'
-                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                            : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
-                        }`}
-                      >
-                        {act.status}
-                      </span>
-                    </td>
-
-                    <td className="py-3.5 px-4 text-right">
-                      <button
-                        onClick={() => {
-                          setSelectedActivityId(act.id);
-                          setActiveTab('activity-detail');
-                        }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-xs cursor-pointer"
-                      >
-                        <span>{t('viewDetails')}</span>
-                        <ArrowRight className="w-3 h-3" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

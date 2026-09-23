@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldAlert, Home } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from './GlobalBackButton';
 
@@ -11,28 +11,23 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({ moduleName }) => {
   const { setActiveTab, t } = usePortal();
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-8 px-4 sm:px-6">
+    <div className="w-full max-w-4xl mx-auto px-5 sm:px-8 py-12 sm:py-16">
       <GlobalBackButton />
 
-      <div className="apple-card rounded-2xl p-10 text-center flex flex-col items-center justify-center min-h-[400px]">
-        <div className="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-6 shadow-sm">
-          <ShieldAlert className="w-8 h-8" />
+      <div className="mt-12 py-20 border-t border-b border-neutral-900/10 dark:border-white/10 text-center">
+        <div className="w-12 h-12 border border-neutral-900/20 dark:border-white/20 flex items-center justify-center text-neutral-500 dark:text-neutral-400 mx-auto mb-6">
+          <ShieldAlert className="w-6 h-6" />
         </div>
 
-        <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white mb-2">
-          {t('accessDenied')}
-        </h2>
+        <h2 className="ed-h1">{t('accessDenied')}</h2>
 
-        <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-md mb-8 leading-relaxed">
-          Your administrator has not enabled <strong>{moduleName}</strong> access for your account. Please contact your Operations Director if you require this clearance.
+        <p className="ed-sub mt-4 max-w-md mx-auto leading-relaxed">
+          Your administrator has not enabled <strong>{moduleName}</strong> access for your account.
+          Please contact your Operations Director if you require this clearance.
         </p>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setActiveTab('home')}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-sm"
-          >
-            <Home className="w-3.5 h-3.5" />
+        <div className="mt-10 flex items-center justify-center">
+          <button onClick={() => setActiveTab('home')} className="ed-btn">
             <span>Return to Workspace</span>
           </button>
         </div>

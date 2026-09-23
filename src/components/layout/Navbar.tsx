@@ -7,11 +7,8 @@ import {
   Menu,
   X,
   CheckCheck,
-  CheckCircle,
-  Clock,
   AlertCircle,
   FileText,
-  User,
   LogOut,
   Settings,
   ChevronDown,
@@ -44,7 +41,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
     assignedTasks,
     activities,
     vouchers,
-    vaultItems,
     signOut,
     t,
   } = usePortal();
@@ -58,7 +54,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
   const profileRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
@@ -75,25 +70,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
-  // Filtered notifications
   const displayedNotifications = notifications.filter((n) =>
     notifFilter === 'unread' ? !n.read : true
   );
 
-  // Search Results
   const searchResults = searchQuery.trim()
     ? [
         ...assignedTasks
           .filter(
-            (t) =>
-              t.taskTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              t.clientName.toLowerCase().includes(searchQuery.toLowerCase())
+            (x) =>
+              x.taskTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              x.clientName.toLowerCase().includes(searchQuery.toLowerCase())
           )
-          .map((t) => ({
-            id: t.id,
+          .map((x) => ({
+            id: x.id,
             type: 'task' as const,
-            title: t.taskTitle,
-            subtitle: `${t.clientName} · ${t.scheduledDate}`,
+            title: x.taskTitle,
+            subtitle: `${x.clientName} · ${x.scheduledDate}`,
             targetTab: 'task-detail' as const,
           })),
         ...activities
@@ -162,10 +155,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full h-14 border-b border-neutral-200/80 dark:border-neutral-800/80 apple-glass">
-      <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
-        {/* Left Zone: ECHO Wordmark + Home + Theme Toggle */}
-        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+    <header className="sticky top-0 z-40 w-full h-16 border-b border-neutral-900/10 dark:border-white/10 apple-glass">
+      <div className="max-w-7xl mx-auto h-full px-5 sm:px-8 flex items-center justify-between gap-4">
+        {/* Left Zone: Wordmark + Home */}
+        <div className="flex items-center gap-4 sm:gap-6 shrink-0">
           <button
             onClick={() => {
               setSelectedTaskId(null);
@@ -173,17 +166,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
               setSelectedVoucherId(null);
               setActiveTab('home');
             }}
-            className="flex items-center gap-2 cursor-pointer group"
+            className="flex items-baseline gap-2 cursor-pointer group"
           >
-            <span className="text-base font-bold tracking-tight text-neutral-900 dark:text-white">
+            <span className="font-serif text-xl tracking-[0.08em] text-neutral-950 dark:text-white">
               ECHO
             </span>
-            <span className="hidden sm:inline-block text-[11px] font-medium px-2 py-0.5 rounded-full bg-neutral-200/60 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-400">
-              Employee
+            <span className="hidden sm:inline-block text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500">
+              Employee Portal
             </span>
           </button>
 
-          <span className="text-neutral-300 dark:text-neutral-700">/</span>
+          <span className="hidden sm:block w-px h-4 bg-neutral-900/10 dark:bg-white/10" />
 
           <button
             onClick={() => {
@@ -192,56 +185,49 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
               setSelectedVoucherId(null);
               setActiveTab('home');
             }}
-            className={`text-xs font-semibold px-2 py-1 rounded-md transition-colors cursor-pointer ${
+            className={`text-[11px] font-semibold uppercase tracking-[0.16em] py-1 transition-colors cursor-pointer ${
               activeTab === 'home'
-                ? 'text-neutral-900 dark:text-white bg-neutral-200/50 dark:bg-neutral-800/50'
-                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                ? 'text-neutral-950 dark:text-white'
+                : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-950 dark:hover:text-white'
             }`}
           >
-            {t('home')}
+            <span className={activeTab === 'home' ? 'underline underline-offset-8 decoration-1' : ''}>
+              {t('home')}
+            </span>
           </button>
 
-          {/* Light/Dark Toggle beside Home button */}
+          {/* Theme toggle */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle visual theme"
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200/60 dark:hover:bg-neutral-800/60 transition-colors cursor-pointer"
+            className="p-1.5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
         </div>
 
-        {/* Center Zone: Search Bar */}
+        {/* Center Zone: Search */}
         <div ref={searchRef} className="relative flex-1 max-w-md hidden md:block">
-          <div className="relative flex items-center">
-            <Search className="w-3.5 h-3.5 absolute left-3 text-neutral-400 pointer-events-none" />
+          <div className="flex items-center border-b border-neutral-900/10 dark:border-white/10 focus-within:border-neutral-950 dark:focus-within:border-white transition-colors">
+            <Search className="w-3.5 h-3.5 mr-2 text-neutral-400 dark:text-neutral-500" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
               placeholder={t('searchPlaceholder')}
-              className="w-full pl-9 pr-4 py-1.5 rounded-xl text-xs bg-neutral-100 dark:bg-neutral-900/90 border border-transparent focus:border-neutral-300 dark:focus:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none transition-all"
+              className="w-full py-1.5 text-xs bg-transparent text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-600 focus:outline-none tracking-wide"
             />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 text-xs"
-              >
-                ×
-              </button>
-            )}
           </div>
 
-          {/* Search Dropdown */}
           {isSearchFocused && searchQuery.trim() && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-neutral-900 rounded-2xl shadow-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden z-50">
-              <div className="p-2 border-b border-neutral-100 dark:border-neutral-800 text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#121110] border border-neutral-900/10 dark:border-white/10 z-50">
+              <div className="ed-label px-4 py-2.5 border-b border-neutral-900/10 dark:border-white/10">
                 Matching Results ({searchResults.length})
               </div>
-              <div className="max-h-64 overflow-y-auto divide-y divide-neutral-100 dark:divide-neutral-800/60">
+              <div className="max-h-64 overflow-y-auto divide-y divide-neutral-900/10 dark:divide-white/10">
                 {searchResults.length === 0 ? (
-                  <div className="p-4 text-center text-xs text-neutral-500">
+                  <div className="p-5 text-center text-xs text-neutral-500">
                     No matching tasks, activities, or vouchers found.
                   </div>
                 ) : (
@@ -249,23 +235,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                     <button
                       key={`${res.type}-${res.id}`}
                       onClick={() => handleSearchResultClick(res)}
-                      className="w-full p-3 text-left hover:bg-neutral-50 dark:hover:bg-neutral-800/60 transition-colors flex items-start gap-2.5 cursor-pointer"
+                      className="w-full p-3.5 text-left hover:bg-neutral-900/[0.03] dark:hover:bg-white/[0.04] transition-colors cursor-pointer group"
                     >
-                      <div className="w-6 h-6 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 flex items-center justify-center shrink-0 mt-0.5">
-                        {res.type === 'task' ? (
-                          <CheckCircle className="w-3.5 h-3.5" />
-                        ) : res.type === 'activity' ? (
-                          <AlertCircle className="w-3.5 h-3.5" />
-                        ) : (
-                          <FileText className="w-3.5 h-3.5" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-semibold text-neutral-900 dark:text-white truncate">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <span className="text-xs font-medium text-neutral-900 dark:text-white truncate">
                           {res.title}
-                        </div>
-                        <div className="text-[11px] text-neutral-500 truncate">{res.subtitle}</div>
+                        </span>
+                        <span className="ed-tag text-neutral-400 dark:text-neutral-500">
+                          {res.type === 'task' ? (
+                            <FileText className="w-3 h-3" />
+                          ) : res.type === 'activity' ? (
+                            <AlertCircle className="w-3 h-3" />
+                          ) : (
+                            <FileText className="w-3 h-3" />
+                          )}
+                          {res.type}
+                        </span>
                       </div>
+                      <div className="ed-mono mt-0.5">{res.subtitle}</div>
                     </button>
                   ))
                 )}
@@ -274,73 +261,68 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
           )}
         </div>
 
-        {/* Right Zone: Notifications, Profile, Menu Toggle */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Right Zone: Notifications, Profile, Menu */}
+        <div className="flex items-center gap-3 shrink-0">
           {/* Notification Bell */}
           <div ref={notifRef} className="relative">
             <button
               onClick={() => setIsNotifOpen(!isNotifOpen)}
               aria-label="View notifications"
-              className="relative w-8 h-8 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200/60 dark:hover:bg-neutral-800/60 transition-colors cursor-pointer"
+              className="relative p-1.5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
             >
               <Bell className="w-4 h-4" />
               {unreadNotificationsCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-neutral-950 animate-pulse" />
+                <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-neutral-950 dark:bg-white" />
               )}
             </button>
 
-            {/* Notification Drawer / Panel */}
             {isNotifOpen && (
-              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="p-3.5 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-neutral-900 dark:text-white">
-                      {t('notifications')}
-                    </span>
-                    {unreadNotificationsCount > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 text-[10px] font-bold">
-                        {unreadNotificationsCount} new
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center p-0.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-[11px]">
-                      <button
-                        onClick={() => setNotifFilter('all')}
-                        className={`px-2 py-0.5 rounded-md font-medium transition-colors ${
-                          notifFilter === 'all'
-                            ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs'
-                            : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
-                        }`}
-                      >
-                        All
-                      </button>
-                      <button
-                        onClick={() => setNotifFilter('unread')}
-                        className={`px-2 py-0.5 rounded-md font-medium transition-colors ${
-                          notifFilter === 'unread'
-                            ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-xs'
-                            : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
-                        }`}
-                      >
-                        Unread
-                      </button>
-                    </div>
-
-                    {unreadNotificationsCount > 0 && (
-                      <button
-                        onClick={markAllNotificationsAsRead}
-                        className="text-[11px] text-sky-600 dark:text-sky-400 hover:underline cursor-pointer"
-                        title={t('markAllAsRead')}
-                      >
-                        <CheckCheck className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
+              <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-[#121110] border border-neutral-900/10 dark:border-white/10 z-50">
+                <div className="px-4 py-3 border-b border-neutral-900/10 dark:border-white/10 flex items-center justify-between">
+                  <span className="ed-h3">{t('notifications')}</span>
+                  <span className="ed-tag text-neutral-400">
+                    {unreadNotificationsCount > 0
+                      ? `${unreadNotificationsCount} unread`
+                      : 'All read'}
+                  </span>
                 </div>
 
-                <div className="max-h-80 overflow-y-auto divide-y divide-neutral-100 dark:divide-neutral-800/60">
+                <div className="flex items-center justify-between px-4 py-2 border-b border-neutral-900/10 dark:border-white/10">
+                  <div className="flex items-center gap-4 text-[11px]">
+                    <button
+                      onClick={() => setNotifFilter('all')}
+                      className={`uppercase tracking-[0.14em] font-semibold cursor-pointer ${
+                        notifFilter === 'all'
+                          ? 'text-neutral-950 dark:text-white underline underline-offset-4'
+                          : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
+                      }`}
+                    >
+                      All
+                    </button>
+                    <button
+                      onClick={() => setNotifFilter('unread')}
+                      className={`uppercase tracking-[0.14em] font-semibold cursor-pointer ${
+                        notifFilter === 'unread'
+                          ? 'text-neutral-950 dark:text-white underline underline-offset-4'
+                          : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
+                      }`}
+                    >
+                      Unread
+                    </button>
+                  </div>
+
+                  {unreadNotificationsCount > 0 && (
+                    <button
+                      onClick={markAllNotificationsAsRead}
+                      className="p-1 text-neutral-400 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
+                      title={t('markAllAsRead')}
+                    >
+                      <CheckCheck className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="max-h-80 overflow-y-auto divide-y divide-neutral-900/10 dark:divide-white/10">
                   {displayedNotifications.length === 0 ? (
                     <div className="p-8 text-center text-xs text-neutral-500">
                       No notifications to display.
@@ -350,26 +332,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                       <div
                         key={notif.id}
                         onClick={() => handleNotificationClick(notif)}
-                        className={`p-3 text-left hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors flex items-start gap-3 cursor-pointer ${
-                          !notif.read ? 'bg-sky-50/40 dark:bg-sky-950/20' : ''
-                        }`}
+                        className="px-4 py-3.5 text-left hover:bg-neutral-900/[0.03] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
                       >
-                        <div
-                          className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                            !notif.read ? 'bg-sky-500' : 'bg-transparent'
-                          }`}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between text-xs font-semibold text-neutral-900 dark:text-white mb-0.5">
-                            <span className="truncate">{notif.title}</span>
-                            <span className="text-[10px] text-neutral-400 font-normal shrink-0 ml-2">
-                              {notif.timestamp}
-                            </span>
-                          </div>
-                          <p className="text-xs text-neutral-600 dark:text-neutral-400 line-clamp-2 leading-relaxed">
-                            {notif.message}
-                          </p>
+                        <div className="flex items-baseline justify-between gap-3">
+                          <span
+                            className={`text-xs font-medium truncate ${
+                              notif.read
+                                ? 'text-neutral-500 dark:text-neutral-400'
+                                : 'text-neutral-950 dark:text-white'
+                            }`}
+                          >
+                            {notif.title}
+                          </span>
+                          <span className="ed-mono shrink-0">{notif.timestamp}</span>
                         </div>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 leading-relaxed line-clamp-2">
+                          {notif.message}
+                        </p>
+                        {!notif.read && (
+                          <span className="inline-block w-1 h-1 rounded-full bg-neutral-950 dark:bg-white mt-1.5" />
+                        )}
                       </div>
                     ))
                   )}
@@ -378,86 +360,86 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
             )}
           </div>
 
-          {/* Profile User Icon & Account Switcher Dropdown */}
+          {/* Profile + Account Switcher */}
           <div ref={profileRef} className="relative">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-2 p-1 rounded-xl hover:bg-neutral-200/60 dark:hover:bg-neutral-800/60 transition-colors cursor-pointer"
+              className="flex items-center gap-2 py-1 cursor-pointer group"
             >
               <img
                 src={currentEmployee.avatarUrl}
                 alt={currentEmployee.name}
-                className="w-7 h-7 rounded-lg object-cover ring-1 ring-neutral-300 dark:ring-neutral-700"
+                className="w-6 h-6 rounded-full object-cover grayscale"
                 referrerPolicy="no-referrer"
               />
-              <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 hidden lg:inline-block">
+              <span className="text-xs font-medium text-neutral-800 dark:text-neutral-200 hidden lg:inline-block">
                 {currentEmployee.name.split(' ')[0]}
               </span>
-              <ChevronDown className="w-3 h-3 text-neutral-400 hidden lg:inline-block" />
+              <ChevronDown className="w-3 h-3 text-neutral-400" />
             </button>
 
-            {/* Profile Dropdown */}
             {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden z-50 p-2 space-y-1">
-                <div className="p-2.5 border-b border-neutral-100 dark:border-neutral-800">
-                  <div className="text-xs font-bold text-neutral-900 dark:text-white">
+              <div className="absolute right-0 mt-3 w-64 bg-white dark:bg-[#121110] border border-neutral-900/10 dark:border-white/10 z-50 p-4 space-y-3">
+                <div className="pb-3 border-b border-neutral-900/10 dark:border-white/10">
+                  <div className="font-serif text-base text-neutral-950 dark:text-white">
                     {currentEmployee.name}
                   </div>
-                  <div className="text-[11px] text-neutral-500 font-mono">
+                  <div className="ed-mono mt-0.5">
                     {currentEmployee.employeeCode} · {currentEmployee.designation}
                   </div>
                 </div>
 
-                <div className="pt-1 text-[10px] font-semibold uppercase tracking-wider text-neutral-400 px-2">
-                  Switch Demo Employee
+                <div className="ed-label pt-1">Switch Demo Employee</div>
+
+                <div className="space-y-1">
+                  {allEmployees.map((emp) => (
+                    <button
+                      key={emp.id}
+                      onClick={() => {
+                        switchEmployee(emp.id);
+                        setIsProfileOpen(false);
+                      }}
+                      className={`w-full p-2 text-left flex items-center justify-between text-xs transition-colors cursor-pointer ${
+                        emp.id === currentEmployee.id
+                          ? 'text-neutral-950 dark:text-white'
+                          : 'text-neutral-500 hover:text-neutral-950 dark:hover:text-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <img
+                          src={emp.avatarUrl}
+                          alt={emp.name}
+                          className="w-5 h-5 rounded-full object-cover grayscale"
+                          referrerPolicy="no-referrer"
+                        />
+                        <span>{emp.name}</span>
+                      </div>
+                      {emp.id === currentEmployee.id && (
+                        <span className="ed-tag text-neutral-500 dark:text-neutral-400">
+                          Active
+                        </span>
+                      )}
+                    </button>
+                  ))}
                 </div>
 
-                {allEmployees.map((emp) => (
-                  <button
-                    key={emp.id}
-                    onClick={() => {
-                      switchEmployee(emp.id);
-                      setIsProfileOpen(false);
-                    }}
-                    className={`w-full p-2 rounded-xl text-left flex items-center justify-between text-xs transition-colors cursor-pointer ${
-                      emp.id === currentEmployee.id
-                        ? 'bg-neutral-100 dark:bg-neutral-800 font-semibold text-neutral-900 dark:text-white'
-                        : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={emp.avatarUrl}
-                        alt={emp.name}
-                        className="w-5 h-5 rounded-md object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                      <span>{emp.name}</span>
-                    </div>
-                    {emp.id === currentEmployee.id && (
-                      <span className="text-[10px] text-sky-500 font-medium">Active</span>
-                    )}
-                  </button>
-                ))}
-
-                <div className="border-t border-neutral-100 dark:border-neutral-800 pt-1">
+                <div className="pt-3 border-t border-neutral-900/10 dark:border-white/10 space-y-1">
                   <button
                     onClick={() => {
                       setActiveTab('profile-settings');
                       setIsProfileOpen(false);
                     }}
-                    className="w-full px-2.5 py-1.5 rounded-lg text-left text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2 cursor-pointer"
+                    className="w-full p-2 text-left text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-900/[0.03] dark:hover:bg-white/[0.04] flex items-center gap-2 cursor-pointer"
                   >
                     <Settings className="w-3.5 h-3.5" />
                     <span>{t('profileSettings')}</span>
                   </button>
-
                   <button
                     onClick={() => {
                       signOut();
                       setIsProfileOpen(false);
                     }}
-                    className="w-full px-2.5 py-1.5 rounded-lg text-left text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2 cursor-pointer"
+                    className="w-full p-2 text-left text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white flex items-center gap-2 cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>{t('signOut')}</span>
@@ -467,11 +449,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
             )}
           </div>
 
-          {/* Menu Button (Sidebar Toggle) */}
+          {/* Menu Toggle */}
           <button
             onClick={onToggleSidebar}
             aria-label="Toggle navigation menu"
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200/60 dark:hover:bg-neutral-800/60 transition-colors cursor-pointer"
+            className="p-1.5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
           >
             {isSidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>

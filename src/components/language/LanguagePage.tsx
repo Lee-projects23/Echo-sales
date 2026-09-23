@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Globe, Sparkles } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
 import { LanguageCode } from '../../types';
@@ -29,21 +29,21 @@ export const LanguagePage: React.FC = () => {
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-8 px-4 sm:px-6 space-y-6 animate-in fade-in duration-150">
-      <GlobalBackButton />
-
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
-          {t('language')}
-        </h1>
-        <p className="text-xs text-neutral-500 mt-1">
-          Select preferred interface language for workflows, task checklists, and communications
-        </p>
+    <div className="w-full max-w-4xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
+      <div className="mb-10">
+        <GlobalBackButton />
+        <div className="mt-4">
+          <p className="ed-label mb-4">Interface</p>
+          <h1 className="ed-h1">{t('language')}</h1>
+          <p className="ed-sub mt-3 max-w-xl">
+            Select preferred interface language for workflows, task checklists, and communications.
+          </p>
+        </div>
       </div>
 
-      {/* Language Options Cards */}
-      <div className="space-y-3">
-        {languageOptions.map((opt) => {
+      {/* Language Options */}
+      <div>
+        {languageOptions.map((opt, idx) => {
           const isSelected = language === opt.code;
 
           return (
@@ -51,46 +51,36 @@ export const LanguagePage: React.FC = () => {
               key={opt.code}
               type="button"
               onClick={() => setLanguage(opt.code)}
-              className={`w-full p-5 rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer ${
-                isSelected
-                  ? 'border-neutral-900 dark:border-white bg-neutral-50 dark:bg-neutral-800/80 shadow-sm'
-                  : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 hover:border-neutral-300 dark:hover:border-neutral-700'
-              }`}
+              className={`w-full flex items-center justify-between gap-4 py-5 text-left transition-colors cursor-pointer border-t border-neutral-900/10 dark:border-white/10 ${
+                idx === languageOptions.length - 1 ? 'border-b' : ''
+              } ${isSelected ? 'bg-neutral-900/[0.03] dark:bg-white/[0.03]' : 'hover:bg-neutral-900/[0.02] dark:hover:bg-white/[0.02]'}`}
             >
-              <div className="flex items-center gap-4">
-                <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold ${
-                    isSelected
-                      ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300'
-                  }`}
-                >
-                  <Globe className="w-5 h-5" />
-                </div>
-
-                <div>
-                  <div className="text-sm font-bold text-neutral-900 dark:text-white">
-                    {opt.native} — {opt.english}
+              <div className="flex items-baseline gap-6 min-w-0">
+                <span className="font-serif text-2xl text-neutral-950 dark:text-neutral-50 shrink-0">
+                  {opt.native}
+                </span>
+                <div className="min-w-0">
+                  <div className="text-sm text-neutral-950 dark:text-neutral-50 truncate">
+                    {opt.english}
                   </div>
-                  <div className="text-[11px] text-neutral-500 mt-0.5">{opt.region}</div>
+                  <div className="ed-mono mt-1">{opt.region}</div>
                 </div>
               </div>
 
               {isSelected ? (
-                <div className="w-6 h-6 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex items-center justify-center">
-                  <Check className="w-3.5 h-3.5 stroke-[3]" />
-                </div>
-              ) : (
-                <div className="w-6 h-6 rounded-full border border-neutral-300 dark:border-neutral-700" />
-              )}
+                <span className="inline-flex items-center gap-2 ed-tag text-neutral-950 dark:text-neutral-50">
+                  <Check className="w-3.5 h-3.5" />
+                  Selected
+                </span>
+              ) : null}
             </button>
           );
         })}
       </div>
 
-      <div className="p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800/60 text-xs text-neutral-500 flex items-start gap-2.5">
-        <Sparkles className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
-        <p className="leading-relaxed">
+      <div className="mt-10 flex items-start gap-3 text-xs text-neutral-500 dark:text-neutral-400 max-w-2xl leading-relaxed">
+        <span className="h-px w-8 mt-2 bg-neutral-900/20 dark:bg-white/20 shrink-0" />
+        <p>
           Localization architecture covers navigation tabs, task action buttons, attendance prompts,
           checklists, notifications, and form validation across English, தமிழ், and हिन्दी.
         </p>
