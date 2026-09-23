@@ -1,0 +1,6 @@
+{
+  "name": "ECHO Employee Portal",
+  "description": "Apple-inspired operations and field execution companion for the ECHO workspace.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
