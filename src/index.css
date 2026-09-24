@@ -6,6 +6,10 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
+/* Class-based dark mode: `dark:` variants follow the `.dark` class on <html>, */
+/* so the theme toggle applies across the entire site instead of the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     color-scheme: light;
