@@ -155,10 +155,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full h-16 border-b border-neutral-900/10 dark:border-white/10 apple-glass">
-      <div className="max-w-7xl mx-auto h-full px-5 sm:px-8 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 w-full h-16 border-b border-[var(--echo-border)] apple-glass">
+      <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 sm:gap-4">
         {/* Left Zone: Wordmark + Home */}
-        <div className="flex items-center gap-4 sm:gap-6 shrink-0">
+        <div className="flex items-center gap-3 sm:gap-5 shrink-0">
           <button
             onClick={() => {
               setSelectedTaskId(null);
@@ -166,17 +166,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
               setSelectedVoucherId(null);
               setActiveTab('home');
             }}
-            className="flex items-baseline gap-2 cursor-pointer group"
+            className="flex items-center gap-2.5 cursor-pointer group"
+            aria-label="ECHO home"
           >
-            <span className="font-serif text-xl tracking-[0.08em] text-neutral-950 dark:text-white">
-              ECHO
+            <span
+              className="echo-icon-tile echo-icon-tile--accent"
+              style={{ width: '1.875rem', height: '1.875rem', borderRadius: '10px' }}
+            >
+              <span className="font-serif text-[13px] leading-none">E</span>
             </span>
-            <span className="hidden sm:inline-block text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500">
-              Employee Portal
+            <span className="flex flex-col items-start leading-none">
+              <span className="font-serif text-[17px] tracking-[0.14em] text-[var(--echo-ink)]">
+                ECHO
+              </span>
+              <span className="hidden sm:inline-block text-[9px] font-semibold uppercase tracking-[0.18em] text-[var(--echo-ink-3)] mt-1">
+                Employee Portal
+              </span>
             </span>
           </button>
 
-          <span className="hidden sm:block w-px h-4 bg-neutral-900/10 dark:bg-white/10" />
+          <span className="hidden sm:block w-px h-5 bg-[var(--echo-border-strong)]" />
 
           <button
             onClick={() => {
@@ -185,22 +194,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
               setSelectedVoucherId(null);
               setActiveTab('home');
             }}
-            className={`text-[11px] font-semibold uppercase tracking-[0.16em] py-1 transition-colors cursor-pointer ${
+            className={`hidden sm:inline-flex items-center rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors cursor-pointer ${
               activeTab === 'home'
-                ? 'text-neutral-950 dark:text-white'
-                : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-950 dark:hover:text-white'
+                ? 'bg-[var(--echo-accent-soft)] text-[var(--echo-accent)]'
+                : 'text-[var(--echo-ink-3)] hover:text-[var(--echo-ink)] hover:bg-[var(--echo-surface-3)]'
             }`}
           >
-            <span className={activeTab === 'home' ? 'underline underline-offset-8 decoration-1' : ''}>
-              {t('home')}
-            </span>
+            {t('home')}
           </button>
 
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle visual theme"
-            className="p-1.5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
+            title={theme === 'dark' ? 'Switch to Day Mode' : 'Switch to Night Mode'}
+            className="echo-icon-tile hover:text-[var(--echo-ink)] hover:border-[var(--echo-border-strong)] transition-colors cursor-pointer"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
@@ -208,26 +216,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
 
         {/* Center Zone: Search */}
         <div ref={searchRef} className="relative flex-1 max-w-md hidden md:block">
-          <div className="flex items-center border-b border-neutral-900/10 dark:border-white/10 focus-within:border-neutral-950 dark:focus-within:border-white transition-colors">
-            <Search className="w-3.5 h-3.5 mr-2 text-neutral-400 dark:text-neutral-500" />
+          <div className="flex items-center rounded-full border border-[var(--echo-border)] bg-[var(--echo-surface-2)] px-4 transition-colors focus-within:border-[var(--echo-accent)] focus-within:bg-[var(--echo-surface)] focus-within:shadow-[0_0_0_4px_var(--echo-accent-soft)]">
+            <Search className="w-3.5 h-3.5 mr-2.5 text-[var(--echo-ink-3)] shrink-0" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
               placeholder={t('searchPlaceholder')}
-              className="w-full py-1.5 text-xs bg-transparent text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-600 focus:outline-none tracking-wide"
+              className="w-full py-2 text-[13px] bg-transparent text-[var(--echo-ink)] placeholder:text-[var(--echo-ink-3)] focus:outline-none"
             />
           </div>
 
           {isSearchFocused && searchQuery.trim() && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#121110] border border-neutral-900/10 dark:border-white/10 z-50">
-              <div className="ed-label px-4 py-2.5 border-b border-neutral-900/10 dark:border-white/10">
+            <div className="echo-popover absolute top-full left-0 right-0 mt-2 z-50">
+              <div className="ed-label px-4 py-3 border-b border-[var(--echo-border)]">
                 Matching Results ({searchResults.length})
               </div>
-              <div className="max-h-64 overflow-y-auto divide-y divide-neutral-900/10 dark:divide-white/10">
+              <div className="max-h-72 overflow-y-auto echo-scroll divide-y divide-[var(--echo-border)]">
                 {searchResults.length === 0 ? (
-                  <div className="p-5 text-center text-xs text-neutral-500">
+                  <div className="p-6 text-center text-[13px] text-[var(--echo-ink-3)]">
                     No matching tasks, activities, or vouchers found.
                   </div>
                 ) : (
@@ -235,13 +243,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                     <button
                       key={`${res.type}-${res.id}`}
                       onClick={() => handleSearchResultClick(res)}
-                      className="w-full p-3.5 text-left hover:bg-neutral-900/[0.03] dark:hover:bg-white/[0.04] transition-colors cursor-pointer group"
+                      className="w-full p-3.5 text-left hover:bg-[var(--echo-surface-2)] transition-colors cursor-pointer group"
                     >
-                      <div className="flex items-baseline justify-between gap-3">
-                        <span className="text-xs font-medium text-neutral-900 dark:text-white truncate">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-[13px] font-medium text-[var(--echo-ink)] truncate">
                           {res.title}
                         </span>
-                        <span className="ed-tag text-neutral-400 dark:text-neutral-500">
+                        <span className="ed-tag shrink-0">
                           {res.type === 'task' ? (
                             <FileText className="w-3 h-3" />
                           ) : res.type === 'activity' ? (
@@ -252,7 +260,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                           {res.type}
                         </span>
                       </div>
-                      <div className="ed-mono mt-0.5">{res.subtitle}</div>
+                      <div className="ed-mono mt-1">{res.subtitle}</div>
                     </button>
                   ))
                 )}
@@ -262,50 +270,44 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
         </div>
 
         {/* Right Zone: Notifications, Profile, Menu */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Notification Bell */}
           <div ref={notifRef} className="relative">
             <button
               onClick={() => setIsNotifOpen(!isNotifOpen)}
               aria-label="View notifications"
-              className="relative p-1.5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
+              className="echo-icon-tile relative hover:text-[var(--echo-ink)] hover:border-[var(--echo-border-strong)] transition-colors cursor-pointer"
             >
               <Bell className="w-4 h-4" />
               {unreadNotificationsCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-neutral-950 dark:bg-white" />
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[var(--echo-accent)] ring-2 ring-[var(--echo-overlay)]" />
               )}
             </button>
 
             {isNotifOpen && (
-              <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-[#121110] border border-neutral-900/10 dark:border-white/10 z-50">
-                <div className="px-4 py-3 border-b border-neutral-900/10 dark:border-white/10 flex items-center justify-between">
+              <div className="echo-popover absolute right-0 mt-3 w-[calc(100vw-2rem)] sm:w-96 z-50">
+                <div className="px-4 py-3.5 border-b border-[var(--echo-border)] flex items-center justify-between">
                   <span className="ed-h3">{t('notifications')}</span>
-                  <span className="ed-tag text-neutral-400">
+                  <span className="ed-tag">
                     {unreadNotificationsCount > 0
                       ? `${unreadNotificationsCount} unread`
                       : 'All read'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between px-4 py-2 border-b border-neutral-900/10 dark:border-white/10">
-                  <div className="flex items-center gap-4 text-[11px]">
+                <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--echo-border)]">
+                  <div className="echo-segment">
                     <button
                       onClick={() => setNotifFilter('all')}
-                      className={`uppercase tracking-[0.14em] font-semibold cursor-pointer ${
-                        notifFilter === 'all'
-                          ? 'text-neutral-950 dark:text-white underline underline-offset-4'
-                          : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
-                      }`}
+                      className="echo-segment-item"
+                      data-active={notifFilter === 'all'}
                     >
                       All
                     </button>
                     <button
                       onClick={() => setNotifFilter('unread')}
-                      className={`uppercase tracking-[0.14em] font-semibold cursor-pointer ${
-                        notifFilter === 'unread'
-                          ? 'text-neutral-950 dark:text-white underline underline-offset-4'
-                          : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
-                      }`}
+                      className="echo-segment-item"
+                      data-active={notifFilter === 'unread'}
                     >
                       Unread
                     </button>
@@ -314,7 +316,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                   {unreadNotificationsCount > 0 && (
                     <button
                       onClick={markAllNotificationsAsRead}
-                      className="p-1 text-neutral-400 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
+                      className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer"
+                      style={{ width: '1.875rem', height: '1.875rem' }}
                       title={t('markAllAsRead')}
                     >
                       <CheckCheck className="w-3.5 h-3.5" />
@@ -322,9 +325,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                   )}
                 </div>
 
-                <div className="max-h-80 overflow-y-auto divide-y divide-neutral-900/10 dark:divide-white/10">
+                <div className="max-h-80 overflow-y-auto echo-scroll divide-y divide-[var(--echo-border)]">
                   {displayedNotifications.length === 0 ? (
-                    <div className="p-8 text-center text-xs text-neutral-500">
+                    <div className="p-8 text-center text-[13px] text-[var(--echo-ink-3)]">
                       No notifications to display.
                     </div>
                   ) : (
@@ -332,25 +335,25 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                       <div
                         key={notif.id}
                         onClick={() => handleNotificationClick(notif)}
-                        className="px-4 py-3.5 text-left hover:bg-neutral-900/[0.03] dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
+                        className="px-4 py-3.5 text-left hover:bg-[var(--echo-surface-2)] transition-colors cursor-pointer"
                       >
-                        <div className="flex items-baseline justify-between gap-3">
+                        <div className="flex items-center justify-between gap-3">
                           <span
-                            className={`text-xs font-medium truncate ${
+                            className={`text-[13px] font-medium truncate ${
                               notif.read
-                                ? 'text-neutral-500 dark:text-neutral-400'
-                                : 'text-neutral-950 dark:text-white'
+                                ? 'text-[var(--echo-ink-3)]'
+                                : 'text-[var(--echo-ink)]'
                             }`}
                           >
                             {notif.title}
                           </span>
                           <span className="ed-mono shrink-0">{notif.timestamp}</span>
                         </div>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 leading-relaxed line-clamp-2">
+                        <p className="text-[12px] text-[var(--echo-ink-3)] mt-1 leading-relaxed line-clamp-2">
                           {notif.message}
                         </p>
                         {!notif.read && (
-                          <span className="inline-block w-1 h-1 rounded-full bg-neutral-950 dark:bg-white mt-1.5" />
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--echo-accent)] mt-2" />
                         )}
                       </div>
                     ))
@@ -364,34 +367,34 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
           <div ref={profileRef} className="relative">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-2 py-1 cursor-pointer group"
+              className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 cursor-pointer hover:bg-[var(--echo-surface-3)] transition-colors"
             >
               <img
                 src={currentEmployee.avatarUrl}
                 alt={currentEmployee.name}
-                className="w-6 h-6 rounded-full object-cover grayscale"
+                className="w-7 h-7 rounded-full object-cover ring-1 ring-[var(--echo-border-strong)]"
                 referrerPolicy="no-referrer"
               />
-              <span className="text-xs font-medium text-neutral-800 dark:text-neutral-200 hidden lg:inline-block">
+              <span className="text-[13px] font-medium text-[var(--echo-ink)] hidden lg:inline-block">
                 {currentEmployee.name.split(' ')[0]}
               </span>
-              <ChevronDown className="w-3 h-3 text-neutral-400" />
+              <ChevronDown className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
             </button>
 
             {isProfileOpen && (
-              <div className="absolute right-0 mt-3 w-64 bg-white dark:bg-[#121110] border border-neutral-900/10 dark:border-white/10 z-50 p-4 space-y-3">
-                <div className="pb-3 border-b border-neutral-900/10 dark:border-white/10">
-                  <div className="font-serif text-base text-neutral-950 dark:text-white">
+              <div className="echo-popover absolute right-0 mt-3 w-64 p-2 z-50">
+                <div className="px-3 py-3 mb-1 rounded-[var(--echo-radius-sm)] bg-[var(--echo-surface-2)]">
+                  <div className="font-serif text-base text-[var(--echo-ink)]">
                     {currentEmployee.name}
                   </div>
-                  <div className="ed-mono mt-0.5">
+                  <div className="ed-mono mt-1">
                     {currentEmployee.employeeCode} · {currentEmployee.designation}
                   </div>
                 </div>
 
-                <div className="ed-label pt-1">Switch Demo Employee</div>
+                <div className="ed-label px-3 pt-2 pb-1">Switch Demo Employee</div>
 
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   {allEmployees.map((emp) => (
                     <button
                       key={emp.id}
@@ -399,39 +402,35 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                         switchEmployee(emp.id);
                         setIsProfileOpen(false);
                       }}
-                      className={`w-full p-2 text-left flex items-center justify-between text-xs transition-colors cursor-pointer ${
+                      className={`w-full p-2 text-left flex items-center justify-between text-[13px] rounded-[10px] transition-colors cursor-pointer ${
                         emp.id === currentEmployee.id
-                          ? 'text-neutral-950 dark:text-white'
-                          : 'text-neutral-500 hover:text-neutral-950 dark:hover:text-white'
+                          ? 'bg-[var(--echo-accent-soft)] text-[var(--echo-accent)]'
+                          : 'text-[var(--echo-ink-2)] hover:bg-[var(--echo-surface-2)] hover:text-[var(--echo-ink)]'
                       }`}
                     >
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex items-center gap-2.5 min-w-0">
                         <img
                           src={emp.avatarUrl}
                           alt={emp.name}
-                          className="w-5 h-5 rounded-full object-cover grayscale"
+                          className="w-6 h-6 rounded-full object-cover shrink-0"
                           referrerPolicy="no-referrer"
                         />
-                        <span>{emp.name}</span>
+                        <span className="truncate">{emp.name}</span>
                       </div>
-                      {emp.id === currentEmployee.id && (
-                        <span className="ed-tag text-neutral-500 dark:text-neutral-400">
-                          Active
-                        </span>
-                      )}
+                      {emp.id === currentEmployee.id && <span className="ed-tag shrink-0">Active</span>}
                     </button>
                   ))}
                 </div>
 
-                <div className="pt-3 border-t border-neutral-900/10 dark:border-white/10 space-y-1">
+                <div className="mt-2 pt-2 border-t border-[var(--echo-border)] space-y-0.5">
                   <button
                     onClick={() => {
                       setActiveTab('profile-settings');
                       setIsProfileOpen(false);
                     }}
-                    className="w-full p-2 text-left text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-900/[0.03] dark:hover:bg-white/[0.04] flex items-center gap-2 cursor-pointer"
+                    className="w-full p-2 text-left text-[13px] text-[var(--echo-ink-2)] hover:bg-[var(--echo-surface-2)] hover:text-[var(--echo-ink)] flex items-center gap-2.5 rounded-[10px] transition-colors cursor-pointer"
                   >
-                    <Settings className="w-3.5 h-3.5" />
+                    <Settings className="w-4 h-4" />
                     <span>{t('profileSettings')}</span>
                   </button>
                   <button
@@ -439,9 +438,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                       signOut();
                       setIsProfileOpen(false);
                     }}
-                    className="w-full p-2 text-left text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white flex items-center gap-2 cursor-pointer"
+                    className="w-full p-2 text-left text-[13px] text-[var(--echo-ink-3)] hover:bg-[var(--echo-danger-soft)] hover:text-[var(--echo-danger)] flex items-center gap-2.5 rounded-[10px] transition-colors cursor-pointer"
                   >
-                    <LogOut className="w-3.5 h-3.5" />
+                    <LogOut className="w-4 h-4" />
                     <span>{t('signOut')}</span>
                   </button>
                 </div>
@@ -453,7 +452,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
           <button
             onClick={onToggleSidebar}
             aria-label="Toggle navigation menu"
-            className="p-1.5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
+            className="echo-icon-tile hover:text-[var(--echo-ink)] hover:border-[var(--echo-border-strong)] transition-colors cursor-pointer"
           >
             {isSidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>

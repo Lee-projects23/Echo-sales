@@ -8,6 +8,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
+import { StatusChip } from '../common/StatusChip';
 
 export const HomePage: React.FC<HomePageHookProps> = () => {
   const {
@@ -70,9 +71,9 @@ export const HomePage: React.FC<HomePageHookProps> = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
       {/* Greeting */}
-      <header className="mb-14">
+      <header className="mb-10">
         <p className="ed-label mb-4">Wednesday · 23 September 2026</p>
         <h1 className="ed-h1">
           {greeting}, {currentEmployee.name.split(' ')[0]}.
@@ -80,83 +81,87 @@ export const HomePage: React.FC<HomePageHookProps> = () => {
         <p className="ed-sub mt-3 max-w-xl">{t('hereIsToday')}</p>
       </header>
 
-      {/* Today's Attendance — full-width editorial section */}
-      <section className="pb-12">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-4 mb-3">
-              <span className="ed-label">{t('todayAttendance')}</span>
-              <span className="h-px w-8 bg-neutral-900/20 dark:bg-white/20" />
-              <span className="ed-mono">23 Sep 2026</span>
+      {/* Today's Attendance — hero card */}
+      <section className="mb-8">
+        <div className="echo-card echo-card--pad lg:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+            <div className="max-w-2xl">
+              <div className="echo-section-head">
+                <span className="ed-label">{t('todayAttendance')}</span>
+                <span className="echo-rule" />
+                <span className="ed-mono">23 Sep 2026</span>
+              </div>
+
+              <h2 className="font-serif text-2xl sm:text-3xl font-light leading-snug text-[var(--echo-ink)]">
+                {attendanceStatusLabel()}
+              </h2>
+
+              <p className="ed-sub mt-3 max-w-lg">{attendanceDetailText()}</p>
             </div>
 
-            <h2 className="font-serif text-2xl sm:text-3xl font-light leading-snug text-neutral-950 dark:text-neutral-50">
-              {attendanceStatusLabel()}
-            </h2>
-
-            <p className="ed-sub mt-3 max-w-lg">{attendanceDetailText()}</p>
-          </div>
-
-          <div className="shrink-0 flex flex-col items-end gap-2">
-            {todayAttendance.status === 'Not Checked In' ? (
-              <button onClick={handleCheckIn} className="ed-btn">
-                <Clock className="w-3.5 h-3.5" />
-                <span>{t('checkIn')}</span>
-              </button>
-            ) : todayAttendance.status === 'Checked In' || todayAttendance.status === 'Late' ? (
-              canCheckOut ? (
-                <>
-                  <button onClick={() => handleCheckOut()} className="ed-btn">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>{t('checkOut')}</span>
-                  </button>
-                  <span className="ed-mono">
-                    {regularTasksCompletedToday} / {regularTasksTotalToday} Regular Tasks · Available
-                  </span>
-                </>
+            <div className="shrink-0 flex flex-col items-start lg:items-end gap-3">
+              {todayAttendance.status === 'Not Checked In' ? (
+                <button onClick={handleCheckIn} className="ed-btn">
+                  <Clock className="w-4 h-4" />
+                  <span>{t('checkIn')}</span>
+                </button>
+              ) : todayAttendance.status === 'Checked In' || todayAttendance.status === 'Late' ? (
+                canCheckOut ? (
+                  <>
+                    <button onClick={() => handleCheckOut()} className="ed-btn">
+                      <Clock className="w-4 h-4" />
+                      <span>{t('checkOut')}</span>
+                    </button>
+                    <span className="ed-mono">
+                      {regularTasksCompletedToday} / {regularTasksTotalToday} Regular Tasks · Available
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleCheckOut()}
+                      disabled
+                      className="ed-btn"
+                      title="Complete all required tasks before checking out."
+                    >
+                      <ShieldAlert className="w-4 h-4" />
+                      <span>{t('checkOut')} — Locked</span>
+                    </button>
+                    <span className="ed-mono inline-flex items-center gap-1.5">
+                      <Lock className="w-3 h-3" />
+                      {regularTasksCompletedToday} / {regularTasksTotalToday} Regular Tasks · Complete all required tasks
+                    </span>
+                  </>
+                )
               ) : (
-                <>
-                  <button
-                    onClick={() => handleCheckOut()}
-                    disabled
-                    className="ed-btn"
-                    title="Complete all required tasks before checking out."
-                  >
-                    <ShieldAlert className="w-3.5 h-3.5" />
-                    <span>{t('checkOut')} — Locked</span>
-                  </button>
-                  <span className="ed-mono">
-                    <Lock className="w-3 h-3 inline mr-1" />
-                    {regularTasksCompletedToday} / {regularTasksTotalToday} Regular Tasks · Complete all required tasks
-                  </span>
-                </>
-              )
-            ) : (
-              <div className="ed-tag text-neutral-500 dark:text-neutral-400">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Shift Complete · 8h 52m</span>
-              </div>
-            )}
+                <div className="ed-tag">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Shift Complete · 8h 52m</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Today's Regular Tasks */}
-      <section className="pt-10">
-        <div className="flex items-end justify-between mb-2">
+      <section className="pt-8">
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
           <div>
             <h2 className="ed-h2">{t('todayRegularTasks')}</h2>
             <p className="ed-sub mt-1">
               Recurring operational checklists scheduled for today ({scheduledTodayTasks.length} items)
             </p>
           </div>
-          <div className="ed-mono whitespace-nowrap">
-            {scheduledTodayTasks.filter((x) => x.status === 'Completed').length} /{' '}
-            {scheduledTodayTasks.length} Completed
+          <div className="echo-segment">
+            <span className="echo-segment-item" data-active="true">
+              {scheduledTodayTasks.filter((x) => x.status === 'Completed').length} /{' '}
+              {scheduledTodayTasks.length} Completed
+            </span>
           </div>
         </div>
 
-        <div>
+        <div className="echo-card divide-y divide-[var(--echo-border)] overflow-hidden">
           {scheduledTodayTasks.map((task, index) => {
             const isCompleted = task.status === 'Completed';
             const isInProgress = task.status === 'In Progress';
@@ -164,29 +169,43 @@ export const HomePage: React.FC<HomePageHookProps> = () => {
             return (
               <div
                 key={task.id}
-                className="ed-row transition-colors hover:bg-neutral-900/[0.02] dark:hover:bg-white/[0.02]"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:px-5 transition-colors hover:bg-[var(--echo-surface-2)]"
               >
-                <div className="flex items-baseline gap-5 min-w-0">
-                  <span className="font-mono text-[11px] text-neutral-400 dark:text-neutral-500 w-6 shrink-0 tabular-nums">
-                    {String(index + 1).padStart(2, '0')}
+                <div className="flex items-start gap-4 min-w-0">
+                  <span
+                    className={`echo-icon-tile shrink-0 ${
+                      isCompleted
+                        ? 'echo-icon-tile--positive'
+                        : isInProgress
+                        ? 'echo-icon-tile--accent'
+                        : ''
+                    }`}
+                  >
+                    {isCompleted ? (
+                      <CheckCircle2 className="w-4 h-4" />
+                    ) : (
+                      <span className="font-mono text-[11px] tabular-nums">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                    )}
                   </span>
 
                   <div className="min-w-0">
                     <h3
-                      className={`text-base leading-snug ${
+                      className={`text-[15px] font-medium leading-snug ${
                         isCompleted
-                          ? 'line-through text-neutral-400 dark:text-neutral-500'
-                          : 'text-neutral-950 dark:text-neutral-50'
+                          ? 'line-through text-[var(--echo-ink-3)]'
+                          : 'text-[var(--echo-ink)]'
                       }`}
                     >
                       {task.title}
                     </h3>
 
-                    <div className="ed-mono mt-1 flex flex-wrap items-center gap-2">
+                    <div className="ed-mono mt-1.5 flex flex-wrap items-center gap-2">
                       <span>Scheduled {task.scheduledTime}</span>
-                      <span>·</span>
+                      <span aria-hidden>·</span>
                       <span className="capitalize">{task.frequency}</span>
-                      <span>·</span>
+                      <span aria-hidden>·</span>
                       <span>
                         {isCompleted
                           ? `Completed at ${task.completedAt || '9:45 AM'}`
@@ -198,20 +217,20 @@ export const HomePage: React.FC<HomePageHookProps> = () => {
                   </div>
                 </div>
 
-                <div className="shrink-0">
+                <div className="shrink-0 sm:self-center">
                   {isCompleted ? (
-                    <span className="ed-tag text-neutral-400 dark:text-neutral-500">
+                    <span className="ed-tag">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       {t('completed')}
                     </span>
                   ) : isInProgress ? (
-                    <button onClick={() => completeRegularTask(task.id)} className="ed-btn-ghost">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                    <button onClick={() => completeRegularTask(task.id)} className="ed-btn">
+                      <CheckCircle2 className="w-4 h-4" />
                       <span>{t('completeTask')}</span>
                     </button>
                   ) : (
-                    <button onClick={() => startRegularTask(task.id)} className="ed-btn">
-                      <PlayCircle className="w-3.5 h-3.5" />
+                    <button onClick={() => startRegularTask(task.id)} className="ed-btn-ghost">
+                      <PlayCircle className="w-4 h-4" />
                       <span>{t('startTask')}</span>
                     </button>
                   )}
@@ -223,8 +242,8 @@ export const HomePage: React.FC<HomePageHookProps> = () => {
       </section>
 
       {/* Assigned Work */}
-      <section className="pt-14">
-        <div className="flex items-end justify-between gap-4 mb-2">
+      <section className="pt-12">
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
           <div>
             <h2 className="ed-h2">Assigned Work</h2>
             <p className="ed-sub mt-1">
@@ -237,11 +256,11 @@ export const HomePage: React.FC<HomePageHookProps> = () => {
             className="ed-link shrink-0"
           >
             <span>View All ({assignedTasks.length})</span>
-            <ArrowRight className="w-3 h-3" />
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div>
+        <div className="echo-card divide-y divide-[var(--echo-border)] overflow-hidden">
           {pendingAssignedTasks.slice(0, 4).map((task) => (
             <div
               key={task.id}
@@ -249,25 +268,25 @@ export const HomePage: React.FC<HomePageHookProps> = () => {
                 setSelectedTaskId(task.id);
                 setActiveTab('task-detail');
               }}
-              className="ed-row cursor-pointer hover:bg-neutral-900/[0.02] dark:hover:bg-white/[0.02] group"
+              className="flex items-center justify-between gap-4 p-4 sm:px-5 cursor-pointer transition-colors hover:bg-[var(--echo-surface-2)] group"
             >
-              <div className="flex items-baseline gap-5 min-w-0">
-                <span className="font-mono text-[11px] text-neutral-400 dark:text-neutral-500 shrink-0 tabular-nums">
+              <div className="flex items-start gap-4 min-w-0">
+                <span className="echo-icon-tile shrink-0 font-mono text-[11px] tabular-nums">
                   {task.taskNumber}
                 </span>
                 <div className="min-w-0">
-                  <h3 className="text-base text-neutral-950 dark:text-neutral-50 leading-snug truncate">
+                  <h3 className="text-[15px] font-medium text-[var(--echo-ink)] leading-snug truncate">
                     {task.taskTitle}
                   </h3>
-                  <p className="ed-mono mt-1 truncate">
+                  <p className="ed-mono mt-1.5 truncate">
                     {task.clientName} · {task.scheduledDate}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 shrink-0">
-                <span className="ed-tag text-neutral-500 dark:text-neutral-400">{task.status}</span>
-                <span className="text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-950 dark:group-hover:text-white transition-colors">
+              <div className="flex items-center gap-3 shrink-0">
+                <StatusChip status={task.status} />
+                <span className="text-[var(--echo-ink-3)] group-hover:text-[var(--echo-accent)] transition-colors">
                   <ArrowRight className="w-4 h-4" />
                 </span>
               </div>

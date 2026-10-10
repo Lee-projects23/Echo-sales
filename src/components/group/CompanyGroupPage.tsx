@@ -4,6 +4,7 @@ import {
   Image as ImageIcon,
   Mic,
   FileText,
+  Users,
 } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { AccessDenied } from '../common/AccessDenied';
@@ -43,13 +44,19 @@ export const CompanyGroupPage: React.FC = () => {
     sendGroupMessage(textMap[type], type);
   };
 
+  const attachmentIcon = (type: 'image' | 'voice' | 'document') => {
+    if (type === 'image') return <ImageIcon className="w-3.5 h-3.5" />;
+    if (type === 'voice') return <Mic className="w-3.5 h-3.5" />;
+    return <FileText className="w-3.5 h-3.5" />;
+  };
+
   return (
-    <div className="w-full max-w-4xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
       <GlobalBackButton />
 
       {/* Header */}
-      <div className="mt-4 mb-8">
-        <div className="flex items-center justify-between">
+      <div className="mt-5 mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="ed-label mb-4">Communications</p>
             <h1 className="ed-h1">{t('companyGroup')}</h1>
@@ -58,32 +65,36 @@ export const CompanyGroupPage: React.FC = () => {
             </p>
           </div>
 
-          <span className="hidden sm:inline-flex items-center gap-2 ed-tag text-neutral-500 dark:text-neutral-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-neutral-950 dark:bg-white" />
+          <span className="echo-chip echo-chip--positive">
+            <span className="echo-dot animate-echo-ping" />
             Live
           </span>
         </div>
       </div>
 
       {/* Chat Box */}
-      <div className="border border-neutral-900/10 dark:border-white/10 flex flex-col h-[560px]">
+      <div className="echo-card flex flex-col h-[560px] overflow-hidden">
         {/* Chat Header */}
-        <div className="px-6 py-4 border-b border-neutral-900/10 dark:border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 border border-neutral-900/20 dark:border-white/20 flex items-center justify-center font-serif text-xs text-neutral-950 dark:text-neutral-50">
+        <div className="px-5 py-4 border-b border-[var(--echo-border)] flex items-center justify-between gap-3 bg-[var(--echo-surface-2)]">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="echo-icon-tile echo-icon-tile--accent font-serif text-[13px]">
               E
-            </div>
-            <div>
-              <div className="text-sm font-medium text-neutral-950 dark:text-neutral-50">
+            </span>
+            <div className="min-w-0">
+              <div className="text-[14px] font-semibold text-[var(--echo-ink)] truncate">
                 Official Operations Desk #01
               </div>
-              <div className="ed-mono">Synchronized with Admin Command Console</div>
+              <div className="ed-mono mt-0.5">Synchronized with Admin Command Console</div>
             </div>
           </div>
+          <span className="echo-chip shrink-0">
+            <Users className="w-3.5 h-3.5" />
+            {groupMessages.length}
+          </span>
         </div>
 
         {/* Message Feed */}
-        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-5">
+        <div className="flex-1 overflow-y-auto echo-scroll px-5 py-6 space-y-5">
           {groupMessages.map((msg) => {
             const isMe = msg.senderId === currentEmployee.id;
 
@@ -92,35 +103,31 @@ export const CompanyGroupPage: React.FC = () => {
                 <img
                   src={msg.avatarUrl}
                   alt={msg.senderName}
-                  className="w-8 h-8 rounded-full object-cover shrink-0 mt-0.5 grayscale"
+                  className="w-8 h-8 rounded-full object-cover shrink-0 mt-0.5 ring-1 ring-[var(--echo-border)]"
                   referrerPolicy="no-referrer"
                 />
 
-                <div className={`max-w-[75%] space-y-1 ${isMe ? 'items-end' : ''}`}>
-                  <div className={`flex items-center gap-2 ${isMe ? 'justify-end' : ''}`}>
-                    <span className="text-xs font-medium text-neutral-800 dark:text-neutral-200">
+                <div className={`max-w-[78%] sm:max-w-[75%] space-y-1.5 ${isMe ? 'items-end text-right' : ''}`}>
+                  <div className={`flex flex-wrap items-center gap-2 ${isMe ? 'justify-end' : ''}`}>
+                    <span className="text-[12px] font-semibold text-[var(--echo-ink)]">
                       {msg.senderName}
                     </span>
-                    <span className="ed-tag text-neutral-400 dark:text-neutral-500">
-                      {msg.senderRole}
-                    </span>
+                    <span className="ed-tag">{msg.senderRole}</span>
                     <span className="ed-mono">{msg.timestamp}</span>
                   </div>
 
                   <div
-                    className={`px-4 py-3 text-xs leading-relaxed border ${
+                    className={`rounded-[var(--echo-radius)] px-4 py-3 text-[13px] leading-relaxed text-left ${
                       isMe
-                        ? 'bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 border-neutral-950 dark:border-white'
-                        : 'border-neutral-900/10 dark:border-white/10 text-neutral-800 dark:text-neutral-200'
+                        ? 'bg-[var(--echo-accent)] text-[var(--echo-accent-ink)] shadow-[var(--echo-shadow-accent)]'
+                        : 'bg-[var(--echo-surface-2)] border border-[var(--echo-border)] text-[var(--echo-ink)]'
                     }`}
                   >
                     {msg.text}
 
                     {msg.attachmentType && (
-                      <span className="mt-2 pt-2 block border-t border-white/15 dark:border-black/15 flex items-center gap-1.5 text-[11px] opacity-80">
-                        {msg.attachmentType === 'image' && <ImageIcon className="w-3.5 h-3.5" />}
-                        {msg.attachmentType === 'voice' && <Mic className="w-3.5 h-3.5" />}
-                        {msg.attachmentType === 'document' && <FileText className="w-3.5 h-3.5" />}
+                      <span className={`mt-2.5 pt-2.5 flex items-center gap-1.5 text-[11px] font-medium ${isMe ? 'border-t border-black/10' : 'border-t border-[var(--echo-border)] text-[var(--echo-ink-3)]'}`}>
+                        {attachmentIcon(msg.attachmentType)}
                         <span className="capitalize">{msg.attachmentType} Verified Attachment</span>
                       </span>
                     )}
@@ -133,14 +140,15 @@ export const CompanyGroupPage: React.FC = () => {
         </div>
 
         {/* Input Bar */}
-        <div className="px-4 py-3 border-t border-neutral-900/10 dark:border-white/10">
+        <div className="px-4 py-3 border-t border-[var(--echo-border)] bg-[var(--echo-surface-2)]">
           <form onSubmit={handleSend} className="flex items-center gap-2">
             <div className="flex items-center gap-1 shrink-0">
               <button
                 type="button"
                 onClick={() => handleAttachMock('image')}
                 title="Attach photo"
-                className="p-2 text-neutral-500 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
+                aria-label="Attach photo"
+                className="echo-icon-tile !border-transparent !bg-transparent hover:!bg-[var(--echo-surface-3)] hover:text-[var(--echo-ink)] transition-colors cursor-pointer"
               >
                 <ImageIcon className="w-4 h-4" />
               </button>
@@ -148,7 +156,8 @@ export const CompanyGroupPage: React.FC = () => {
                 type="button"
                 onClick={() => handleAttachMock('voice')}
                 title="Attach voice note"
-                className="p-2 text-neutral-500 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
+                aria-label="Attach voice note"
+                className="echo-icon-tile !border-transparent !bg-transparent hover:!bg-[var(--echo-surface-3)] hover:text-[var(--echo-ink)] transition-colors cursor-pointer"
               >
                 <Mic className="w-4 h-4" />
               </button>
@@ -156,7 +165,8 @@ export const CompanyGroupPage: React.FC = () => {
                 type="button"
                 onClick={() => handleAttachMock('document')}
                 title="Attach document"
-                className="p-2 text-neutral-500 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
+                aria-label="Attach document"
+                className="echo-icon-tile !border-transparent !bg-transparent hover:!bg-[var(--echo-surface-3)] hover:text-[var(--echo-ink)] transition-colors cursor-pointer"
               >
                 <FileText className="w-4 h-4" />
               </button>
@@ -167,13 +177,14 @@ export const CompanyGroupPage: React.FC = () => {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Send message to Admin and Client..."
-              className="flex-1 px-4 py-2 text-xs bg-transparent border border-neutral-900/20 dark:border-white/20 focus:outline-none focus:border-neutral-950 dark:focus:border-white text-neutral-900 dark:text-white placeholder-neutral-400 transition-colors"
+              className="ed-input !rounded-full"
             />
 
             <button
               type="submit"
               disabled={!inputText.trim()}
-              className="p-2.5 bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 hover:opacity-80 disabled:opacity-30 transition-opacity shrink-0 cursor-pointer"
+              aria-label="Send message"
+              className="echo-icon-tile echo-icon-tile--accent disabled:opacity-40 disabled:pointer-events-none transition-transform hover:-translate-y-px cursor-pointer"
             >
               <Send className="w-4 h-4" />
             </button>

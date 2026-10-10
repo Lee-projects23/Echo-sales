@@ -11,6 +11,7 @@ import {
   LogOut,
   X,
   RotateCcw,
+  Lock,
 } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
@@ -36,11 +37,29 @@ export const ProfileSettingsPage: React.FC = () => {
     },
   ];
 
+  const ModalShell: React.FC<{
+    title: string;
+    onClose: () => void;
+    children: React.ReactNode;
+  }> = ({ title, onClose, children }) => (
+    <div className="echo-modal-scrim">
+      <div className="echo-modal max-w-sm space-y-5">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="ed-h3">{title}</h3>
+          <button onClick={onClose} aria-label="Close" className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer" style={{ width: '1.875rem', height: '1.875rem' }}>
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="w-full max-w-4xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
       <div className="mb-10">
         <GlobalBackButton />
-        <div className="mt-4">
+        <div className="mt-5">
           <p className="ed-label mb-4">Credentials</p>
           <h1 className="ed-h1">{t('profileSettings')}</h1>
           <p className="ed-sub mt-3 max-w-xl">
@@ -50,10 +69,12 @@ export const ProfileSettingsPage: React.FC = () => {
       </div>
 
       {/* Admin Notice */}
-      <div className="mb-10 flex items-start gap-4 border border-neutral-900/10 dark:border-white/10 p-5">
-        <Shield className="w-4 h-4 shrink-0 mt-0.5 text-neutral-500" />
-        <div className="text-xs leading-relaxed text-neutral-700 dark:text-neutral-300">
-          <span className="font-semibold uppercase tracking-[0.14em] block mb-1">
+      <div className="echo-card echo-card--pad mb-8 flex items-start gap-4">
+        <span className="echo-icon-tile echo-icon-tile--info shrink-0">
+          <Shield className="w-4 h-4" />
+        </span>
+        <div className="text-[13px] leading-relaxed text-[var(--echo-ink-2)]">
+          <span className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--echo-ink)] block mb-1.5">
             Admin-Governed Profile
           </span>
           Profile information is managed exclusively by your administrator through the ECHO Admin Portal.
@@ -62,24 +83,24 @@ export const ProfileSettingsPage: React.FC = () => {
       </div>
 
       {/* Profile */}
-      <div className="mb-12">
+      <div className="echo-card overflow-hidden">
         {/* Identity Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-6 border-b border-neutral-900/10 dark:border-white/10 pb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-6 p-6 sm:p-8 border-b border-[var(--echo-border)]">
           <img
             src={currentEmployee.avatarUrl}
             alt={currentEmployee.name}
-            className="w-20 h-20 rounded-full object-cover ring-1 ring-neutral-900/15 dark:ring-white/20 grayscale"
+            className="w-20 h-20 rounded-full object-cover ring-1 ring-[var(--echo-border-strong)] shrink-0"
             referrerPolicy="no-referrer"
           />
-          <div className="space-y-1.5">
-            <div className="font-serif text-3xl text-neutral-950 dark:text-neutral-50">
+          <div className="space-y-2 min-w-0">
+            <div className="font-serif text-3xl text-[var(--echo-ink)] leading-tight">
               {currentEmployee.name}
             </div>
             <div className="ed-mono">
               {currentEmployee.employeeCode} · {currentEmployee.designation}
             </div>
-            <span className="ed-tag text-neutral-400 dark:text-neutral-500">
-              <RotateCcw className="w-3 h-3" /> Read-Only Profile
+            <span className="ed-tag">
+              <Lock className="w-3 h-3" /> Read-Only Profile
             </span>
           </div>
         </div>
@@ -89,10 +110,12 @@ export const ProfileSettingsPage: React.FC = () => {
           {details.map((d, idx) => (
             <div
               key={d.label}
-              className={`py-5 pr-6 ${idx % 2 !== 0 ? 'md:border-l border-neutral-900/10 dark:border-white/10 md:pl-8' : ''} border-b border-neutral-900/10 dark:border-white/10`}
+              className={`py-5 px-6 border-b border-[var(--echo-border)] ${
+                idx % 2 !== 0 ? 'md:border-l' : ''
+              }`}
             >
-              <div className="ed-label mb-2 flex items-center gap-1.5">{d.icon}{d.label}</div>
-              <div className={`text-sm text-neutral-950 dark:text-neutral-50 ${d.mono ? 'font-mono' : ''}`}>
+              <div className="echo-kpi-label mb-2 flex items-center gap-1.5">{d.icon}{d.label}</div>
+              <div className={`text-[14px] text-[var(--echo-ink)] ${d.mono ? 'font-mono' : ''}`}>
                 {d.value}
               </div>
             </div>
@@ -100,14 +123,14 @@ export const ProfileSettingsPage: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="pt-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="p-6 flex flex-wrap items-center justify-between gap-3">
           <button type="button" onClick={() => setShowResetConfirm(true)} className="ed-btn-ghost">
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-4 h-4" />
             <span>Reset Local Storage &amp; Cache</span>
           </button>
 
-          <button type="button" onClick={() => setShowSignOutConfirm(true)} className="ed-btn-ghost">
-            <LogOut className="w-3.5 h-3.5" />
+          <button type="button" onClick={() => setShowSignOutConfirm(true)} className="ed-btn-ghost !text-[var(--echo-danger)] !border-[color-mix(in_srgb,var(--echo-danger)_30%,transparent)] hover:!bg-[var(--echo-danger-soft)] hover:!border-[var(--echo-danger)]">
+            <LogOut className="w-4 h-4" />
             <span>Sign Out of Account</span>
           </button>
         </div>
@@ -115,70 +138,52 @@ export const ProfileSettingsPage: React.FC = () => {
 
       {/* Reset Dialog */}
       {showResetConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-          <div className="w-full max-w-sm bg-[#f7f5f0] dark:bg-[#0a0a09] border border-neutral-900/10 dark:border-white/10 p-7 space-y-5">
-            <div className="flex items-center justify-between">
-              <h3 className="ed-h3">Reset Local Cache</h3>
-              <button onClick={() => setShowResetConfirm(false)} className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+        <ModalShell title="Reset Local Cache" onClose={() => setShowResetConfirm(false)}>
+          <p className="text-[13px] leading-relaxed text-[var(--echo-ink-2)]">
+            This will clear any local cached records or corrupted tokens and reset mock workspace data to its original fresh state.
+          </p>
 
-            <p className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">
-              This will clear any local cached records or corrupted tokens and reset mock workspace data to its original fresh state.
-            </p>
-
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <button type="button" onClick={() => setShowResetConfirm(false)} className="ed-btn-ghost">
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowResetConfirm(false);
-                  resetWorkspaceData();
-                }}
-                className="ed-btn"
-              >
-                Reset Data
-              </button>
-            </div>
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button type="button" onClick={() => setShowResetConfirm(false)} className="ed-btn-ghost">
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowResetConfirm(false);
+                resetWorkspaceData();
+              }}
+              className="ed-btn"
+            >
+              Reset Data
+            </button>
           </div>
-        </div>
+        </ModalShell>
       )}
 
       {/* Sign Out Dialog */}
       {showSignOutConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-          <div className="w-full max-w-sm bg-[#f7f5f0] dark:bg-[#0a0a09] border border-neutral-900/10 dark:border-white/10 p-7 space-y-5">
-            <div className="flex items-center justify-between">
-              <h3 className="ed-h3">Confirm Sign Out</h3>
-              <button onClick={() => setShowSignOutConfirm(false)} className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+        <ModalShell title="Confirm Sign Out" onClose={() => setShowSignOutConfirm(false)}>
+          <p className="text-[13px] leading-relaxed text-[var(--echo-ink-2)]">
+            Are you sure you want to sign out of the ECHO Employee Portal? Any unsubmitted task drafts will remain saved locally.
+          </p>
 
-            <p className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">
-              Are you sure you want to sign out of the ECHO Employee Portal? Any unsubmitted task drafts will remain saved locally.
-            </p>
-
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <button type="button" onClick={() => setShowSignOutConfirm(false)} className="ed-btn-ghost">
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowSignOutConfirm(false);
-                  signOut();
-                }}
-                className="ed-btn"
-              >
-                Sign Out
-              </button>
-            </div>
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button type="button" onClick={() => setShowSignOutConfirm(false)} className="ed-btn-ghost">
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowSignOutConfirm(false);
+                signOut();
+              }}
+              className="ed-btn"
+            >
+              Sign Out
+            </button>
           </div>
-        </div>
+        </ModalShell>
       )}
     </div>
   );

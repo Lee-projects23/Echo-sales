@@ -10,171 +10,696 @@
 /* so the theme toggle applies across the entire site instead of the OS setting. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ------------------------------------------------------------------ */
+/* ECHO — design tokens                                               */
+/* Premium fintech surface system. Day/Night modes share one contract. */
+/* ------------------------------------------------------------------ */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --echo-bg: #f3f3f1;
+  --echo-bg-glow-1: rgba(239, 107, 18, 0.07);
+  --echo-bg-glow-2: rgba(23, 23, 26, 0.04);
+  --echo-surface: #ffffff;
+  --echo-surface-2: #fafaf9;
+  --echo-surface-3: #f1f1ef;
+  --echo-surface-inset: #f7f7f6;
+  --echo-overlay: rgba(255, 255, 255, 0.86);
+
+  /* Ink */
+  --echo-ink: #17171a;
+  --echo-ink-2: #4a4a52;
+  --echo-ink-3: #73737d;
+  --echo-ink-inverse: #ffffff;
+
+  /* Lines */
+  --echo-border: rgba(23, 23, 26, 0.08);
+  --echo-border-strong: rgba(23, 23, 26, 0.14);
+
+  /* ECHO accent (brand orange) */
+  --echo-accent: #ea5c0b;
+  --echo-accent-hover: #d24f06;
+  --echo-accent-active: #b44305;
+  --echo-accent-ink: #ffffff;
+  --echo-accent-soft: rgba(234, 92, 11, 0.09);
+  --echo-accent-soft-strong: rgba(234, 92, 11, 0.16);
+  --echo-accent-glow: rgba(234, 92, 11, 0.22);
+
+  /* Status tones */
+  --echo-positive: #0f9252;
+  --echo-positive-soft: rgba(15, 146, 82, 0.10);
+  --echo-warning: #b45309;
+  --echo-warning-soft: rgba(180, 83, 9, 0.10);
+  --echo-danger: #d92d20;
+  --echo-danger-soft: rgba(217, 45, 32, 0.09);
+  --echo-info: #1d4ed8;
+  --echo-info-soft: rgba(29, 78, 216, 0.09);
+
+  /* Depth */
+  --echo-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --echo-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 10px 28px -16px rgba(16, 24, 40, 0.18);
+  --echo-shadow-lg: 0 2px 4px rgba(16, 24, 40, 0.04), 0 28px 56px -28px rgba(16, 24, 40, 0.26);
+  --echo-shadow-accent: 0 8px 20px -10px var(--echo-accent-glow);
+
+  /* Radii — restrained */
+  --echo-radius: 16px;
+  --echo-radius-sm: 12px;
+  --echo-radius-lg: 20px;
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --echo-bg: #08080a;
+  --echo-bg-glow-1: rgba(251, 146, 60, 0.10);
+  --echo-bg-glow-2: rgba(120, 130, 255, 0.07);
+  --echo-surface: #121216;
+  --echo-surface-2: #17171c;
+  --echo-surface-3: #202027;
+  --echo-surface-inset: #0e0e11;
+  --echo-overlay: rgba(10, 10, 12, 0.86);
+
+  /* Ink */
+  --echo-ink: #f6f6f7;
+  --echo-ink-2: #b6b6bf;
+  --echo-ink-3: #8b8b96;
+  --echo-ink-inverse: #0b0b0d;
+
+  /* Lines */
+  --echo-border: rgba(255, 255, 255, 0.08);
+  --echo-border-strong: rgba(255, 255, 255, 0.16);
+
+  /* ECHO accent (brand orange) */
+  --echo-accent: #fb923c;
+  --echo-accent-hover: #fdba74;
+  --echo-accent-active: #fed7aa;
+  --echo-accent-ink: #1a1005;
+  --echo-accent-soft: rgba(251, 146, 60, 0.13);
+  --echo-accent-soft-strong: rgba(251, 146, 60, 0.22);
+  --echo-accent-glow: rgba(251, 146, 60, 0.30);
+
+  /* Status tones */
+  --echo-positive: #45d483;
+  --echo-positive-soft: rgba(69, 212, 131, 0.13);
+  --echo-warning: #fbbf24;
+  --echo-warning-soft: rgba(251, 191, 36, 0.13);
+  --echo-danger: #fb7185;
+  --echo-danger-soft: rgba(251, 113, 133, 0.13);
+  --echo-info: #7aa7ff;
+  --echo-info-soft: rgba(122, 167, 255, 0.13);
+
+  /* Depth */
+  --echo-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --echo-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 18px 40px -24px rgba(0, 0, 0, 0.85);
+  --echo-shadow-lg: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 34px 68px -34px rgba(0, 0, 0, 0.95);
+  --echo-shadow-accent: 0 10px 26px -12px var(--echo-accent-glow);
+}
+
 @layer base {
-  :root {
-    color-scheme: light;
-  }
-
-  .dark {
-    color-scheme: dark;
-  }
-
   html {
-    background-color: #f7f5f0;
-    transition: background-color 0.3s ease;
+    background-color: var(--echo-bg);
+    transition: background-color 0.35s ease;
     scroll-behavior: smooth;
-  }
-
-  html.dark {
-    background-color: #0a0a09;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     font-family: var(--font-sans);
+    background-color: var(--echo-bg);
+    color: var(--echo-ink);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     font-feature-settings: "ss01" on, "cv01" on;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.35s ease, color 0.35s ease;
+  }
+
+  /* Consistent, accessible focus treatment across every interactive element */
+  :focus-visible {
+    outline: 2px solid var(--echo-accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: var(--echo-accent);
+    color: var(--echo-accent-ink);
   }
 }
 
 /* ------------------------------------------------------------------ */
-/* ECHO × Obsidian Assembly — editorial design system                  */
-/* Monochrome, typography-led, hairline separators, generous whitespace */
+/* ECHO — component layer                                              */
+/* Visual-only primitives. No behavioural or layout-contract changes.  */
 /* ------------------------------------------------------------------ */
 
 @layer components {
+  /* ---------- Typography ---------- */
+
   /* Small uppercase section label */
   .ed-label {
-    @apply text-[11px] font-medium uppercase tracking-[0.16em] text-neutral-500 dark:text-neutral-400;
+    @apply text-[11px] font-semibold uppercase tracking-[0.13em];
+    color: var(--echo-ink-3);
   }
 
-  /* Large editorial serif display heading */
+  /* Large display heading */
   .ed-h1 {
-    @apply font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.01em] leading-[1.05] text-neutral-950 dark:text-neutral-50;
+    @apply font-serif text-[clamp(1.875rem,4vw,2.75rem)] font-normal leading-[1.08] tracking-[-0.015em];
+    color: var(--echo-ink);
   }
 
   /* Section heading */
   .ed-h2 {
-    @apply font-serif text-xl sm:text-2xl font-normal tracking-[-0.01em] leading-snug text-neutral-950 dark:text-neutral-50;
+    @apply font-serif text-xl sm:text-[1.4rem] font-normal leading-snug tracking-[-0.01em];
+    color: var(--echo-ink);
   }
 
   /* Small heading used inside panels */
   .ed-h3 {
-    @apply text-sm font-semibold tracking-tight text-neutral-950 dark:text-neutral-50;
+    @apply text-[15px] font-semibold tracking-[-0.01em];
+    color: var(--echo-ink);
   }
 
   /* Muted descriptive copy */
   .ed-sub {
-    @apply text-sm leading-relaxed text-neutral-500 dark:text-neutral-400;
+    @apply text-sm leading-relaxed;
+    color: var(--echo-ink-3);
   }
 
-  /* Hairline row used across the editorial layout */
+  /* Hairline row used across layouts */
   .ed-row {
-    @apply flex items-center justify-between gap-4 py-5 border-t border-neutral-900/10 dark:border-white/10 transition-colors;
+    @apply flex items-center justify-between gap-4 py-5 transition-colors;
+    border-bottom: 1px solid var(--echo-border);
   }
 
-  /* Quiet bordered panel (hairline, squared) */
+  /* ---------- Surfaces ---------- */
+
+  /* Primary rounded card surface */
   .ed-panel {
-    @apply border border-neutral-900/10 dark:border-white/10;
+    @apply p-5 sm:p-6;
+    background: var(--echo-surface);
+    border: 1px solid var(--echo-border);
+    border-radius: var(--echo-radius);
+    box-shadow: var(--echo-shadow);
   }
+
+  .echo-card {
+    background: var(--echo-surface);
+    border: 1px solid var(--echo-border);
+    border-radius: var(--echo-radius);
+    box-shadow: var(--echo-shadow);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease,
+      background-color 0.25s ease;
+  }
+
+  .echo-card--pad {
+    @apply p-5 sm:p-6;
+  }
+
+  /* Interactive card: subtle lift on hover */
+  .echo-card-hover:hover {
+    border-color: var(--echo-border-strong);
+    box-shadow: var(--echo-shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  /* Nested / inset surface (rows, wells, inputs) */
+  .echo-inset {
+    background: var(--echo-surface-2);
+    border: 1px solid var(--echo-border);
+    border-radius: var(--echo-radius-sm);
+  }
+
+  /* ---------- Buttons ---------- */
 
   /* Primary solid action */
   .ed-btn {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] rounded-none bg-neutral-950 text-white border border-neutral-950 hover:bg-neutral-800 hover:border-neutral-800 dark:bg-white dark:text-neutral-950 dark:border-white dark:hover:bg-neutral-200 dark:hover:border-neutral-200 transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:pointer-events-none select-none;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-[13px] font-semibold tracking-[-0.005em] rounded-full cursor-pointer select-none;
+    background: var(--echo-accent);
+    color: var(--echo-accent-ink);
+    border: 1px solid transparent;
+    box-shadow: var(--echo-shadow-accent);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease,
+      opacity 0.2s ease;
+  }
+  .ed-btn:hover:not(:disabled) {
+    background: var(--echo-accent-hover);
+    box-shadow: 0 12px 26px -10px var(--echo-accent-glow);
+    transform: translateY(-1px);
+  }
+  .ed-btn:active:not(:disabled) {
+    background: var(--echo-accent-active);
+    transform: translateY(0) scale(0.985);
+    box-shadow: var(--echo-shadow-sm);
+  }
+  .ed-btn:disabled {
+    opacity: 0.45;
+    pointer-events: none;
+    box-shadow: none;
   }
 
   /* Secondary quiet outline action */
   .ed-btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] rounded-none border border-neutral-900/20 dark:border-white/20 text-neutral-700 dark:text-neutral-300 hover:border-neutral-900 dark:hover:border-white hover:text-neutral-950 dark:hover:text-white transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:pointer-events-none select-none;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-[13px] font-semibold tracking-[-0.005em] rounded-full cursor-pointer select-none;
+    background: var(--echo-surface);
+    color: var(--echo-ink);
+    border: 1px solid var(--echo-border-strong);
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease,
+      opacity 0.2s ease;
+  }
+  .ed-btn-ghost:hover:not(:disabled) {
+    background: var(--echo-surface-3);
+    border-color: var(--echo-ink-3);
+    transform: translateY(-1px);
+  }
+  .ed-btn-ghost:active:not(:disabled) {
+    transform: translateY(0) scale(0.985);
+    background: var(--echo-surface-3);
+  }
+  .ed-btn-ghost:disabled {
+    opacity: 0.45;
+    pointer-events: none;
   }
 
-  /* Underlined editorial link */
+  /* Quiet inline action */
   .ed-link {
-    @apply inline-flex items-center text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-900 dark:text-neutral-100 underline underline-offset-4 decoration-neutral-900/30 dark:decoration-white/30 hover:decoration-neutral-900 dark:hover:decoration-white transition-colors cursor-pointer;
+    @apply inline-flex items-center gap-1.5 text-[13px] font-semibold cursor-pointer;
+    color: var(--echo-accent);
+    transition: color 0.2s ease, gap 0.2s ease;
+  }
+  .ed-link:hover {
+    color: var(--echo-accent-hover);
+    gap: 0.5rem;
   }
 
   /* Muted plain-text clickable label */
   .ed-textbtn {
-    @apply text-[11px] font-medium uppercase tracking-[0.16em] text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer;
+    @apply inline-flex items-center gap-1.5 text-[13px] font-medium cursor-pointer;
+    color: var(--echo-ink-3);
+    transition: color 0.2s ease;
+  }
+  .ed-textbtn:hover {
+    color: var(--echo-ink);
   }
 
-  /* Editorial monochrome status tag (replaces coloured pills) */
-  .ed-tag {
-    @apply inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em];
+  /* Segmented control / pill toggle */
+  .echo-segment {
+    @apply inline-flex items-center gap-1 p-1 rounded-full;
+    background: var(--echo-surface-3);
+    border: 1px solid var(--echo-border);
+  }
+  .echo-segment-item {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold cursor-pointer whitespace-nowrap;
+    color: var(--echo-ink-3);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .echo-segment-item:hover {
+    color: var(--echo-ink);
+  }
+  .echo-segment-item[data-active="true"] {
+    background: var(--echo-surface);
+    color: var(--echo-ink);
+    box-shadow: var(--echo-shadow-sm);
   }
 
-  /* Editorial form input / textarea / select */
+  /* ---------- Chips / status pills ---------- */
+
+  .ed-tag,
+  .echo-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none whitespace-nowrap;
+    background: var(--echo-surface-3);
+    color: var(--echo-ink-2);
+    border: 1px solid var(--echo-border);
+  }
+
+  .echo-chip--neutral {
+    background: var(--echo-surface-3);
+    color: var(--echo-ink-2);
+    border-color: var(--echo-border);
+  }
+  .echo-chip--accent {
+    background: var(--echo-accent-soft);
+    color: var(--echo-accent);
+    border-color: var(--echo-accent-soft-strong);
+  }
+  .echo-chip--positive {
+    background: var(--echo-positive-soft);
+    color: var(--echo-positive);
+    border-color: color-mix(in srgb, var(--echo-positive) 22%, transparent);
+  }
+  .echo-chip--warning {
+    background: var(--echo-warning-soft);
+    color: var(--echo-warning);
+    border-color: color-mix(in srgb, var(--echo-warning) 24%, transparent);
+  }
+  .echo-chip--danger {
+    background: var(--echo-danger-soft);
+    color: var(--echo-danger);
+    border-color: color-mix(in srgb, var(--echo-danger) 24%, transparent);
+  }
+  .echo-chip--info {
+    background: var(--echo-info-soft);
+    color: var(--echo-info);
+    border-color: color-mix(in srgb, var(--echo-info) 24%, transparent);
+  }
+
+  /* Small leading dot used inside chips / live indicators */
+  .echo-dot {
+    @apply w-1.5 h-1.5 rounded-full shrink-0;
+    background: currentColor;
+  }
+
+  /* ---------- Icon tiles ---------- */
+
+  .echo-icon-tile {
+    @apply inline-flex items-center justify-center shrink-0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--echo-radius-sm);
+    background: var(--echo-surface-3);
+    border: 1px solid var(--echo-border);
+    color: var(--echo-ink-2);
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+  .echo-icon-tile--accent {
+    background: var(--echo-accent-soft);
+    border-color: var(--echo-accent-soft-strong);
+    color: var(--echo-accent);
+  }
+  .echo-icon-tile--positive {
+    background: var(--echo-positive-soft);
+    border-color: color-mix(in srgb, var(--echo-positive) 22%, transparent);
+    color: var(--echo-positive);
+  }
+  .echo-icon-tile--warning {
+    background: var(--echo-warning-soft);
+    border-color: color-mix(in srgb, var(--echo-warning) 24%, transparent);
+    color: var(--echo-warning);
+  }
+  .echo-icon-tile--danger {
+    background: var(--echo-danger-soft);
+    border-color: color-mix(in srgb, var(--echo-danger) 24%, transparent);
+    color: var(--echo-danger);
+  }
+  .echo-icon-tile--info {
+    background: var(--echo-info-soft);
+    border-color: color-mix(in srgb, var(--echo-info) 24%, transparent);
+    color: var(--echo-info);
+  }
+
+  /* ---------- Metrics / KPI ---------- */
+
+  .echo-kpi-label {
+    @apply text-[11px] font-semibold uppercase tracking-[0.12em];
+    color: var(--echo-ink-3);
+  }
+
+  .echo-kpi-value {
+    @apply font-serif text-[1.75rem] sm:text-[2rem] font-normal leading-none tracking-[-0.02em] tabular-nums;
+    color: var(--echo-ink);
+  }
+
+  .echo-metric-value {
+    @apply text-lg font-semibold tabular-nums tracking-[-0.01em];
+    color: var(--echo-ink);
+  }
+
+  /* ---------- Progress ---------- */
+
+  .echo-progress {
+    @apply w-full overflow-hidden rounded-full;
+    height: 6px;
+    background: var(--echo-surface-3);
+    border: 1px solid var(--echo-border);
+  }
+  .echo-progress-bar {
+    @apply h-full rounded-full;
+    background: var(--echo-accent);
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .echo-progress-bar--positive {
+    background: var(--echo-positive);
+  }
+  .echo-progress-bar--info {
+    background: var(--echo-info);
+  }
+
+  /* Thin bar used inside charts */
+  .echo-bar {
+    border-radius: 6px 6px 2px 2px;
+    transition: height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* ---------- Forms ---------- */
+
   .ed-input {
-    @apply w-full px-4 py-2.5 text-sm bg-transparent border border-neutral-900/20 dark:border-white/20 rounded-none text-neutral-950 dark:text-neutral-50 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-950 dark:focus:border-white transition-colors duration-200;
+    @apply w-full px-4 py-2.5 text-sm;
+    background: var(--echo-surface-2);
+    border: 1px solid var(--echo-border-strong);
+    border-radius: var(--echo-radius-sm);
+    color: var(--echo-ink);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+  .ed-input::placeholder {
+    color: var(--echo-ink-3);
+  }
+  .ed-input:hover:not(:disabled) {
+    border-color: var(--echo-ink-3);
+  }
+  .ed-input:focus {
+    outline: none;
+    background: var(--echo-surface);
+    border-color: var(--echo-accent);
+    box-shadow: 0 0 0 4px var(--echo-accent-soft);
+  }
+  .ed-input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
   }
 
-  /* Table cell base */
-  .ed-td {
-    @apply px-4 py-4 text-sm text-neutral-900 dark:text-neutral-100 align-middle;
-  }
+  /* ---------- Tables ---------- */
 
-  /* Table header label */
   .ed-th {
-    @apply px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400 whitespace-nowrap;
+    @apply px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.13em] whitespace-nowrap text-left;
+    color: var(--echo-ink-3);
   }
 
-  /* Large serif statistic */
+  .ed-td {
+    @apply px-4 py-4 text-sm align-middle;
+    color: var(--echo-ink);
+  }
+
+  /* ---------- Data / meta ---------- */
+
   .ed-stat {
-    @apply font-serif text-2xl sm:text-3xl font-normal tracking-[-0.01em] tabular-nums text-neutral-950 dark:text-neutral-50;
+    @apply font-serif text-[2rem] sm:text-[2.5rem] font-normal leading-none tracking-[-0.02em] tabular-nums;
+    color: var(--echo-ink);
   }
 
-  /* Monospace metadata */
   .ed-mono {
-    @apply font-mono text-xs text-neutral-500 dark:text-neutral-400;
+    @apply font-mono text-[11px] tracking-[-0.01em];
+    color: var(--echo-ink-3);
   }
 
-  /* Horizontal hairline separator */
   .ed-hairline {
-    @apply border-t border-neutral-900/10 dark:border-white/10;
+    border-top: 1px solid var(--echo-border);
   }
 
-  /* Transparent / squashed "card" surface used sparingly */
   .ed-surface {
-    @apply bg-white dark:bg-[#121110];
+    background: var(--echo-surface);
+  }
+
+  /* ---------- Section headers ---------- */
+
+  /* Eyebrow + rule + meta row used above content blocks */
+  .echo-section-head {
+    @apply flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-5;
+  }
+  .echo-rule {
+    @apply hidden sm:inline-block h-px w-8 shrink-0 self-center;
+    background: var(--echo-border-strong);
+  }
+
+  /* ---------- Floating panels (dropdowns, popovers) ---------- */
+
+  .echo-popover {
+    @apply max-w-[calc(100vw-2rem)] p-0 overflow-hidden;
+    background: var(--echo-surface);
+    border: 1px solid var(--echo-border);
+    border-radius: var(--echo-radius);
+    box-shadow: var(--echo-shadow-lg);
+    animation: echo-rise 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* ---------- Modals ---------- */
+
+  .echo-modal-scrim {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+    background: rgba(8, 8, 10, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: echo-fade-in 0.2s ease both;
+  }
+  .echo-modal {
+    @apply w-full max-w-[calc(100vw-2rem)] p-6 sm:p-7;
+    background: var(--echo-surface);
+    border: 1px solid var(--echo-border);
+    border-radius: var(--echo-radius-lg);
+    box-shadow: var(--echo-shadow-lg);
+    animation: echo-rise 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* ---------- Empty states ---------- */
+
+  .echo-empty {
+    @apply flex flex-col items-center justify-center text-center py-16 px-6;
+    background: var(--echo-surface);
+    border: 1px dashed var(--echo-border-strong);
+    border-radius: var(--echo-radius);
+  }
+
+  /* ---------- Scroll containers ---------- */
+
+  .echo-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--echo-border-strong) transparent;
   }
 }
 
-/* Custom scrollbars */
+/* ------------------------------------------------------------------ */
+/* Motion                                                              */
+/* ------------------------------------------------------------------ */
+
+@keyframes echo-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes echo-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes echo-slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes echo-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes echo-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 var(--echo-accent-glow);
+  }
+  70% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.animate-echo-rise {
+  animation: echo-rise 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-echo-fade {
+  animation: echo-fade-in 0.3s ease both;
+}
+.animate-echo-drawer-right {
+  animation: echo-slide-in-right 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-echo-drawer-left {
+  animation: echo-slide-in-left 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-echo-ping {
+  animation: echo-pulse-ring 2s ease-out infinite;
+}
+
+/* ------------------------------------------------------------------ */
+/* Ambient page glow — soft, premium depth behind the workspace        */
+/* ------------------------------------------------------------------ */
+
+.echo-ambient {
+  position: relative;
+  isolation: isolate;
+}
+.echo-ambient::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 32rem at 12% -8%, var(--echo-bg-glow-1), transparent 65%),
+    radial-gradient(52rem 30rem at 92% 4%, var(--echo-bg-glow-2), transparent 62%);
+}
+
+/* ------------------------------------------------------------------ */
+/* Scrollbars                                                          */
+/* ------------------------------------------------------------------ */
+
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(140, 140, 140, 0.25);
+  background: var(--echo-border-strong);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(140, 140, 140, 0.45);
+  background: var(--echo-ink-3);
 }
 
-/* Legacy glass helper — retained for compatibility, now a quiet scrim */
+/* ------------------------------------------------------------------ */
+/* Form control normalisation                                          */
+/* ------------------------------------------------------------------ */
+
+input[type="range"] {
+  accent-color: var(--echo-accent);
+}
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--echo-accent);
+}
+
+/* ------------------------------------------------------------------ */
+/* Legacy helpers — retained for compatibility                          */
+/* ------------------------------------------------------------------ */
+
 .apple-glass {
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-.dark .apple-glass {
-  background: rgba(10, 10, 9, 0.82);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--echo-overlay);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
 }
 
-/* Legacy card helper — redefined as an editorial hairline surface */
 .apple-card {
-  background-color: transparent;
-  border: 1px solid rgba(18, 18, 16, 0.1);
-}
-.dark .apple-card {
-  background-color: transparent;
-  border: 1px solid rgba(244, 241, 234, 0.12);
+  background: var(--echo-surface);
+  border: 1px solid var(--echo-border);
+  border-radius: var(--echo-radius);
 }

@@ -1,4 +1,15 @@
 import React from 'react';
+import {
+  CheckCircle2,
+  Clock,
+  TrendingUp,
+  ListChecks,
+  Activity as ActivityIcon,
+  CalendarCheck,
+  Palette,
+  Layers,
+  BarChart3,
+} from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
 
@@ -8,32 +19,56 @@ interface BarValue {
   note?: string;
 }
 
-const Bars: React.FC<{ data: BarValue[]; primaryLabel?: string }> = ({ data }) => {
+/** Slim vertical bar — refined interactive chart primitive. */
+const Bars: React.FC<{ data: BarValue[]; tone?: 'accent' | 'neutral' }> = ({
+  data,
+  tone = 'neutral',
+}) => {
   const max = Math.max(1, ...data.map((d) => d.value));
   return (
-    <div className="flex items-end gap-4">
+    <div className="flex items-end gap-3 sm:gap-5">
       {data.map((d) => (
-        <div key={d.label} className="flex-1 flex flex-col items-center justify-end">
-          <span className="font-mono text-xs text-neutral-950 dark:text-neutral-50 tabular-nums mb-2">
+        <div key={d.label} className="flex-1 flex flex-col items-center justify-end min-w-0">
+          <span className="font-mono text-[11px] text-[var(--echo-ink)] tabular-nums mb-2">
             {d.note ? d.note : Math.round(d.value)}
           </span>
-          <div className="w-full max-w-[46px] h-36 flex items-end border-b border-neutral-900/15 dark:border-white/15">
+          <div className="w-full max-w-[44px] h-32 sm:h-36 flex items-end rounded-t-[6px] bg-[var(--echo-surface-3)] overflow-hidden">
             <div
-              className="w-full bg-neutral-950 dark:bg-white"
-              style={{ height: `${Math.max(2, (d.value / max) * 100)}%` }}
+              className={`echo-bar w-full ${tone === 'accent' ? 'bg-[var(--echo-accent)]' : 'bg-[var(--echo-ink)]'}`}
+              style={{ height: `${Math.max(3, (d.value / max) * 100)}%` }}
             />
           </div>
-          <span className="ed-mono mt-2 whitespace-nowrap">{d.label}</span>
+          <span className="ed-mono mt-2.5 whitespace-nowrap truncate max-w-full">{d.label}</span>
         </div>
       ))}
     </div>
   );
 };
 
+/** Section heading used above every chart block. */
+const ChartHeading: React.FC<{ label: string; meta: string }> = ({ label, meta }) => (
+  <div className="echo-section-head">
+    <span className="ed-label">{label}</span>
+    <span className="echo-rule" />
+    <span className="ed-mono">{meta}</span>
+  </div>
+);
+
+/** One metric tile inside a KPI card. */
+const MetricTile: React.FC<{ k: string; v: string }> = ({ k, v }) => (
+  <div className="rounded-[10px] bg-[var(--echo-surface-2)] px-3 py-2.5">
+    <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--echo-ink-3)]">
+      {k}
+    </div>
+    <div className="mt-1 font-mono text-[15px] font-medium text-[var(--echo-ink)] tabular-nums">
+      {v}
+    </div>
+  </div>
+);
+
 export const DashboardPage: React.FC = () => {
   const {
     currentEmployee,
-    regularTasks,
     todayRegularTasks,
     regularTasksCompletedToday,
     regularTasksTotalToday,
@@ -100,6 +135,67 @@ export const DashboardPage: React.FC = () => {
     { label: 'Week 2', value: 83, note: '83%' },
     { label: 'Week 3', value: 95, note: '95%' },
     { label: 'Week 4', value: 89, note: '89%' },
+  ];
+
+  /** Headline KPI tiles — icon, headline metric, supporting detail. */
+  const headlineKpis: {
+    key: string;
+    label: string;
+    value: string;
+    detail: string;
+    icon: React.ReactNode;
+    tone: string;
+    progress?: { value: number; barTone?: string };
+  }[] = [
+    {
+      key: 'tasks',
+      label: 'Regular Tasks',
+      value: `${regCompletedToday}/${regScheduledToday}`,
+      detail: `${regMissed} remaining today`,
+      icon: <ListChecks className="w-4 h-4" />,
+      tone: 'echo-icon-tile--accent',
+      progress: { value: regPct },
+    },
+    {
+      key: 'new-tasks',
+      label: 'Assigned Tasks',
+      value: String(newAssigned),
+      detail: `${newAwaiting} awaiting review`,
+      icon: <CheckCircle2 className="w-4 h-4" />,
+      tone: 'echo-icon-tile--info',
+    },
+    {
+      key: 'activities',
+      label: 'Activities',
+      value: String(actPending),
+      detail: `${actCompleted} of ${actAssigned} resolved`,
+      icon: <ActivityIcon className="w-4 h-4" />,
+      tone: 'echo-icon-tile--warning',
+    },
+    {
+      key: 'attendance',
+      label: 'Attendance',
+      value: `${attPct}%`,
+      detail: `${presentDays} present · ${lateDays} late · ${absentDays} absent`,
+      icon: <CalendarCheck className="w-4 h-4" />,
+      tone: 'echo-icon-tile--positive',
+    },
+    {
+      key: 'leave',
+      label: 'Leave Balance',
+      value: `${currentEmployee.leaveBalance.remaining}`,
+      detail: `${currentEmployee.leaveBalance.taken} of ${currentEmployee.leaveBalance.total} days used`,
+      icon: <Palette className="w-4 h-4" />,
+      tone: 'echo-icon-tile--accent',
+    },
+    {
+      key: 'hours',
+      label: 'Working Hours',
+      value: `${totalHoursH}h ${totalHoursM}m`,
+      detail: `Average ${avgDaily} per day`,
+      icon: <Clock className="w-4 h-4" />,
+      tone: 'echo-icon-tile--neutral',
+    },
   ];
 
   const kpis: { label: string; cols: { k: string; v: string }[] }[] = [
@@ -172,11 +268,11 @@ export const DashboardPage: React.FC = () => {
   ];
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
       {/* Heading */}
-      <div className="mb-12">
+      <div className="mb-10">
         <GlobalBackButton />
-        <div className="mt-4">
+        <div className="mt-5">
           <p className="ed-label mb-4">Personal Record</p>
           <h1 className="ed-h1">{t('dashboard')}</h1>
           <p className="ed-sub mt-3 max-w-xl">
@@ -185,34 +281,61 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* KPI Section — executive blocks */}
-      <section className="mb-16">
-        <div className="flex items-baseline gap-4 mb-2">
+      {/* KPI Section — headline tiles */}
+      <section className="mb-10">
+        <div className="echo-section-head">
           <span className="ed-label">Key Performance Indicators</span>
-          <span className="hidden sm:inline-block h-px w-8 bg-neutral-900/20 dark:bg-white/20" />
+          <span className="echo-rule" />
           <span className="ed-mono">Live · Synced with Admin Monitor</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border-l border-t border-neutral-900/10 dark:border-white/10">
-          {kpis.map((kpi) => (
-            <div
-              key={kpi.label}
-              className="border-r border-b border-neutral-900/10 dark:border-white/10 p-6"
-            >
-              <div className="ed-label mb-5">{kpi.label}</div>
-              <div className="space-y-3">
-                {kpi.cols.map((c) => (
-                  <div
-                    key={c.k}
-                    className="flex items-baseline justify-between gap-3 border-t border-neutral-900/5 dark:border-white/5 pt-2"
-                  >
-                    <span className="text-[11px] uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400">
-                      {c.k}
-                    </span>
-                    <span className="font-mono text-sm text-neutral-950 dark:text-neutral-50 tabular-nums">
-                      {c.v}
-                    </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {headlineKpis.map((kpi) => (
+            <div key={kpi.key} className="echo-card echo-card--pad echo-card-hover">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="echo-kpi-label">{kpi.label}</div>
+                  <div className="echo-kpi-value mt-3">{kpi.value}</div>
+                </div>
+                <span className={`echo-icon-tile ${kpi.tone}`}>{kpi.icon}</span>
+              </div>
+
+              <p className="ed-sub mt-3 text-[12px]">{kpi.detail}</p>
+
+              {kpi.progress && (
+                <div className="mt-4">
+                  <div className="echo-progress">
+                    <div
+                      className="echo-progress-bar"
+                      style={{ width: `${Math.min(100, kpi.progress.value)}%` }}
+                    />
                   </div>
+                  <div className="ed-mono mt-2">{kpi.progress.value}% complete</div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Detailed metric grid */}
+      <section className="mb-12">
+        <div className="echo-section-head">
+          <span className="ed-label">Detailed Metrics</span>
+          <span className="echo-rule" />
+          <span className="ed-mono">Breakdown by module</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {kpis.map((kpi) => (
+            <div key={kpi.label} className="echo-card echo-card--pad">
+              <div className="flex items-center gap-2.5 mb-4">
+                <Layers className="w-4 h-4 text-[var(--echo-ink-3)]" />
+                <div className="ed-h3">{kpi.label}</div>
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                {kpi.cols.map((c) => (
+                  <MetricTile key={c.k} k={c.k} v={c.v} />
                 ))}
               </div>
             </div>
@@ -221,14 +344,11 @@ export const DashboardPage: React.FC = () => {
       </section>
 
       {/* Charts */}
-      <section className="mb-16 space-y-16">
+      <section className="mb-12 space-y-5">
         {/* Chart 1 — Task Completion */}
-        <div>
-          <div className="flex items-baseline gap-4 mb-8">
-            <span className="ed-label">Chart 1 — Task Completion</span>
-            <span className="ed-mono">This week · scheduled vs completed vs missed</span>
-          </div>
-          <div className="flex items-end gap-4">
+        <div className="echo-card echo-card--pad">
+          <ChartHeading label="Chart 1 — Task Completion" meta="This week · scheduled vs completed vs missed" />
+          <div className="flex items-end gap-3 sm:gap-5">
             {[
               { day: 'Mon', comp: 9, miss: 0 },
               { day: 'Tue', comp: 8, miss: 1 },
@@ -240,18 +360,18 @@ export const DashboardPage: React.FC = () => {
             ].map((d) => {
               const total = regScheduledToday || 9;
               return (
-                <div key={d.day} className="flex-1 flex flex-col items-center">
-                  <span className="font-mono text-[11px] text-neutral-950 dark:text-neutral-50 tabular-nums mb-2">
+                <div key={d.day} className="flex-1 flex flex-col items-center min-w-0">
+                  <span className="font-mono text-[11px] text-[var(--echo-ink)] tabular-nums mb-2">
                     {d.comp}/{d.miss > 0 ? d.miss : total}
                   </span>
-                  <div className="relative w-full max-w-[42px] h-36 border border-neutral-900/15 dark:border-white/15">
+                  <div className="relative w-full max-w-[44px] h-32 sm:h-36 rounded-t-[6px] bg-[var(--echo-surface-3)] overflow-hidden">
                     <div
-                      className="absolute left-0 right-0 bottom-0 bg-neutral-950 dark:bg-white"
+                      className="absolute left-0 right-0 bottom-0 bg-[var(--echo-accent)] echo-bar"
                       style={{ height: `${(d.comp / total) * 100}%` }}
                     />
                     {d.miss > 0 && (
                       <div
-                        className="absolute left-0 right-0 bg-neutral-300 dark:bg-neutral-600"
+                        className="absolute left-0 right-0 bg-[var(--echo-warning)]"
                         style={{
                           height: `${(d.miss / total) * 100}%`,
                           bottom: `${(d.comp / total) * 100}%`,
@@ -259,30 +379,27 @@ export const DashboardPage: React.FC = () => {
                       />
                     )}
                   </div>
-                  <span className="ed-mono mt-3">{d.day}</span>
+                  <span className="ed-mono mt-2.5">{d.day}</span>
                 </div>
               );
             })}
           </div>
-          <div className="mt-5 flex items-center gap-6 ed-mono">
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 bg-neutral-950 dark:bg-white" /> Completed
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 ed-mono">
+            <span className="inline-flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[var(--echo-accent)]" /> Completed
             </span>
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 bg-neutral-300 dark:bg-neutral-600" /> Missed
+            <span className="inline-flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[var(--echo-warning)]" /> Missed
             </span>
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 border border-neutral-900/15 dark:border-white/15" /> Scheduled
+            <span className="inline-flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[var(--echo-surface-3)] border border-[var(--echo-border)]" /> Scheduled
             </span>
           </div>
         </div>
 
         {/* Chart 2 — Attendance */}
-        <div>
-          <div className="flex items-baseline gap-4 mb-8">
-            <span className="ed-label">Chart 2 — Attendance</span>
-            <span className="ed-mono">September 2026 · Present / Absent / Late</span>
-          </div>
+        <div className="echo-card echo-card--pad">
+          <ChartHeading label="Chart 2 — Attendance" meta="September 2026 · Present / Absent / Late" />
           <Bars
             data={[
               { label: 'Present', value: presentDays },
@@ -293,12 +410,10 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Chart 3 — Work Activity */}
-        <div>
-          <div className="flex items-baseline gap-4 mb-8">
-            <span className="ed-label">Chart 3 — Work Activity</span>
-            <span className="ed-mono">September 2026 · cumulative submissions</span>
-          </div>
+        <div className="echo-card echo-card--pad">
+          <ChartHeading label="Chart 3 — Work Activity" meta="September 2026 · cumulative submissions" />
           <Bars
+            tone="accent"
             data={[
               { label: 'New Tasks Completed', value: newCompleted, note: `${newCompleted}` },
               { label: 'Activities Completed', value: actCompleted, note: `${actCompleted}` },
@@ -309,49 +424,39 @@ export const DashboardPage: React.FC = () => {
               },
             ]}
           />
-          <p className="ed-mono mt-4 max-w-2xl">
+          <p className="ed-mono mt-5 max-w-2xl leading-relaxed">
             Task evidence, activity resolutions, and vouchers submitted across the current monthly cycle.
           </p>
         </div>
 
         {/* Chart 4 — Working Hours */}
-        <div>
-          <div className="flex items-baseline gap-4 mb-8">
-            <span className="ed-label">Chart 4 — Working Hours</span>
-            <span className="ed-mono">Recent recorded days · hours on site</span>
-          </div>
+        <div className="echo-card echo-card--pad">
+          <ChartHeading label="Chart 4 — Working Hours" meta="Recent recorded days · hours on site" />
           <Bars data={hoursSeries} />
         </div>
 
         {/* Chart 5 — Regular Task Performance */}
-        <div>
-          <div className="flex items-baseline gap-4 mb-8">
-            <span className="ed-label">Chart 5 — Regular Task Performance</span>
-            <span className="ed-mono">Historical weekly completion trend</span>
-          </div>
-          <Bars data={weeklyTrend} />
-          <p className="ed-mono mt-4 max-w-2xl">
+        <div className="echo-card echo-card--pad">
+          <ChartHeading label="Chart 5 — Regular Task Performance" meta="Historical weekly completion trend" />
+          <Bars tone="accent" data={weeklyTrend} />
+          <p className="ed-mono mt-5 max-w-2xl leading-relaxed">
             Weekly completion percentage of daily recurring regular tasks over the past four operational weeks.
           </p>
         </div>
       </section>
 
       {/* Operational Summary + Recent Activity */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
-        <div>
-          <div className="mb-2">
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="echo-card echo-card--pad">
+          <div className="flex items-center gap-2.5 mb-5">
+            <TrendingUp className="w-4 h-4 text-[var(--echo-accent)]" />
             <h2 className="ed-h2">Operational Summary</h2>
           </div>
-          <div>
-            {summaryRows.map((row, idx) => (
-              <div
-                key={row.label}
-                className={`flex items-baseline justify-between gap-4 py-4 ${
-                  idx === 0 ? '' : ''
-                } border-t border-neutral-900/10 dark:border-white/10`}
-              >
-                <span className="text-sm text-neutral-500 dark:text-neutral-400">{row.label}</span>
-                <span className="font-mono text-sm text-neutral-950 dark:text-neutral-50 tabular-nums">
+          <div className="divide-y divide-[var(--echo-border)]">
+            {summaryRows.map((row) => (
+              <div key={row.label} className="flex items-center justify-between gap-4 py-3">
+                <span className="text-[13px] text-[var(--echo-ink-3)]">{row.label}</span>
+                <span className="font-mono text-[13px] font-medium text-[var(--echo-ink)] tabular-nums">
                   {row.value}
                 </span>
               </div>
@@ -359,21 +464,24 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <div>
-          <div className="mb-2">
+        <div className="echo-card echo-card--pad">
+          <div className="flex items-center gap-2.5 mb-5">
+            <BarChart3 className="w-4 h-4 text-[var(--echo-accent)]" />
             <h2 className="ed-h2">Recent Activity Log</h2>
           </div>
-          <div>
+          <div className="divide-y divide-[var(--echo-border)]">
             {activityLog.map((act, i) => (
-              <div
-                key={i}
-                className={`${i === 0 ? 'border-t' : ''} border-t border-neutral-900/10 dark:border-white/10 py-4`}
-              >
-                <div className="flex items-baseline justify-between gap-4">
-                  <span className="text-sm text-neutral-950 dark:text-neutral-50">{act.title}</span>
-                  <span className="ed-mono shrink-0">{act.time}</span>
+              <div key={i} className="flex items-start gap-3.5 py-3.5">
+                <span className="echo-icon-tile shrink-0" style={{ width: '1.75rem', height: '1.75rem' }}>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-[13px] font-medium text-[var(--echo-ink)]">{act.title}</span>
+                    <span className="ed-mono shrink-0">{act.time}</span>
+                  </div>
+                  <p className="ed-sub mt-1 text-[12px]">{act.desc}</p>
                 </div>
-                <p className="ed-sub mt-1 text-xs">{act.desc}</p>
               </div>
             ))}
           </div>

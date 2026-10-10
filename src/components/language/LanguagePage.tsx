@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check, Globe, Languages } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
 import { LanguageCode } from '../../types';
@@ -29,21 +29,27 @@ export const LanguagePage: React.FC = () => {
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
       <div className="mb-10">
         <GlobalBackButton />
-        <div className="mt-4">
-          <p className="ed-label mb-4">Interface</p>
-          <h1 className="ed-h1">{t('language')}</h1>
-          <p className="ed-sub mt-3 max-w-xl">
-            Select preferred interface language for workflows, task checklists, and communications.
-          </p>
+        <div className="mt-5 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+          <div>
+            <p className="ed-label mb-4">Interface</p>
+            <h1 className="ed-h1">{t('language')}</h1>
+            <p className="ed-sub mt-3 max-w-xl">
+              Select preferred interface language for workflows, task checklists, and communications.
+            </p>
+          </div>
+          <span className="echo-chip echo-chip--accent self-start sm:self-auto">
+            <Languages className="w-3.5 h-3.5" />
+            {languageOptions.length} available
+          </span>
         </div>
       </div>
 
       {/* Language Options */}
-      <div>
-        {languageOptions.map((opt, idx) => {
+      <div className="space-y-3">
+        {languageOptions.map((opt) => {
           const isSelected = language === opt.code;
 
           return (
@@ -51,16 +57,24 @@ export const LanguagePage: React.FC = () => {
               key={opt.code}
               type="button"
               onClick={() => setLanguage(opt.code)}
-              className={`w-full flex items-center justify-between gap-4 py-5 text-left transition-colors cursor-pointer border-t border-neutral-900/10 dark:border-white/10 ${
-                idx === languageOptions.length - 1 ? 'border-b' : ''
-              } ${isSelected ? 'bg-neutral-900/[0.03] dark:bg-white/[0.03]' : 'hover:bg-neutral-900/[0.02] dark:hover:bg-white/[0.02]'}`}
+              aria-pressed={isSelected}
+              className={`echo-card echo-card-hover w-full flex items-center justify-between gap-4 p-5 text-left cursor-pointer ${
+                isSelected
+                  ? '!border-[var(--echo-accent)] !bg-[var(--echo-accent-soft)]'
+                  : ''
+              }`}
             >
-              <div className="flex items-baseline gap-6 min-w-0">
-                <span className="font-serif text-2xl text-neutral-950 dark:text-neutral-50 shrink-0">
-                  {opt.native}
+              <div className="flex items-center gap-5 min-w-0">
+                <span
+                  className={`echo-icon-tile shrink-0 ${isSelected ? 'echo-icon-tile--accent' : ''}`}
+                >
+                  <Globe className="w-4 h-4" />
                 </span>
                 <div className="min-w-0">
-                  <div className="text-sm text-neutral-950 dark:text-neutral-50 truncate">
+                  <div className="font-serif text-2xl text-[var(--echo-ink)] shrink-0 leading-none">
+                    {opt.native}
+                  </div>
+                  <div className="text-[13px] text-[var(--echo-ink)] mt-2 truncate">
                     {opt.english}
                   </div>
                   <div className="ed-mono mt-1">{opt.region}</div>
@@ -68,7 +82,7 @@ export const LanguagePage: React.FC = () => {
               </div>
 
               {isSelected ? (
-                <span className="inline-flex items-center gap-2 ed-tag text-neutral-950 dark:text-neutral-50">
+                <span className="ed-tag shrink-0">
                   <Check className="w-3.5 h-3.5" />
                   Selected
                 </span>
@@ -78,8 +92,8 @@ export const LanguagePage: React.FC = () => {
         })}
       </div>
 
-      <div className="mt-10 flex items-start gap-3 text-xs text-neutral-500 dark:text-neutral-400 max-w-2xl leading-relaxed">
-        <span className="h-px w-8 mt-2 bg-neutral-900/20 dark:bg-white/20 shrink-0" />
+      <div className="mt-8 flex items-start gap-3 text-[13px] text-[var(--echo-ink-3)] max-w-2xl leading-relaxed">
+        <span className="echo-rule !inline-block mt-2.5 shrink-0" />
         <p>
           Localization architecture covers navigation tabs, task action buttons, attendance prompts,
           checklists, notifications, and form validation across English, தமிழ், and हिन्दी.

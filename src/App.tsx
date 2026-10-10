@@ -54,9 +54,9 @@ class PortalErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySta
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-[#f7f5f0] dark:bg-[#0a0a09] text-neutral-900 dark:text-neutral-100 flex items-center justify-center p-6">
-          <div className="max-w-md w-full border border-neutral-900/10 dark:border-white/10 p-10 text-center space-y-6">
-            <div className="text-neutral-400 flex items-center justify-center">
+        <div className="echo-ambient min-h-screen text-[var(--echo-ink)] flex items-center justify-center p-6">
+          <div className="echo-modal max-w-md w-full p-8 sm:p-10 text-center space-y-6">
+            <div className="echo-icon-tile echo-icon-tile--warning mx-auto">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
@@ -124,7 +124,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f5f0] dark:bg-[#0a0a09] text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
+    <div className="echo-ambient min-h-screen text-[var(--echo-ink)] flex flex-col font-sans transition-colors duration-300">
       {/* Top Navbar */}
       <Navbar
         isSidebarOpen={isSidebarOpen}
@@ -142,9 +142,9 @@ const AppContent: React.FC = () => {
         {renderCurrentPage()}
       </main>
 
-      {/* Editorial Footer */}
-      <footer className="border-t border-neutral-900/10 dark:border-white/10">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 ed-mono">
+      {/* Footer */}
+      <footer className="border-t border-[var(--echo-border)]">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[var(--echo-ink-3)]">
           <span>ECHO Operational Companion · Synchronized with Admin Core</span>
           <span>Secure Connection · 2026</span>
         </div>

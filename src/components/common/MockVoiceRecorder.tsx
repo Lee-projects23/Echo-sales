@@ -82,16 +82,16 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
   };
 
   return (
-    <div className="border border-neutral-900/10 dark:border-white/10 p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+    <div className="echo-card echo-card--pad space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
           <span
-            className={`w-1.5 h-1.5 rounded-full ${
+            className={`echo-dot ${
               isRecording
-                ? 'bg-neutral-950 dark:bg-white animate-pulse'
+                ? 'bg-[var(--echo-danger)]'
                 : hasRecording
-                ? 'bg-neutral-500'
-                : 'bg-neutral-300 dark:bg-neutral-700'
+                ? 'bg-[var(--echo-positive)]'
+                : 'bg-[var(--echo-ink-3)]'
             }`}
           />
           <span className="ed-label">
@@ -102,13 +102,13 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
               : 'Field Voice Response'}
           </span>
         </div>
-        <span className="font-mono text-xs tabular-nums text-neutral-700 dark:text-neutral-200">
+        <span className="font-mono text-[12px] tabular-nums text-[var(--echo-ink)]">
           {formatTime(recordedDuration)}
         </span>
       </div>
 
       {/* Waveform visualization */}
-      <div className="h-14 border border-neutral-900/10 dark:border-white/10 px-4 flex items-center justify-center gap-1 overflow-hidden">
+      <div className="h-14 rounded-[var(--echo-radius-sm)] border border-[var(--echo-border)] bg-[var(--echo-surface-2)] px-4 flex items-center justify-center gap-1 overflow-hidden">
         {Array.from({ length: 36 }).map((_, i) => {
           const activeHeight = isRecording
             ? Math.max(15, Math.sin(i * 0.4 + Date.now() / 200) * 85 + 20)
@@ -120,12 +120,12 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
           return (
             <div
               key={i}
-              className={`w-px transition-all duration-150 ${
+              className={`w-px rounded-full transition-all duration-150 ${
                 isRecording
-                  ? 'bg-neutral-950 dark:bg-white'
+                  ? 'bg-[var(--echo-accent)]'
                   : isPlaying && isPassed
-                  ? 'bg-neutral-950 dark:bg-white'
-                  : 'bg-neutral-300 dark:bg-neutral-700'
+                  ? 'bg-[var(--echo-accent)]'
+                  : 'bg-[var(--echo-border-strong)]'
               }`}
               style={{ height: `${activeHeight}%` }}
             />
@@ -135,17 +135,17 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
 
       {/* Control Buttons */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {!hasRecording && !isRecording && (
             <button type="button" onClick={handleStartRecording} className="ed-btn">
-              <Mic className="w-3.5 h-3.5" />
+              <Mic className="w-4 h-4" />
               <span>Start Recording</span>
             </button>
           )}
 
           {isRecording && (
             <button type="button" onClick={handleStopRecording} className="ed-btn">
-              <Square className="w-3.5 h-3.5" />
+              <Square className="w-4 h-4" />
               <span>Stop</span>
             </button>
           )}
@@ -153,12 +153,12 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
           {hasRecording && (
             <>
               <button type="button" onClick={handlePlayToggle} className="ed-btn">
-                {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                 <span>{isPlaying ? 'Pause' : 'Play Recording'}</span>
               </button>
 
               <button type="button" onClick={handleRerecord} className="ed-btn-ghost">
-                <RotateCcw className="w-3.5 h-3.5" />
+                <RotateCcw className="w-4 h-4" />
                 <span>Re-record</span>
               </button>
             </>
@@ -172,7 +172,7 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
             disabled={isSubmitted}
             className={`ed-btn ${isSubmitted ? 'opacity-100 pointer-events-none' : ''}`}
           >
-            <Check className="w-3.5 h-3.5" />
+            <Check className="w-4 h-4" />
             <span>{isSubmitted ? 'Voice Confirmed' : 'Attach Voice Note'}</span>
           </button>
         )}

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, ArrowRight, X } from 'lucide-react';
+import { Plus, ArrowRight, X, Receipt } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
+import { StatusChip } from '../common/StatusChip';
 import { Voucher } from '../../types';
 
 export const VoucherCreationPage: React.FC = () => {
@@ -32,11 +33,11 @@ export const VoucherCreationPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
       {/* Header */}
       <div className="mb-8">
         <GlobalBackButton />
-        <div className="mt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+        <div className="mt-5 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
           <div>
             <p className="ed-label mb-4">Formal Requests</p>
             <h1 className="ed-h1">{t('voucherCreation')}</h1>
@@ -46,77 +47,85 @@ export const VoucherCreationPage: React.FC = () => {
           </div>
 
           <button onClick={() => setShowModal(true)} className="ed-btn shrink-0">
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             <span>Create New Voucher</span>
           </button>
         </div>
       </div>
 
       {/* Table of Vouchers */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-t border-b border-neutral-900/10 dark:border-white/10">
-              <th className="ed-th w-12 text-center">No.</th>
-              <th className="ed-th">Code</th>
-              <th className="ed-th">Reason</th>
-              <th className="ed-th">Date</th>
-              <th className="ed-th">Time</th>
-              <th className="ed-th">Status</th>
-              <th className="ed-th text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-neutral-900/10 dark:divide-white/10">
-            {vouchers.map((vch, index) => (
-              <tr key={vch.id} className="hover:bg-neutral-900/[0.02] dark:hover:bg-white/[0.02] transition-colors">
-                <td className="ed-td text-center font-mono text-xs text-neutral-400 dark:text-neutral-500">
-                  {index + 1}
-                </td>
+      <div className="echo-card overflow-hidden">
+        <div className="flex items-center gap-2.5 px-5 py-4 border-b border-[var(--echo-border)] bg-[var(--echo-surface-2)]">
+          <Receipt className="w-4 h-4 text-[var(--echo-accent)]" />
+          <span className="ed-h3">Filed Vouchers</span>
+          <span className="ed-tag ml-auto">{vouchers.length}</span>
+        </div>
 
-                <td className="ed-td font-mono font-medium">{vch.voucherCode}</td>
-
-                <td className="ed-td">
-                  <div className="font-medium">{vch.reason === 'Other' && vch.customReason ? vch.customReason : vch.reason}</div>
-                  <div className="ed-mono truncate max-w-xs">{vch.description}</div>
-                </td>
-
-                <td className="ed-td font-mono text-xs text-neutral-500 dark:text-neutral-400">
-                  {vch.date}
-                </td>
-
-                <td className="ed-td font-mono text-xs text-neutral-500 dark:text-neutral-400">
-                  {vch.time}
-                </td>
-
-                <td className="ed-td">
-                  <span className="ed-tag text-neutral-700 dark:text-neutral-300">{vch.status}</span>
-                </td>
-
-                <td className="ed-td text-right">
-                  <button
-                    onClick={() => {
-                      setSelectedVoucherId(vch.id);
-                      setActiveTab('voucher-detail');
-                    }}
-                    className="ed-link"
-                  >
-                    <span>{t('viewDetails')}</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
-                </td>
+        <div className="overflow-x-auto echo-scroll">
+          <table className="w-full text-left min-w-[820px]">
+            <thead>
+              <tr className="border-b border-[var(--echo-border)]">
+                <th className="ed-th w-14 text-center">No.</th>
+                <th className="ed-th">Code</th>
+                <th className="ed-th">Reason</th>
+                <th className="ed-th">Date</th>
+                <th className="ed-th">Time</th>
+                <th className="ed-th">Status</th>
+                <th className="ed-th text-right">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-[var(--echo-border)]">
+              {vouchers.map((vch, index) => (
+                <tr key={vch.id} className="transition-colors hover:bg-[var(--echo-surface-2)]">
+                  <td className="ed-td text-center font-mono text-[12px] text-[var(--echo-ink-3)]">
+                    {index + 1}
+                  </td>
+
+                  <td className="ed-td font-mono font-medium">{vch.voucherCode}</td>
+
+                  <td className="ed-td">
+                    <div className="font-medium">{vch.reason === 'Other' && vch.customReason ? vch.customReason : vch.reason}</div>
+                    <div className="ed-mono mt-0.5 truncate max-w-xs">{vch.description}</div>
+                  </td>
+
+                  <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
+                    {vch.date}
+                  </td>
+
+                  <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
+                    {vch.time}
+                  </td>
+
+                  <td className="ed-td">
+                    <StatusChip status={vch.status} />
+                  </td>
+
+                  <td className="ed-td text-right">
+                    <button
+                      onClick={() => {
+                        setSelectedVoucherId(vch.id);
+                        setActiveTab('voucher-detail');
+                      }}
+                      className="ed-link justify-end"
+                    >
+                      <span>{t('viewDetails')}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Create Voucher Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-          <div className="relative w-full max-w-md bg-[#f7f5f0] dark:bg-[#0a0a09] border border-neutral-900/10 dark:border-white/10 p-8 space-y-6">
-            <div className="flex items-center justify-between border-b border-neutral-900/10 dark:border-white/10 pb-4">
+        <div className="echo-modal-scrim">
+          <div className="echo-modal max-w-md space-y-6">
+            <div className="flex items-center justify-between gap-3 border-b border-[var(--echo-border)] pb-4">
               <h3 className="ed-h3">Create Operational Voucher</h3>
-              <button onClick={() => setShowModal(false)} className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer">
+              <button onClick={() => setShowModal(false)} aria-label="Close" className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer" style={{ width: '1.875rem', height: '1.875rem' }}>
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -185,7 +194,7 @@ export const VoucherCreationPage: React.FC = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Provide full operational justification for Operations Director review..."
-                  className="ed-input"
+                  className="ed-input resize-y"
                 />
               </div>
 

@@ -6,6 +6,14 @@ import {
   FileCheck,
   Check,
   AlertCircle,
+  Calendar,
+  Timer,
+  LogIn,
+  LogOut,
+  Mic,
+  PenLine,
+  Star,
+  StickyNote,
 } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
@@ -14,7 +22,58 @@ import { MockCamera } from '../common/MockCamera';
 import { MockVoiceRecorder } from '../common/MockVoiceRecorder';
 import { SignaturePad } from '../common/SignaturePad';
 import { RatingPicker } from '../common/RatingPicker';
+import { StatusChip } from '../common/StatusChip';
 import { TaskPhoto, TaskVideo } from '../../types';
+
+/** Bordered callout used for banners and validation messages. */
+const Callout: React.FC<{
+  icon: React.ReactNode;
+  tone: string;
+  title: string;
+  children: React.ReactNode;
+  meta?: React.ReactNode;
+}> = ({ icon, tone, title, children, meta }) => (
+  <div className="echo-card echo-card--pad flex items-start gap-4">
+    <span className={`echo-icon-tile shrink-0 ${tone}`}>{icon}</span>
+    <div className="space-y-1.5 min-w-0">
+      <div className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--echo-ink)]">
+        {title}
+      </div>
+      <p className="text-[13px] leading-relaxed text-[var(--echo-ink-2)]">{children}</p>
+      {meta && <div className="ed-mono">{meta}</div>}
+    </div>
+  </div>
+);
+
+/** Upper hairline section with index badge, title and trailing status. */
+const ChecklistSection: React.FC<{
+  index: string;
+  title: string;
+  complete?: boolean;
+  trailing?: React.ReactNode;
+  children: React.ReactNode;
+}> = ({ index, title, complete, trailing, children }) => (
+  <div className="pt-6 border-t border-[var(--echo-border)]">
+    <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+      <div className="flex items-center gap-3">
+        <span className="echo-icon-tile font-mono text-[11px]" style={{ width: '1.75rem', height: '1.75rem' }}>
+          {index}
+        </span>
+        <h3 className="ed-h3">{title}</h3>
+        <span className="ed-tag">Required</span>
+      </div>
+      {trailing}
+    </div>
+    {children}
+  </div>
+);
+
+const ScheduleTile: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <div className="rounded-[var(--echo-radius-sm)] border border-[var(--echo-border)] bg-[var(--echo-surface-2)] p-4">
+    <div className="echo-kpi-label">{label}</div>
+    <div className="mt-2 font-mono text-[14px] font-medium text-[var(--echo-ink)]">{value}</div>
+  </div>
+);
 
 export const TaskDetailPage: React.FC = () => {
   const {
@@ -122,360 +181,337 @@ export const TaskDetailPage: React.FC = () => {
     isMarkComplete;
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
       <GlobalBackButton onBack={() => setActiveTab('new-task')} label="Back to Tasks" />
 
-      {/* Re-upload banner */}
-      {isReupload && (
-        <div className="mt-6 mb-10 flex items-start gap-3 border border-neutral-900/20 dark:border-white/20 p-5">
-          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-neutral-500" />
-          <div className="space-y-1 text-xs leading-relaxed text-neutral-700 dark:text-neutral-300">
-            <div className="font-semibold uppercase tracking-[0.14em]">Admin Requested Re-upload</div>
-            <p>{task.adminFeedback}</p>
-            <div className="ed-mono">Reviewed by Operations Lead at {task.adminReviewedAt}</div>
-          </div>
-        </div>
-      )}
+      <div className="mt-6 space-y-5">
+        {/* Re-upload banner */}
+        {isReupload && (
+          <Callout
+            icon={<AlertTriangle className="w-4 h-4" />}
+            tone="echo-icon-tile--warning"
+            title="Admin Requested Re-upload"
+            meta={`Reviewed by Operations Lead at ${task.adminReviewedAt}`}
+          >
+            {task.adminFeedback}
+          </Callout>
+        )}
 
-      {/* Submitted banner */}
-      {task.status === 'Submitted' && (
-        <div className="mt-6 mb-10 flex items-start gap-3 border border-neutral-900/20 dark:border-white/20 p-5">
-          <Clock className="w-4 h-4 shrink-0 mt-0.5 text-neutral-500" />
-          <div className="space-y-1 text-xs leading-relaxed text-neutral-700 dark:text-neutral-300">
-            <div className="font-semibold uppercase tracking-[0.14em]">Submitted — Awaiting Admin Review</div>
-            <p>
-              Your evidence checklist has been compiled and dispatched to the Admin Employee Monitor.
-              This task is currently locked from further edits while pending Operations Director sign-off.
+        {/* Submitted banner */}
+        {task.status === 'Submitted' && (
+          <Callout
+            icon={<Clock className="w-4 h-4" />}
+            tone="echo-icon-tile--info"
+            title="Submitted — Awaiting Admin Review"
+            meta={`Submitted at: ${task.submittedAt}`}
+          >
+            Your evidence checklist has been compiled and dispatched to the Admin Employee Monitor.
+            This task is currently locked from further edits while pending Operations Director sign-off.
+          </Callout>
+        )}
+
+        {/* Header */}
+        <header className="echo-card echo-card--pad lg:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div className="space-y-3 min-w-0">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="ed-label">Task #{task.taskNumber}</span>
+                <span className="echo-rule" />
+                <span className="ed-mono">{task.clientName}</span>
+              </div>
+              <h1 className="ed-h1">{task.taskTitle}</h1>
+              <p className="ed-sub">{task.companyName}</p>
+            </div>
+
+            <StatusChip status={task.status} className="self-start" />
+          </div>
+
+          {/* Description */}
+          <div className="mt-7 rounded-[var(--echo-radius-sm)] border border-[var(--echo-border)] bg-[var(--echo-surface-2)] p-4 sm:p-5">
+            <div className="ed-label mb-2">Task Description</div>
+            <p className="text-[14px] leading-relaxed text-[var(--echo-ink-2)]">
+              {task.description}
             </p>
-            <div className="ed-mono">Submitted at: {task.submittedAt}</div>
           </div>
-        </div>
-      )}
+        </header>
 
-      {/* Header */}
-      <header className="mb-10 border-b border-neutral-900/10 dark:border-white/10 pb-8">
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <span className="ed-label">Task #{task.taskNumber}</span>
-              <span className="h-px w-6 bg-neutral-900/20 dark:bg-white/20" />
-              <span className="ed-mono">{task.clientName}</span>
-            </div>
-            <h1 className="ed-h1">{task.taskTitle}</h1>
-            <p className="ed-sub">{task.companyName}</p>
-          </div>
-
-          <span className="ed-tag text-neutral-700 dark:text-neutral-300 self-start">
-            {task.status}
-          </span>
-        </div>
-
-        {/* Description */}
-        <div className="mt-8">
-          <div className="ed-label mb-2">Task Description</div>
-          <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
-            {task.description}
-          </p>
-        </div>
-      </header>
-
-      {/* Schedule & Windows */}
-      <section className="mb-12 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
-        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-3">
-          <div className="ed-label mb-1.5">Date</div>
-          <div className="font-mono text-sm text-neutral-950 dark:text-neutral-50">{task.scheduledDate}</div>
-        </div>
-        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-3">
-          <div className="ed-label mb-1.5">Scheduled Time</div>
-          <div className="font-mono text-sm text-neutral-950 dark:text-neutral-50">{task.scheduledTime}</div>
-        </div>
-        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-3">
-          <div className="ed-label mb-1.5">Check-In Window</div>
-          <div className="font-mono text-sm text-neutral-950 dark:text-neutral-50">{task.checkInWindow}</div>
-        </div>
-        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-3">
-          <div className="ed-label mb-1.5">Check-Out Window</div>
-          <div className="font-mono text-sm text-neutral-950 dark:text-neutral-50">{task.checkOutWindow}</div>
-        </div>
-      </section>
-
-      {/* Admin Voice Message */}
-      {task.adminVoiceNote && (
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="ed-h2">{t('adminVoiceMessage')}</h2>
-            <span className="ed-mono">Audio Briefing</span>
-          </div>
-          <AudioPlayer
-            title={task.adminVoiceNote.audioTitle}
-            durationString={task.adminVoiceNote.duration}
-            durationSeconds={task.adminVoiceNote.durationSeconds}
-            recordedDate={task.adminVoiceNote.recordedDate}
-          />
+        {/* Schedule & Windows */}
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <ScheduleTile label="Date" value={task.scheduledDate} />
+          <ScheduleTile label="Scheduled Time" value={task.scheduledTime} />
+          <ScheduleTile label="Check-In Window" value={task.checkInWindow} />
+          <ScheduleTile label="Check-Out Window" value={task.checkOutWindow} />
         </section>
-      )}
 
-      {/* Required Checklist */}
-      <section className="space-y-12">
-        <div className="mb-2">
-          <h2 className="ed-h2">{t('requiredChecklist')}</h2>
-          <p className="ed-sub mt-2">
-            Admin has configured the following mandatory evidence requirements for this work order.
-          </p>
-        </div>
-
-        {/* 1. Before & After Photos */}
-        {requiredChecklist.beforeAfterPhotos && (
-          <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-baseline gap-3">
-                <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">01</span>
-                <h3 className="ed-h3">Upload Before &amp; After Photos</h3>
-                <span className="ed-tag text-neutral-400 dark:text-neutral-500">Required</span>
-              </div>
-              {submissions.beforePhoto && submissions.afterPhoto && (
-                <span className="ed-tag text-neutral-600 dark:text-neutral-300">
-                  <FileCheck className="w-3.5 h-3.5" /> Completed
-                </span>
-              )}
+        {/* Admin Voice Message */}
+        {task.adminVoiceNote && (
+          <section className="echo-card echo-card--pad">
+            <div className="echo-section-head">
+              <h2 className="ed-h2">{t('adminVoiceMessage')}</h2>
+              <span className="echo-rule" />
+              <span className="ed-mono">Audio Briefing</span>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <MockCamera
-                label="Before Photo"
-                defaultLocation="ECR Site · Chennai, Tamil Nadu"
-                existingImage={submissions.beforePhoto}
-                onCapture={handleBeforePhotoCapture}
-              />
-
-              {submissions.beforePhoto ? (
-                <MockCamera
-                  label="After Photo"
-                  defaultLocation="ECR Site · Chennai, Tamil Nadu"
-                  existingImage={submissions.afterPhoto}
-                  onCapture={handleAfterPhotoCapture}
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center text-center p-8 border border-dashed border-neutral-900/20 dark:border-white/20 min-h-full">
-                  <AlertCircle className="w-5 h-5 mb-2 opacity-40" />
-                  <p className="text-xs text-neutral-500">
-                    Upload Before Photo first to unlock After Photo capture.
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* 2. Voice Upload */}
-        {requiredChecklist.voiceReply && (
-          <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-baseline gap-3">
-                <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">02</span>
-                <h3 className="ed-h3">Upload Voice Response</h3>
-                <span className="ed-tag text-neutral-400 dark:text-neutral-500">Required</span>
-              </div>
-              {submissions.voiceNoteUrl && (
-                <span className="ed-tag text-neutral-600 dark:text-neutral-300">
-                  <FileCheck className="w-3.5 h-3.5" /> Recorded
-                </span>
-              )}
-            </div>
-
-            <MockVoiceRecorder
-              existingVoiceUrl={submissions.voiceNoteUrl}
-              existingDuration={submissions.voiceNoteDuration}
-              onVoiceSubmitted={handleVoiceSubmit}
+            <AudioPlayer
+              title={task.adminVoiceNote.audioTitle}
+              durationString={task.adminVoiceNote.duration}
+              durationSeconds={task.adminVoiceNote.durationSeconds}
+              recordedDate={task.adminVoiceNote.recordedDate}
             />
-          </div>
+          </section>
         )}
 
-        {/* 3. 4 Photos + 1 Video */}
-        {requiredChecklist.fourPhotosOneVideo && (
-          <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-baseline gap-3">
-                <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">03</span>
-                <h3 className="ed-h3">Upload 4 Photos + 1 Video</h3>
-                <span className="ed-tag text-neutral-400 dark:text-neutral-500">Required</span>
-              </div>
-              <span className="ed-mono">
-                Photos: {submissions.photos.length}/4 · Video: {submissions.video ? 1 : 0}/1
-              </span>
-            </div>
+        {/* Required Checklist */}
+        <section className="echo-card echo-card--pad lg:p-8 space-y-10">
+          <div>
+            <h2 className="ed-h2">{t('requiredChecklist')}</h2>
+            <p className="ed-sub mt-2">
+              Admin has configured the following mandatory evidence requirements for this work order.
+            </p>
+          </div>
 
-            <div className="space-y-4">
-              <div className="ed-label">Inspection Photos (Strictly 4 Required)</div>
+          {/* 1. Before & After Photos */}
+          {requiredChecklist.beforeAfterPhotos && (
+            <ChecklistSection
+              index="01"
+              title="Upload Before & After Photos"
+              trailing={
+                submissions.beforePhoto && submissions.afterPhoto ? (
+                  <span className="ed-tag">
+                    <FileCheck className="w-3.5 h-3.5" /> Completed
+                  </span>
+                ) : undefined
+              }
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <MockCamera
+                  label="Before Photo"
+                  defaultLocation="ECR Site · Chennai, Tamil Nadu"
+                  existingImage={submissions.beforePhoto}
+                  onCapture={handleBeforePhotoCapture}
+                />
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {submissions.photos.map((p, idx) => (
-                  <div
-                    key={idx}
-                    className="relative aspect-square overflow-hidden border border-neutral-900/10 dark:border-white/10 bg-neutral-950 group"
-                  >
-                    <img
-                      src={p.url}
-                      alt={`Photo ${idx + 1}`}
-                      className="w-full h-full object-cover grayscale"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute inset-0 bg-black/50 p-2 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-[10px] text-white font-mono">Photo #{idx + 1}</span>
-                      {!isSubmittedOrApproved && (
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveBatchPhoto(idx)}
-                          className="self-end px-2 py-0.5 border border-white/40 text-white text-[10px] font-semibold"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-
-                {submissions.photos.length < 4 && !isSubmittedOrApproved && (
-                  <div className="col-span-2 sm:col-span-2">
-                    <MockCamera
-                      label={`Photo #${submissions.photos.length + 1} Capture`}
-                      defaultLocation="ECR Site · Chennai, Tamil Nadu"
-                      onCapture={handleAddBatchPhoto}
-                    />
+                {submissions.beforePhoto ? (
+                  <MockCamera
+                    label="After Photo"
+                    defaultLocation="ECR Site · Chennai, Tamil Nadu"
+                    existingImage={submissions.afterPhoto}
+                    onCapture={handleAfterPhotoCapture}
+                  />
+                ) : (
+                  <div className="echo-empty py-10">
+                    <span className="echo-icon-tile mb-4">
+                      <AlertCircle className="w-5 h-5" />
+                    </span>
+                    <p className="text-[13px] text-[var(--echo-ink-3)] max-w-xs">
+                      Upload Before Photo first to unlock After Photo capture.
+                    </p>
                   </div>
                 )}
               </div>
-            </div>
+            </ChecklistSection>
+          )}
 
-            {/* Video Sub-section */}
-            <div className="pt-5 mt-6 border-t border-neutral-900/10 dark:border-white/10 space-y-3">
-              <div className="ed-label">Audit Video Walkthrough (1 Required)</div>
+          {/* 2. Voice Upload */}
+          {requiredChecklist.voiceReply && (
+            <ChecklistSection
+              index="02"
+              title="Upload Voice Response"
+              trailing={
+                submissions.voiceNoteUrl ? (
+                  <span className="ed-tag">
+                    <FileCheck className="w-3.5 h-3.5" /> Recorded
+                  </span>
+                ) : undefined
+              }
+            >
+              <MockVoiceRecorder
+                existingVoiceUrl={submissions.voiceNoteUrl}
+                existingDuration={submissions.voiceNoteDuration}
+                onVoiceSubmitted={handleVoiceSubmit}
+              />
+            </ChecklistSection>
+          )}
 
-              {submissions.video ? (
-                <div className="flex items-center justify-between text-xs border border-neutral-900/10 dark:border-white/10 p-4">
-                  <div className="flex items-center gap-3">
-                    <Video className="w-4 h-4 text-neutral-500" />
-                    <div>
-                      <div className="font-medium text-neutral-950 dark:text-neutral-50">
-                        {submissions.video.title}
+          {/* 3. 4 Photos + 1 Video */}
+          {requiredChecklist.fourPhotosOneVideo && (
+            <ChecklistSection
+              index="03"
+              title="Upload 4 Photos + 1 Video"
+              trailing={
+                <span className="ed-mono">
+                  Photos: {submissions.photos.length}/4 · Video: {submissions.video ? 1 : 0}/1
+                </span>
+              }
+            >
+              <div className="space-y-4">
+                <div className="ed-label">Inspection Photos (Strictly 4 Required)</div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {submissions.photos.map((p, idx) => (
+                    <div
+                      key={idx}
+                      className="relative aspect-square overflow-hidden rounded-[var(--echo-radius-sm)] border border-[var(--echo-border)] bg-[var(--echo-surface-inset)] group"
+                    >
+                      <img
+                        src={p.url}
+                        alt={`Photo ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent p-2.5 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="text-[10px] text-white font-mono">Photo #{idx + 1}</span>
+                        {!isSubmittedOrApproved && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveBatchPhoto(idx)}
+                            className="self-end rounded-full border border-white/40 px-2.5 py-1 text-[10px] font-semibold text-white hover:bg-white hover:text-[var(--echo-ink)] transition-colors cursor-pointer"
+                          >
+                            Remove
+                          </button>
+                        )}
                       </div>
-                      <div className="ed-mono">Duration: {submissions.video.duration} · High-Def Walkthrough</div>
                     </div>
-                  </div>
-                  {!isSubmittedOrApproved && (
-                    <button type="button" onClick={handleRemoveVideo} className="ed-textbtn text-neutral-500">
-                      Delete
-                    </button>
+                  ))}
+
+                  {submissions.photos.length < 4 && !isSubmittedOrApproved && (
+                    <div className="col-span-2 sm:col-span-2">
+                      <MockCamera
+                        label={`Photo #${submissions.photos.length + 1} Capture`}
+                        defaultLocation="ECR Site · Chennai, Tamil Nadu"
+                        onCapture={handleAddBatchPhoto}
+                      />
+                    </div>
                   )}
                 </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleAddVideo}
-                  disabled={isSubmittedOrApproved}
-                  className="w-full py-5 border border-dashed border-neutral-900/20 dark:border-white/20 text-xs font-medium text-neutral-500 dark:text-neutral-400 flex items-center justify-center gap-2 hover:border-neutral-900 dark:hover:border-white transition-colors cursor-pointer"
-                >
-                  <Video className="w-4 h-4" />
-                  <span>Attach Video Walkthrough (Mock Capture / Upload)</span>
-                </button>
-              )}
-            </div>
-          </div>
-        )}
+              </div>
 
-        {/* 4. Signature */}
-        {requiredChecklist.signature && (
-          <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
-            <div className="flex items-baseline gap-3 mb-4">
-              <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">04</span>
-              <h3 className="ed-h3">Signature Confirmation</h3>
-              <span className="ed-tag text-neutral-400 dark:text-neutral-500">Required</span>
+              {/* Video Sub-section */}
+              <div className="pt-5 mt-6 border-t border-[var(--echo-border)] space-y-3">
+                <div className="ed-label">Audit Video Walkthrough (1 Required)</div>
+
+                {submissions.video ? (
+                  <div className="echo-inset flex flex-wrap items-center justify-between gap-3 p-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="echo-icon-tile echo-icon-tile--accent">
+                        <Video className="w-4 h-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="font-medium text-[var(--echo-ink)]">
+                          {submissions.video.title}
+                        </div>
+                        <div className="ed-mono mt-0.5">Duration: {submissions.video.duration} · High-Def Walkthrough</div>
+                      </div>
+                    </div>
+                    {!isSubmittedOrApproved && (
+                      <button type="button" onClick={handleRemoveVideo} className="ed-textbtn">
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleAddVideo}
+                    disabled={isSubmittedOrApproved}
+                    className="echo-empty w-full py-8 hover:border-[var(--echo-ink-3)] transition-colors cursor-pointer"
+                  >
+                    <Video className="w-5 h-5 mb-3 text-[var(--echo-ink-3)]" />
+                    <span className="text-[13px] font-medium text-[var(--echo-ink-2)]">
+                      Attach Video Walkthrough (Mock Capture / Upload)
+                    </span>
+                  </button>
+                )}
+              </div>
+            </ChecklistSection>
+          )}
+
+          {/* 4. Signature */}
+          {requiredChecklist.signature && (
+            <ChecklistSection index="04" title="Signature Confirmation">
+              <SignaturePad
+                initialName={submissions.signatureName}
+                isConfirmed={submissions.confirmedSignature}
+                onSignatureConfirmed={handleSignatureConfirmed}
+              />
+            </ChecklistSection>
+          )}
+
+          {/* 5. Mark / Rating */}
+          {requiredChecklist.markRating && (
+            <ChecklistSection index="05" title="Employee Self-Assessment Mark">
+              <RatingPicker value={submissions.markRating || 0} onChange={handleRatingChange} disabled={isSubmittedOrApproved} />
+            </ChecklistSection>
+          )}
+
+          {/* Additional Note */}
+          <div className="pt-6 border-t border-[var(--echo-border)]">
+            <div className="flex items-center gap-2 mb-3">
+              <StickyNote className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
+              <div className="ed-label">{t('additionalNote')}</div>
             </div>
-            <SignaturePad
-              initialName={submissions.signatureName}
-              isConfirmed={submissions.confirmedSignature}
-              onSignatureConfirmed={handleSignatureConfirmed}
+            <textarea
+              rows={4}
+              value={narrativeInput}
+              onChange={handleNarrativeChange}
+              disabled={isSubmittedOrApproved}
+              placeholder="Document work completed, site anomalies encountered, parts required, or instructions given to client representative..."
+              className="ed-input resize-y"
             />
           </div>
-        )}
 
-        {/* 5. Mark / Rating */}
-        {requiredChecklist.markRating && (
-          <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
-            <div className="flex items-baseline gap-3 mb-4">
-              <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">05</span>
-              <h3 className="ed-h3">Employee Self-Assessment Mark</h3>
-              <span className="ed-tag text-neutral-400 dark:text-neutral-500">Required</span>
+          {/* Validation Summary */}
+          <div className="pt-6 border-t border-[var(--echo-border)] space-y-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
+              <div className="ed-label">Submission Checklist Validation</div>
             </div>
-            <RatingPicker value={submissions.markRating || 0} onChange={handleRatingChange} disabled={isSubmittedOrApproved} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              {[
+                { on: requiredChecklist.beforeAfterPhotos, done: isBeforeAfterComplete, label: 'Before & After', icon: <FileCheck className="w-3.5 h-3.5" /> },
+                { on: requiredChecklist.voiceReply, done: isVoiceComplete, label: 'Voice Note', icon: <Mic className="w-3.5 h-3.5" /> },
+                { on: requiredChecklist.fourPhotosOneVideo, done: isFourPhotosOneVideoComplete, label: '4 Photos + 1 Video', icon: <Video className="w-3.5 h-3.5" /> },
+                { on: requiredChecklist.signature, done: isSignatureComplete, label: 'Signature', icon: <PenLine className="w-3.5 h-3.5" /> },
+                { on: requiredChecklist.markRating, done: isMarkComplete, label: 'Mark / Rating', icon: <Star className="w-3.5 h-3.5" /> },
+              ]
+                .filter((item) => item.on)
+                .map((item) => (
+                  <div
+                    key={item.label}
+                    className={`flex items-center gap-2.5 rounded-full border px-3.5 py-2 text-[12px] font-medium transition-colors ${
+                      item.done
+                        ? 'border-[color-mix(in_srgb,var(--echo-positive)_25%,transparent)] bg-[var(--echo-positive-soft)] text-[var(--echo-positive)]'
+                        : 'border-[var(--echo-border)] bg-[var(--echo-surface-2)] text-[var(--echo-ink-3)]'
+                    }`}
+                  >
+                    {item.done ? <Check className="w-3.5 h-3.5" /> : item.icon}
+                    <span>{item.label}</span>
+                  </div>
+                ))}
+            </div>
           </div>
-        )}
 
-        {/* Additional Note */}
-        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6">
-          <div className="ed-label mb-3">{t('additionalNote')}</div>
-          <textarea
-            rows={4}
-            value={narrativeInput}
-            onChange={handleNarrativeChange}
-            disabled={isSubmittedOrApproved}
-            placeholder="Document work completed, site anomalies encountered, parts required, or instructions given to client representative..."
-            className="ed-input disabled:opacity-60"
-          />
-        </div>
+          {validationError && (
+            <div className="rounded-[var(--echo-radius-sm)] border border-[color-mix(in_srgb,var(--echo-danger)_30%,transparent)] bg-[var(--echo-danger-soft)] p-4 text-[13px] text-[var(--echo-danger)] flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{validationError}</span>
+            </div>
+          )}
 
-        {/* Validation Summary */}
-        <div className="border-t border-neutral-900/10 dark:border-white/10 pt-6 space-y-3">
-          <div className="ed-label">Submission Checklist Validation</div>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-y-2 text-xs">
-            {requiredChecklist.beforeAfterPhotos && (
-              <span className={`flex items-center gap-1.5 ${isBeforeAfterComplete ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-400'}`}>
-                {isBeforeAfterComplete ? '✓' : '○'} Before &amp; After
-              </span>
-            )}
-            {requiredChecklist.voiceReply && (
-              <span className={`flex items-center gap-1.5 ${isVoiceComplete ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-400'}`}>
-                {isVoiceComplete ? '✓' : '○'} Voice Note
-              </span>
-            )}
-            {requiredChecklist.fourPhotosOneVideo && (
-              <span className={`flex items-center gap-1.5 ${isFourPhotosOneVideoComplete ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-400'}`}>
-                {isFourPhotosOneVideoComplete ? '✓' : '○'} 4 Photos + 1 Video
-              </span>
-            )}
-            {requiredChecklist.signature && (
-              <span className={`flex items-center gap-1.5 ${isSignatureComplete ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-400'}`}>
-                {isSignatureComplete ? '✓' : '○'} Signature
-              </span>
-            )}
-            {requiredChecklist.markRating && (
-              <span className={`flex items-center gap-1.5 ${isMarkComplete ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-400'}`}>
-                {isMarkComplete ? '✓' : '○'} Mark / Rating
-              </span>
-            )}
-          </div>
-        </div>
-
-        {validationError && (
-          <div className="p-4 border border-neutral-900/20 dark:border-white/20 text-xs text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{validationError}</span>
-          </div>
-        )}
-
-        {/* Actions */}
-        {!isSubmittedOrApproved && (
-          <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-neutral-900/10 dark:border-white/10">
-            <button type="button" onClick={handleSaveDraft} className="ed-btn-ghost">
-              {t('saveDraft')}
-            </button>
-            <button type="button" onClick={handleSubmit} disabled={!allMandatoryMet} className="ed-btn">
-              <Check className="w-3.5 h-3.5" />
-              <span>{t('submitTask')}</span>
-            </button>
-          </div>
-        )}
-      </section>
+          {/* Actions */}
+          {!isSubmittedOrApproved && (
+            <div className="flex flex-wrap items-center justify-end gap-3 pt-6 border-t border-[var(--echo-border)]">
+              <button type="button" onClick={handleSaveDraft} className="ed-btn-ghost">
+                {t('saveDraft')}
+              </button>
+              <button type="button" onClick={handleSubmit} disabled={!allMandatoryMet} className="ed-btn">
+                <Check className="w-4 h-4" />
+                <span>{t('submitTask')}</span>
+              </button>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 };

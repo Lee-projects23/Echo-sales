@@ -98,8 +98,8 @@ export const MockCamera: React.FC<MockCameraProps> = ({
 
   return (
     <div className={`space-y-3 ${className}`}>
-      <div className="flex items-center justify-between text-xs">
-        <span className="font-medium text-neutral-900 dark:text-neutral-100">{label}</span>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="text-[13px] font-semibold text-[var(--echo-ink)]">{label}</span>
         <div className="ed-mono flex items-center gap-1.5">
           <MapPin className="w-3 h-3" />
           <span>{defaultLocation}</span>
@@ -107,7 +107,7 @@ export const MockCamera: React.FC<MockCameraProps> = ({
       </div>
 
       {capturedImage ? (
-        <div className="relative border border-neutral-900/10 dark:border-white/10 bg-neutral-950 group aspect-4/3 sm:aspect-16/9 flex items-center justify-center overflow-hidden">
+        <div className="relative rounded-[var(--echo-radius-sm)] border border-[var(--echo-border)] bg-[var(--echo-surface-inset)] group aspect-4/3 sm:aspect-16/9 flex items-center justify-center overflow-hidden">
           <img
             src={capturedImage}
             alt={label}
@@ -115,45 +115,40 @@ export const MockCamera: React.FC<MockCameraProps> = ({
             referrerPolicy="no-referrer"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent flex flex-col justify-between p-4">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent flex flex-col justify-between p-4">
             <div className="flex items-center justify-between">
-              <span className="ed-tag text-white/90">
+              <span className="ed-tag !bg-black/45 !text-white !border-white/25">
                 <Check className="w-3 h-3" /> Captured
               </span>
               <button
                 type="button"
                 onClick={handleRetake}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-white/30 text-white text-[11px] font-medium hover:bg-white hover:text-neutral-950 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-black/35 px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-white hover:text-[var(--echo-ink)] transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-3 h-3" /> Retake
               </button>
             </div>
 
-            <div className="text-white text-xs space-y-0.5">
-              <div className="font-medium">{label}</div>
-              <div className="text-neutral-300 text-[11px]">{defaultLocation}</div>
+            <div className="text-white text-[13px] space-y-0.5">
+              <div className="font-semibold">{label}</div>
+              <div className="text-[11px] text-white/70">{defaultLocation}</div>
             </div>
           </div>
         </div>
       ) : (
-        <div className="relative border border-dashed border-neutral-900/20 dark:border-white/20 p-6 flex flex-col items-center justify-center text-center overflow-hidden aspect-4/3 sm:aspect-16/9 transition-all">
+        <div className="echo-empty relative aspect-4/3 sm:aspect-16/9 py-6">
           {isShutterActive && (
-            <div className="absolute inset-0 bg-white z-20 animate-ping opacity-90 pointer-events-none" />
+            <div className="absolute inset-0 bg-white z-20 animate-ping opacity-90 pointer-events-none rounded-[var(--echo-radius)]" />
           )}
 
-          <div className="absolute top-4 left-4 w-5 h-5 border-t border-l border-neutral-400 dark:border-neutral-600 pointer-events-none" />
-          <div className="absolute top-4 right-4 w-5 h-5 border-t border-r border-neutral-400 dark:border-neutral-600 pointer-events-none" />
-          <div className="absolute bottom-4 left-4 w-5 h-5 border-b border-l border-neutral-400 dark:border-neutral-600 pointer-events-none" />
-          <div className="absolute bottom-4 right-4 w-5 h-5 border-b border-r border-neutral-400 dark:border-neutral-600 pointer-events-none" />
+          <span className="echo-icon-tile mb-4" style={{ width: '3rem', height: '3rem' }}>
+            <Camera className="w-5 h-5" />
+          </span>
 
-          <div className="w-12 h-12 border border-neutral-900/15 dark:border-white/15 flex items-center justify-center text-neutral-400 mb-3">
-            <Camera className="w-6 h-6" />
-          </div>
-
-          <div className="font-serif text-lg text-neutral-950 dark:text-neutral-50 mb-1">
+          <div className="text-[15px] font-semibold text-[var(--echo-ink)] mb-1.5">
             Camera Viewfinder
           </div>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-xs mb-5">
+          <p className="text-[13px] text-[var(--echo-ink-3)] max-w-xs mb-5">
             Capture live field evidence or upload high-resolution inspection media from device.
           </p>
 
@@ -163,7 +158,7 @@ export const MockCamera: React.FC<MockCameraProps> = ({
               onClick={handleMockSnap}
               className="ed-btn"
             >
-              <Camera className="w-3.5 h-3.5" />
+              <Camera className="w-4 h-4" />
               <span>Take Photo</span>
             </button>
 
@@ -172,7 +167,7 @@ export const MockCamera: React.FC<MockCameraProps> = ({
               onClick={() => fileInputRef.current?.click()}
               className="ed-btn-ghost"
             >
-              <Upload className="w-3.5 h-3.5" />
+              <Upload className="w-4 h-4" />
               <span>Upload from Device</span>
             </button>
             <input

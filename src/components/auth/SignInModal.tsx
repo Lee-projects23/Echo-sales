@@ -44,11 +44,13 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="relative w-full max-w-md bg-[#f7f5f0] dark:bg-[#0a0a09] border border-neutral-900/10 dark:border-white/10 overflow-hidden text-neutral-900 dark:text-neutral-100 p-8 sm:p-10">
+    <div className="echo-modal-scrim">
+      <div className="echo-modal max-w-md p-8 sm:p-10">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-1.5 text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer"
+          aria-label="Close sign in"
+          className="absolute top-5 right-5 echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer"
+          style={{ width: '1.875rem', height: '1.875rem' }}
         >
           <X className="w-4 h-4" />
         </button>
@@ -57,24 +59,21 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
           <div>
             <div className="mb-8">
               <span className="ed-label">ECHO Authentication</span>
-              <h2 className="ed-h1 text-3xl mt-2">Employee Sign In</h2>
-              <p className="ed-sub mt-3 text-xs">
+              <h2 className="ed-h1 !text-3xl mt-2">Employee Sign In</h2>
+              <p className="ed-sub mt-3 text-[13px]">
                 Sign in to your operational field workspace.
               </p>
             </div>
 
             {/* Quick Demo Switcher */}
-            <div className="mb-6 flex items-center gap-4 text-[11px]">
+            <div className="echo-segment mb-6">
               {allEmployees.map((emp) => (
                 <button
                   key={emp.id}
                   type="button"
                   onClick={() => selectQuickAccount(emp.email)}
-                  className={`uppercase tracking-[0.14em] font-semibold transition-colors cursor-pointer ${
-                    email === emp.email
-                      ? 'text-neutral-950 dark:text-white underline underline-offset-4'
-                      : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
-                  }`}
+                  className="echo-segment-item"
+                  data-active={email === emp.email}
                 >
                   {emp.name.split(' ')[0]}
                 </button>
@@ -85,7 +84,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
               <div>
                 <label className="ed-label block mb-2">Email / Login Identifier</label>
                 <div className="relative">
-                  <Mail className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                  <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--echo-ink-3)] pointer-events-none" />
                   <input
                     type="email"
                     required
@@ -106,13 +105,13 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
                       setForgotEmail(email);
                       setShowForgotPassword(true);
                     }}
-                    className="text-[11px] text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:underline cursor-pointer"
+                    className="text-[12px] font-medium text-[var(--echo-ink-3)] hover:text-[var(--echo-accent)] cursor-pointer"
                   >
                     Forgot password?
                   </button>
                 </div>
                 <div className="relative">
-                  <Lock className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                  <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--echo-ink-3)] pointer-events-none" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
@@ -124,7 +123,8 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--echo-ink-3)] hover:text-[var(--echo-ink)] cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -132,18 +132,18 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
               </div>
 
               {errorMessage && (
-                <div className="p-3 text-xs border border-neutral-900/20 dark:border-white/20 text-neutral-700 dark:text-neutral-300">
+                <div className="rounded-[var(--echo-radius-sm)] border border-[color-mix(in_srgb,var(--echo-danger)_30%,transparent)] bg-[var(--echo-danger-soft)] p-3.5 text-[13px] text-[var(--echo-danger)]">
                   {errorMessage}
                 </div>
               )}
 
               <div className="pt-1">
-                <label className="flex items-center gap-2 cursor-pointer text-xs text-neutral-500 dark:text-neutral-400 select-none">
+                <label className="flex items-center gap-2.5 cursor-pointer text-[13px] text-[var(--echo-ink-2)] select-none">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="rounded-none border-neutral-400 text-neutral-900 focus:ring-neutral-900"
+                    className="w-4 h-4 rounded"
                   />
                   <span>Remember me</span>
                 </label>
@@ -151,7 +151,6 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
 
               <button type="submit" className="ed-btn w-full">
                 <span>Sign In</span>
-                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </form>
           </div>
@@ -159,19 +158,21 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onClose, onSuccess }) 
           <div>
             <div className="mb-8">
               <span className="ed-label">Password Recovery</span>
-              <h2 className="ed-h1 text-3xl mt-2">Reset Password</h2>
-              <p className="ed-sub mt-3 text-xs">
+              <h2 className="ed-h1 !text-3xl mt-2">Reset Password</h2>
+              <p className="ed-sub mt-3 text-[13px]">
                 Enter your registered employee email to request an admin password reset token.
               </p>
             </div>
 
             {forgotSent ? (
               <div className="space-y-5">
-                <div className="p-4 border border-neutral-900/10 dark:border-white/10 text-xs leading-relaxed flex items-start gap-3">
-                  <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-neutral-500" />
-                  <div>
+                <div className="echo-card echo-card--pad text-[13px] leading-relaxed flex items-start gap-3">
+                  <span className="echo-icon-tile echo-icon-tile--positive shrink-0" style={{ width: '1.75rem', height: '1.75rem' }}>
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                  </span>
+                  <div className="text-[var(--echo-ink-2)]">
                     Password reset notification dispatched to Operations Admin for employee account{' '}
-                    <strong>{forgotEmail}</strong>. Default test credentials remain{' '}
+                    <strong className="text-[var(--echo-ink)]">{forgotEmail}</strong>. Default test credentials remain{' '}
                     <code className="font-mono">Echo@123</code>.
                   </div>
                 </div>

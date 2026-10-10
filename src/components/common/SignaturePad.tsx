@@ -26,11 +26,11 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
   };
 
   return (
-    <div className="border border-neutral-900/10 dark:border-white/10 p-5 space-y-4">
-      <div className="flex items-center justify-between border-b border-neutral-900/10 dark:border-white/10 pb-3">
+    <div className="echo-card echo-card--pad space-y-4">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--echo-border)] pb-3">
         <label className="ed-label">Enter Name for Signature</label>
         {confirmed && (
-          <span className="inline-flex items-center gap-1.5 text-xs text-neutral-700 dark:text-neutral-200 font-medium">
+          <span className="ed-tag !text-[var(--echo-positive)] !bg-[var(--echo-positive-soft)] !border-[color-mix(in_srgb,var(--echo-positive)_25%,transparent)]">
             <ShieldCheck className="w-3.5 h-3.5" />
             Signature Verified
           </span>
@@ -48,14 +48,12 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
           />
 
           {name.trim() && (
-            <div className="px-4 py-6 border border-neutral-900/10 dark:border-white/10 bg-neutral-900/[0.02] dark:bg-white/[0.02] flex flex-col items-center justify-center">
-              <span className="text-[11px] uppercase tracking-[0.16em] text-neutral-400 mb-2">
-                Live Signature Preview
-              </span>
-              <div className="text-2xl font-serif italic tracking-wider text-neutral-950 dark:text-white py-2 font-medium">
+            <div className="rounded-[var(--echo-radius-sm)] border border-[var(--echo-border)] bg-[var(--echo-surface-2)] px-4 py-6 flex flex-col items-center justify-center">
+              <span className="ed-label mb-2">Live Signature Preview</span>
+              <div className="text-2xl font-serif italic tracking-wider text-[var(--echo-ink)] py-2 font-medium">
                 {name}
               </div>
-              <div className="w-48 h-px bg-neutral-900/15 dark:bg-white/15 mt-1" />
+              <div className="w-48 h-px bg-[var(--echo-border-strong)] mt-1" />
             </div>
           )}
 
@@ -63,19 +61,19 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
             type="button"
             onClick={handleConfirm}
             disabled={!name.trim()}
-            className="ed-btn w-full justify-center disabled:opacity-40"
+            className="ed-btn w-full justify-center"
           >
             Confirm Signature
           </button>
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="px-5 py-6 border border-neutral-900/10 dark:border-white/10 flex flex-col items-center justify-center text-center">
-            <div className="text-3xl font-serif italic tracking-wider text-neutral-950 dark:text-white py-1">
+          <div className="rounded-[var(--echo-radius-sm)] border border-[var(--echo-border)] bg-[var(--echo-surface-2)] px-5 py-6 flex flex-col items-center justify-center text-center">
+            <div className="text-3xl font-serif italic tracking-wider text-[var(--echo-ink)] py-1">
               {name}
             </div>
-            <div className="w-56 h-px bg-neutral-900/15 dark:bg-white/15 my-2" />
-            <div className="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
+            <div className="w-56 h-px bg-[var(--echo-border-strong)] my-2" />
+            <div className="text-[11px] font-mono text-[var(--echo-ink-3)]">
               Digitally Signed · {new Date().toLocaleDateString()}
             </div>
           </div>

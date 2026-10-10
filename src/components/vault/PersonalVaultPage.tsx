@@ -9,6 +9,7 @@ import {
   Trash2,
   File,
   X,
+  FolderOpen,
 } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { AccessDenied } from '../common/AccessDenied';
@@ -55,11 +56,11 @@ export const PersonalVaultPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-5 sm:px-8 py-12 sm:py-16 animate-in fade-in duration-300">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
       {/* Header */}
       <div className="mb-6">
         <GlobalBackButton />
-        <div className="mt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+        <div className="mt-5 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
           <div>
             <p className="ed-label mb-4">Private Locker</p>
             <h1 className="ed-h1">{t('personalVault')}</h1>
@@ -68,13 +69,13 @@ export const PersonalVaultPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button onClick={() => setShowNewFolderModal(true)} className="ed-btn-ghost">
-              <FolderPlus className="w-3.5 h-3.5" />
+              <FolderPlus className="w-4 h-4" />
               <span>New Folder</span>
             </button>
             <button onClick={() => handleMockUpload('document')} className="ed-btn">
-              <Upload className="w-3.5 h-3.5" />
+              <Upload className="w-4 h-4" />
               <span>Upload File</span>
             </button>
           </div>
@@ -82,39 +83,41 @@ export const PersonalVaultPage: React.FC = () => {
       </div>
 
       {/* Breadcrumb */}
-      <div className="mb-8 flex items-center gap-2 text-xs border-b border-neutral-900/10 dark:border-white/10 pb-4">
+      <nav className="echo-card echo-card--pad mb-6 flex flex-wrap items-center gap-2 !py-3">
         {breadcrumbList.map((crumb, idx) => (
           <React.Fragment key={crumb.id || 'root'}>
-            {idx > 0 && <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />}
+            {idx > 0 && <ChevronRight className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />}
             <button
               onClick={() => setCurrentFolderId(crumb.id)}
-              className={`hover:underline cursor-pointer uppercase tracking-[0.14em] text-[11px] font-semibold ${
+              className={`rounded-full px-3 py-1 text-[12px] font-semibold transition-colors cursor-pointer ${
                 crumb.id === currentFolderId
-                  ? 'text-neutral-950 dark:text-white'
-                  : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-950 dark:hover:text-white'
+                  ? 'bg-[var(--echo-accent-soft)] text-[var(--echo-accent)]'
+                  : 'text-[var(--echo-ink-3)] hover:bg-[var(--echo-surface-2)] hover:text-[var(--echo-ink)]'
               }`}
             >
               {crumb.name}
             </button>
           </React.Fragment>
         ))}
-      </div>
+      </nav>
 
       {/* Finder Grid */}
       {currentItems.length === 0 ? (
-        <div className="py-20 border-t border-b border-neutral-900/10 dark:border-white/10 text-center">
-          <Folder className="w-6 h-6 mx-auto mb-4 text-neutral-300 dark:text-neutral-600" />
-          <p className="font-serif text-xl text-neutral-950 dark:text-neutral-50">This folder is empty</p>
-          <p className="ed-sub mt-2 max-w-md mx-auto">
+        <div className="echo-empty">
+          <span className="echo-icon-tile mb-5">
+            <FolderOpen className="w-5 h-5" />
+          </span>
+          <p className="ed-h2">This folder is empty</p>
+          <p className="ed-sub mt-2 max-w-md">
             Upload personal certifications, safety badges, or create new organization folders.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {currentItems.map((item) => (
             <div
               key={item.id}
-              className="group cursor-pointer flex flex-col justify-between border border-neutral-900/10 dark:border-white/10 p-4 hover:border-neutral-950 dark:hover:border-white transition-colors relative"
+              className="echo-card echo-card-hover group cursor-pointer flex flex-col justify-between p-4 relative"
               onClick={() => {
                 if (item.type === 'folder') {
                   setCurrentFolderId(item.id);
@@ -123,16 +126,16 @@ export const PersonalVaultPage: React.FC = () => {
                 }
               }}
             >
-              <div className="flex items-start justify-between">
-                <div className="text-neutral-700 dark:text-neutral-300 opacity-80">
+              <div className="flex items-start justify-between gap-2">
+                <span className="echo-icon-tile">
                   {item.type === 'folder' ? (
-                    <Folder className="w-6 h-6" />
+                    <Folder className="w-5 h-5" />
                   ) : item.type === 'photo' ? (
-                    <ImageIcon className="w-6 h-6" />
+                    <ImageIcon className="w-5 h-5" />
                   ) : (
-                    <FileText className="w-6 h-6" />
+                    <FileText className="w-5 h-5" />
                   )}
-                </div>
+                </span>
 
                 <button
                   type="button"
@@ -140,17 +143,18 @@ export const PersonalVaultPage: React.FC = () => {
                     e.stopPropagation();
                     deleteVaultItem(item.id);
                   }}
-                  className="opacity-0 group-hover:opacity-100 p-1 text-neutral-400 hover:text-neutral-950 dark:hover:text-white transition-all cursor-pointer"
+                  aria-label={`Delete ${item.name}`}
+                  className="rounded-full p-1.5 text-[var(--echo-ink-3)] opacity-0 group-hover:opacity-100 hover:bg-[var(--echo-danger-soft)] hover:text-[var(--echo-danger)] transition-all cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
 
-              <div className="mt-6">
-                <div className="text-sm text-neutral-950 dark:text-neutral-50 truncate">
+              <div className="mt-5">
+                <div className="text-[14px] font-medium text-[var(--echo-ink)] truncate">
                   {item.name}
                 </div>
-                <div className="ed-mono mt-1 flex items-center justify-between">
+                <div className="ed-mono mt-1.5 flex items-center justify-between gap-2">
                   <span>{item.type === 'folder' ? 'Folder' : item.size}</span>
                   <span>{item.updatedAt}</span>
                 </div>
@@ -162,11 +166,11 @@ export const PersonalVaultPage: React.FC = () => {
 
       {/* New Folder Modal */}
       {showNewFolderModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-          <div className="w-full max-w-sm bg-[#f7f5f0] dark:bg-[#0a0a09] border border-neutral-900/10 dark:border-white/10 p-7 space-y-5">
+        <div className="echo-modal-scrim">
+          <div className="echo-modal max-w-sm space-y-5">
             <div className="flex items-center justify-between">
               <h3 className="ed-h3">Create New Folder</h3>
-              <button onClick={() => setShowNewFolderModal(false)} className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer">
+              <button onClick={() => setShowNewFolderModal(false)} aria-label="Close" className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer" style={{ width: '1.875rem', height: '1.875rem' }}>
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -197,27 +201,29 @@ export const PersonalVaultPage: React.FC = () => {
 
       {/* File Preview Modal */}
       {selectedFileForPreview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-          <div className="w-full max-w-lg bg-[#f7f5f0] dark:bg-[#0a0a09] border border-neutral-900/10 dark:border-white/10 p-7 space-y-5">
-            <div className="flex items-center justify-between border-b border-neutral-900/10 dark:border-white/10 pb-4">
-              <div className="flex items-center gap-2">
-                <File className="w-4 h-4 text-neutral-500" />
-                <span className="ed-h3">{selectedFileForPreview.name}</span>
+        <div className="echo-modal-scrim">
+          <div className="echo-modal max-w-lg space-y-5">
+            <div className="flex items-center justify-between gap-3 border-b border-[var(--echo-border)] pb-4">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="echo-icon-tile">
+                  <File className="w-4 h-4" />
+                </span>
+                <span className="ed-h3 truncate">{selectedFileForPreview.name}</span>
               </div>
-              <button onClick={() => setSelectedFileForPreview(null)} className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer">
+              <button onClick={() => setSelectedFileForPreview(null)} aria-label="Close" className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer" style={{ width: '1.875rem', height: '1.875rem' }}>
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="py-10 flex flex-col items-center justify-center text-center space-y-3">
-              <div className="text-neutral-700 dark:text-neutral-300">
+              <span className="echo-icon-tile" style={{ width: '3.5rem', height: '3.5rem' }}>
                 {selectedFileForPreview.type === 'photo' ? (
-                  <ImageIcon className="w-10 h-10" />
+                  <ImageIcon className="w-6 h-6" />
                 ) : (
-                  <FileText className="w-10 h-10" />
+                  <FileText className="w-6 h-6" />
                 )}
-              </div>
-              <div className="text-sm font-medium text-neutral-950 dark:text-neutral-50">Encrypted Vault Asset</div>
+              </span>
+              <div className="text-[14px] font-medium text-[var(--echo-ink)]">Encrypted Vault Asset</div>
               <p className="ed-mono">
                 Size: {selectedFileForPreview.size || '1.4 MB'} · Verified SHA-256 Checksum
               </p>

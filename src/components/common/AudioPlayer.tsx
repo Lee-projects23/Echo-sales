@@ -50,21 +50,21 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const percent = (currentSeconds / Math.max(1, durationSeconds)) * 100;
 
   return (
-    <div className="border border-neutral-900/10 dark:border-white/10 p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border border-neutral-900/20 dark:border-white/20 flex items-center justify-center text-neutral-500 dark:text-neutral-400">
+    <div className="echo-card echo-card--pad space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="echo-icon-tile echo-icon-tile--accent">
             <Radio className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-xs font-medium text-neutral-950 dark:text-neutral-50">{title}</div>
-            {recordedDate && <div className="ed-mono">{recordedDate}</div>}
+          </span>
+          <div className="min-w-0">
+            <div className="text-[13px] font-semibold text-[var(--echo-ink)] truncate">{title}</div>
+            {recordedDate && <div className="ed-mono mt-0.5">{recordedDate}</div>}
           </div>
         </div>
 
         <div className="ed-mono flex items-center gap-1.5 tabular-nums">
           <span>{formatTime(currentSeconds)}</span>
-          <span>/</span>
+          <span aria-hidden>/</span>
           <span>{durationString}</span>
         </div>
       </div>
@@ -73,9 +73,10 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         <button
           type="button"
           onClick={togglePlay}
-          className="w-10 h-10 bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity cursor-pointer"
+          aria-label={isPlaying ? 'Pause audio' : 'Play audio'}
+          className="echo-icon-tile echo-icon-tile--accent shrink-0 transition-transform hover:-translate-y-px cursor-pointer"
         >
-          {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+          {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
         </button>
 
         <div className="flex-1 relative flex items-center">
@@ -85,11 +86,12 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             max={durationSeconds}
             value={currentSeconds}
             onChange={handleSeek}
-            className="w-full h-1 bg-neutral-900/10 dark:bg-white/10 appearance-none cursor-pointer accent-neutral-950 dark:accent-white"
+            aria-label="Audio progress"
+            className="w-full h-1.5 rounded-full bg-[var(--echo-surface-3)] appearance-none cursor-pointer"
           />
         </div>
 
-        <Volume2 className="w-4 h-4 text-neutral-400 shrink-0" />
+        <Volume2 className="w-4 h-4 text-[var(--echo-ink-3)] shrink-0" />
       </div>
     </div>
   );
