@@ -43,18 +43,33 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     onClose();
   };
 
-  const navItemClass = (tab: NavigationTab, isRestricted = false) => {
-    const isActive = activeTab === tab;
-    return `group w-full flex items-center justify-between gap-3 rounded-full px-4 py-2.5 text-[13px] font-medium transition-all duration-200 cursor-pointer ${
-      isActive
-        ? 'bg-[var(--echo-accent-soft)] text-[var(--echo-accent)]'
-        : 'text-[var(--echo-ink-2)] hover:bg-[var(--echo-surface-3)] hover:text-[var(--echo-ink)]'
-    } ${isRestricted ? 'opacity-70' : ''}`;
-  };
-
-  const groupLabelClass = 'ed-label px-4 pb-2 pt-1';
-
   const iconClass = 'w-4 h-4 shrink-0';
+
+  const navItemClass = (isRestricted = false) =>
+    `echo-nav-item ${isRestricted ? 'opacity-70' : ''}`.trim();
+
+  /** One navigation row: icon + label, with a lock badge when access is withheld. */
+  const NavRow: React.FC<{
+    tab: NavigationTab;
+    label: string;
+    icon: React.ReactNode;
+    restricted?: boolean;
+  }> = ({ tab, label, icon, restricted = false }) => (
+    <button
+      onClick={() => handleNav(tab)}
+      className={navItemClass(restricted)}
+      data-active={activeTab === tab}
+      aria-current={activeTab === tab ? 'page' : undefined}
+    >
+      {icon}
+      <span className="truncate">{label}</span>
+      {restricted && <Lock className="w-3 h-3 ml-auto opacity-60" />}
+    </button>
+  );
+
+  const GroupLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <div className="echo-nav-group-label">{children}</div>
+  );
 
   if (!isOpen) return null;
 
@@ -78,7 +93,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               referrerPolicy="no-referrer"
             />
             <div className="min-w-0">
-              <div className="text-[14px] font-semibold text-[var(--echo-ink)] truncate">
+              <div className="text-[14px] font-bold tracking-[-0.01em] text-[var(--echo-ink)] truncate">
                 {currentEmployee.name}
               </div>
               <div className="ed-mono truncate mt-0.5">{currentEmployee.employeeCode}</div>
@@ -98,130 +113,86 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <div className="flex-1 overflow-y-auto echo-scroll px-3 py-5 space-y-6">
           {/* Main */}
           <div>
-            <div className={groupLabelClass}>Index</div>
+            <GroupLabel>Operations</GroupLabel>
 
             <div className="space-y-0.5">
-              <button onClick={() => handleNav('home')} className={navItemClass('home')}>
-                <div className="flex items-center gap-3">
-                  <Home className={iconClass} />
-                  <span>{t('home')}</span>
-                </div>
-              </button>
-
-              <button onClick={() => handleNav('dashboard')} className={navItemClass('dashboard')}>
-                <div className="flex items-center gap-3">
-                  <LayoutDashboard className={iconClass} />
-                  <span>{t('dashboard')}</span>
-                </div>
-              </button>
-
-              <button onClick={() => handleNav('new-task')} className={navItemClass('new-task')}>
-                <div className="flex items-center gap-3">
-                  <CheckSquare className={iconClass} />
-                  <span>{t('newTask')}</span>
-                </div>
-              </button>
-
-              <button onClick={() => handleNav('new-activity')} className={navItemClass('new-activity')}>
-                <div className="flex items-center gap-3">
-                  <AlertCircle className={iconClass} />
-                  <span>{t('newActivity')}</span>
-                </div>
-              </button>
-
-              <button onClick={() => handleNav('attendance')} className={navItemClass('attendance')}>
-                <div className="flex items-center gap-3">
-                  <CalendarCheck className={iconClass} />
-                  <span>{t('attendance')}</span>
-                </div>
-              </button>
+              <NavRow tab="home" label={t('home')} icon={<Home className={iconClass} />} />
+              <NavRow
+                tab="dashboard"
+                label={t('dashboard')}
+                icon={<LayoutDashboard className={iconClass} />}
+              />
+              <NavRow
+                tab="new-task"
+                label={t('newTask')}
+                icon={<CheckSquare className={iconClass} />}
+              />
+              <NavRow
+                tab="new-activity"
+                label={t('newActivity')}
+                icon={<AlertCircle className={iconClass} />}
+              />
+              <NavRow
+                tab="attendance"
+                label={t('attendance')}
+                icon={<CalendarCheck className={iconClass} />}
+              />
             </div>
           </div>
 
           {/* Personal */}
           <div>
-            <div className={groupLabelClass}>Personal</div>
+            <GroupLabel>Personal</GroupLabel>
 
             <div className="space-y-0.5">
-              <button
-                onClick={() => handleNav('personal-vault')}
-                className={navItemClass('personal-vault', !currentEmployee.permissions.personalVault)}
-              >
-                <div className="flex items-center gap-3">
-                  <FolderLock className={iconClass} />
-                  <span>{t('personalVault')}</span>
-                </div>
-                {!currentEmployee.permissions.personalVault && (
-                  <Lock className="w-3 h-3 opacity-60" />
-                )}
-              </button>
+              <NavRow
+                tab="personal-vault"
+                label={t('personalVault')}
+                icon={<FolderLock className={iconClass} />}
+                restricted={!currentEmployee.permissions.personalVault}
+              />
 
-              <button
-                onClick={() => handleNav('photo-gallery')}
-                className={navItemClass('photo-gallery', !currentEmployee.permissions.photoGallery)}
-              >
-                <div className="flex items-center gap-3">
-                  <ImageIcon className={iconClass} />
-                  <span>{t('photoGallery')}</span>
-                </div>
-                {!currentEmployee.permissions.photoGallery && (
-                  <Lock className="w-3 h-3 opacity-60" />
-                )}
-              </button>
+              <NavRow
+                tab="photo-gallery"
+                label={t('photoGallery')}
+                icon={<ImageIcon className={iconClass} />}
+                restricted={!currentEmployee.permissions.photoGallery}
+              />
 
-              <button
-                onClick={() => handleNav('company-group')}
-                className={navItemClass('company-group', !currentEmployee.permissions.companyGroup)}
-              >
-                <div className="flex items-center gap-3">
-                  <Users className={iconClass} />
-                  <span>{t('companyGroup')}</span>
-                </div>
-                {!currentEmployee.permissions.companyGroup && (
-                  <Lock className="w-3 h-3 opacity-60" />
-                )}
-              </button>
+              <NavRow
+                tab="company-group"
+                label={t('companyGroup')}
+                icon={<Users className={iconClass} />}
+                restricted={!currentEmployee.permissions.companyGroup}
+              />
 
-              <button
-                onClick={() => handleNav('voucher-creation')}
-                className={navItemClass('voucher-creation', !currentEmployee.permissions.voucherCreation)}
-              >
-                <div className="flex items-center gap-3">
-                  <Receipt className={iconClass} />
-                  <span>{t('voucherCreation')}</span>
-                </div>
-              </button>
+              <NavRow
+                tab="voucher-creation"
+                label={t('voucherCreation')}
+                icon={<Receipt className={iconClass} />}
+                restricted={!currentEmployee.permissions.voucherCreation}
+              />
             </div>
           </div>
 
           {/* Settings */}
           <div>
-            <div className={groupLabelClass}>Settings</div>
+            <GroupLabel>Settings</GroupLabel>
 
             <div className="space-y-0.5">
-              <button onClick={() => handleNav('language')} className={navItemClass('language')}>
-                <div className="flex items-center gap-3">
-                  <Globe className={iconClass} />
-                  <span>{t('language')}</span>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleNav('profile-settings')}
-                className={navItemClass('profile-settings')}
-              >
-                <div className="flex items-center gap-3">
-                  <UserCheck className={iconClass} />
-                  <span>{t('profileSettings')}</span>
-                </div>
-              </button>
+              <NavRow tab="language" label={t('language')} icon={<Globe className={iconClass} />} />
+              <NavRow
+                tab="profile-settings"
+                label={t('profileSettings')}
+                icon={<UserCheck className={iconClass} />}
+              />
 
               <button
                 onClick={() => {
                   onClose();
                   signOut();
                 }}
-                className="w-full flex items-center gap-3 rounded-full px-4 py-2.5 text-[13px] font-medium text-[var(--echo-ink-3)] hover:bg-[var(--echo-danger-soft)] hover:text-[var(--echo-danger)] transition-colors cursor-pointer"
+                className="echo-nav-item hover:!bg-[var(--echo-danger-soft)] hover:!text-[var(--echo-danger)]"
               >
                 <LogOut className={iconClass} />
                 <span>{t('signOut')}</span>

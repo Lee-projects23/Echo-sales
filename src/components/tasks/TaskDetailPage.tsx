@@ -173,6 +173,17 @@ export const TaskDetailPage: React.FC = () => {
   const isSignatureComplete = !requiredChecklist.signature || (!!submissions.signatureName && !!submissions.confirmedSignature);
   const isMarkComplete = !requiredChecklist.markRating || (!!submissions.markRating && submissions.markRating > 0);
 
+  // How many mandatory checklist items are currently satisfied (presentation only).
+  const checklistItems: { on: boolean; done: boolean }[] = [
+    { on: requiredChecklist.beforeAfterPhotos, done: isBeforeAfterComplete },
+    { on: requiredChecklist.voiceReply, done: isVoiceComplete },
+    { on: requiredChecklist.fourPhotosOneVideo, done: isFourPhotosOneVideoComplete },
+    { on: requiredChecklist.signature, done: isSignatureComplete },
+    { on: requiredChecklist.markRating, done: isMarkComplete },
+  ];
+  const totalRequired = checklistItems.filter((i) => i.on).length;
+  const completedRequired = checklistItems.filter((i) => i.on && i.done).length;
+
   const allMandatoryMet =
     isBeforeAfterComplete &&
     isVoiceComplete &&
@@ -263,10 +274,32 @@ export const TaskDetailPage: React.FC = () => {
         {/* Required Checklist */}
         <section className="echo-card echo-card--pad lg:p-8 space-y-10">
           <div>
-            <h2 className="ed-h2">{t('requiredChecklist')}</h2>
-            <p className="ed-sub mt-2">
-              Admin has configured the following mandatory evidence requirements for this work order.
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div>
+                <h2 className="ed-h2">{t('requiredChecklist')}</h2>
+                <p className="ed-sub mt-2">
+                  Admin has configured the following mandatory evidence requirements for this work order.
+                </p>
+              </div>
+
+              {/* Submission progress — derived from the live checklist state */}
+              <div className="w-full sm:w-56 shrink-0">
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="echo-kpi-label">Submission Progress</span>
+                  <span className="font-mono text-[13px] font-semibold text-[var(--echo-ink)] tabular-nums">
+                    {completedRequired}/{totalRequired}
+                  </span>
+                </div>
+                <div className="echo-progress mt-2">
+                  <div
+                    className={`echo-progress-bar ${
+                      completedRequired === totalRequired ? 'echo-progress-bar--positive' : ''
+                    }`}
+                    style={{ width: `${(completedRequired / Math.max(1, totalRequired)) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* 1. Before & After Photos */}

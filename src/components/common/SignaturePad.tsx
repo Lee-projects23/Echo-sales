@@ -50,7 +50,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
           {name.trim() && (
             <div className="rounded-[var(--echo-radius-sm)] border border-[var(--echo-border)] bg-[var(--echo-surface-2)] px-4 py-6 flex flex-col items-center justify-center">
               <span className="ed-label mb-2">Live Signature Preview</span>
-              <div className="text-2xl font-serif italic tracking-wider text-[var(--echo-ink)] py-2 font-medium">
+              <div className="text-2xl italic tracking-wider text-[var(--echo-ink)] py-2 font-medium">
                 {name}
               </div>
               <div className="w-48 h-px bg-[var(--echo-border-strong)] mt-1" />
@@ -69,7 +69,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
       ) : (
         <div className="space-y-3">
           <div className="rounded-[var(--echo-radius-sm)] border border-[var(--echo-border)] bg-[var(--echo-surface-2)] px-5 py-6 flex flex-col items-center justify-center text-center">
-            <div className="text-3xl font-serif italic tracking-wider text-[var(--echo-ink)] py-1">
+            <div className="text-3xl italic tracking-wider text-[var(--echo-ink)] py-1">
               {name}
             </div>
             <div className="w-56 h-px bg-[var(--echo-border-strong)] my-2" />

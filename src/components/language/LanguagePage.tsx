@@ -71,7 +71,7 @@ export const LanguagePage: React.FC = () => {
                   <Globe className="w-4 h-4" />
                 </span>
                 <div className="min-w-0">
-                  <div className="font-serif text-2xl text-[var(--echo-ink)] shrink-0 leading-none">
+                  <div className="text-2xl font-bold tracking-[-0.02em] text-[var(--echo-ink)] shrink-0 leading-none">
                     {opt.native}
                   </div>
                   <div className="text-[13px] text-[var(--echo-ink)] mt-2 truncate">

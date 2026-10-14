@@ -77,7 +77,7 @@ export const CompanyGroupPage: React.FC = () => {
         {/* Chat Header */}
         <div className="px-5 py-4 border-b border-[var(--echo-border)] flex items-center justify-between gap-3 bg-[var(--echo-surface-2)]">
           <div className="flex items-center gap-3 min-w-0">
-            <span className="echo-icon-tile echo-icon-tile--accent font-serif text-[13px]">
+            <span className="echo-icon-tile echo-icon-tile--accent text-[13px]">
               E
             </span>
             <div className="min-w-0">

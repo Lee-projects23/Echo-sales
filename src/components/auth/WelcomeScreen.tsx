@@ -49,13 +49,13 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onEnter }) => {
           </div>
 
           {/* Large wordmark */}
-          <h1 className="font-serif font-light text-[clamp(4rem,14vw,9rem)] leading-[0.9] tracking-[-0.03em] mb-6 text-[var(--echo-ink)]">
+          <h1 className="text-[clamp(4rem,14vw,9rem)] font-extrabold leading-[0.9] tracking-[-0.04em] mb-6 text-[var(--echo-ink)]">
             ECHO
           </h1>
 
           <div className="h-px w-full max-w-md mb-6 bg-[var(--echo-border-strong)]" />
 
-          <p className="font-serif text-2xl sm:text-3xl font-light mb-4 leading-snug text-[var(--echo-ink)]">
+          <p className="text-2xl sm:text-3xl font-bold tracking-[-0.02em] mb-4 leading-snug text-[var(--echo-ink)]">
             Employee Operations Portal
           </p>
 

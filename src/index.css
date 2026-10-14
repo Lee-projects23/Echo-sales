@@ -2,8 +2,7 @@
 
 @theme {
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-serif: 'Fraunces', 'Georgia', 'Times New Roman', serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 /* Class-based dark mode: `dark:` variants follow the `.dark` class on <html>, */
@@ -12,110 +11,111 @@
 
 /* ------------------------------------------------------------------ */
 /* ECHO — design tokens                                               */
-/* Premium fintech surface system. Day/Night modes share one contract. */
+/* Dark-first premium SaaS dashboard system (SpendIQ visual language). */
+/* One token contract drives Day Mode and Night Mode across every page. */
 /* ------------------------------------------------------------------ */
 
 :root {
   color-scheme: light;
 
-  /* Surfaces */
-  --echo-bg: #f3f3f1;
-  --echo-bg-glow-1: rgba(239, 107, 18, 0.07);
-  --echo-bg-glow-2: rgba(23, 23, 26, 0.04);
+  /* Surfaces — white + soft neutrals */
+  --echo-bg: #f4f6f9;
+  --echo-bg-glow-1: rgba(37, 99, 235, 0.07);
+  --echo-bg-glow-2: rgba(15, 23, 42, 0.04);
   --echo-surface: #ffffff;
-  --echo-surface-2: #fafaf9;
-  --echo-surface-3: #f1f1ef;
-  --echo-surface-inset: #f7f7f6;
+  --echo-surface-2: #f7f9fc;
+  --echo-surface-3: #eef2f7;
+  --echo-surface-inset: #f7f9fc;
   --echo-overlay: rgba(255, 255, 255, 0.86);
 
-  /* Ink */
-  --echo-ink: #17171a;
-  --echo-ink-2: #4a4a52;
-  --echo-ink-3: #73737d;
+  /* Ink — near-black headings, muted greys for support copy */
+  --echo-ink: #0b1220;
+  --echo-ink-2: #3c4858;
+  --echo-ink-3: #6b7787;
   --echo-ink-inverse: #ffffff;
 
-  /* Lines */
-  --echo-border: rgba(23, 23, 26, 0.08);
-  --echo-border-strong: rgba(23, 23, 26, 0.14);
+  /* Lines — thin, restrained */
+  --echo-border: rgba(11, 18, 32, 0.09);
+  --echo-border-strong: rgba(11, 18, 32, 0.16);
 
-  /* ECHO accent (brand orange) */
-  --echo-accent: #ea5c0b;
-  --echo-accent-hover: #d24f06;
-  --echo-accent-active: #b44305;
+  /* ECHO accent — chart blue */
+  --echo-accent: #2563eb;
+  --echo-accent-hover: #1d4ed8;
+  --echo-accent-active: #1e40af;
   --echo-accent-ink: #ffffff;
-  --echo-accent-soft: rgba(234, 92, 11, 0.09);
-  --echo-accent-soft-strong: rgba(234, 92, 11, 0.16);
-  --echo-accent-glow: rgba(234, 92, 11, 0.22);
+  --echo-accent-soft: rgba(37, 99, 235, 0.08);
+  --echo-accent-soft-strong: rgba(37, 99, 235, 0.17);
+  --echo-accent-glow: rgba(37, 99, 235, 0.22);
 
-  /* Status tones */
-  --echo-positive: #0f9252;
-  --echo-positive-soft: rgba(15, 146, 82, 0.10);
-  --echo-warning: #b45309;
-  --echo-warning-soft: rgba(180, 83, 9, 0.10);
-  --echo-danger: #d92d20;
-  --echo-danger-soft: rgba(217, 45, 32, 0.09);
-  --echo-info: #1d4ed8;
-  --echo-info-soft: rgba(29, 78, 216, 0.09);
+  /* Status tones — restrained */
+  --echo-positive: #047857;
+  --echo-positive-soft: rgba(4, 120, 87, 0.09);
+  --echo-warning: #a4530a;
+  --echo-warning-soft: rgba(164, 83, 10, 0.09);
+  --echo-danger: #c2261c;
+  --echo-danger-soft: rgba(194, 38, 28, 0.08);
+  --echo-info: #2563eb;
+  --echo-info-soft: rgba(37, 99, 235, 0.08);
 
   /* Depth */
-  --echo-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
-  --echo-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 10px 28px -16px rgba(16, 24, 40, 0.18);
-  --echo-shadow-lg: 0 2px 4px rgba(16, 24, 40, 0.04), 0 28px 56px -28px rgba(16, 24, 40, 0.26);
-  --echo-shadow-accent: 0 8px 20px -10px var(--echo-accent-glow);
+  --echo-shadow-sm: 0 1px 2px rgba(11, 18, 32, 0.05);
+  --echo-shadow: 0 1px 2px rgba(11, 18, 32, 0.04), 0 10px 26px -18px rgba(11, 18, 32, 0.18);
+  --echo-shadow-lg: 0 2px 4px rgba(11, 18, 32, 0.04), 0 26px 52px -30px rgba(11, 18, 32, 0.26);
+  --echo-shadow-accent: 0 8px 20px -12px var(--echo-accent-glow);
 
   /* Radii — restrained */
-  --echo-radius: 16px;
-  --echo-radius-sm: 12px;
-  --echo-radius-lg: 20px;
+  --echo-radius: 14px;
+  --echo-radius-sm: 10px;
+  --echo-radius-lg: 18px;
 }
 
 .dark {
   color-scheme: dark;
 
-  /* Surfaces */
-  --echo-bg: #08080a;
-  --echo-bg-glow-1: rgba(251, 146, 60, 0.10);
-  --echo-bg-glow-2: rgba(120, 130, 255, 0.07);
-  --echo-surface: #121216;
-  --echo-surface-2: #17171c;
-  --echo-surface-3: #202027;
-  --echo-surface-inset: #0e0e11;
-  --echo-overlay: rgba(10, 10, 12, 0.86);
+  /* Surfaces — deep charcoal + near-black */
+  --echo-bg: #08090c;
+  --echo-bg-glow-1: rgba(59, 130, 246, 0.11);
+  --echo-bg-glow-2: rgba(148, 163, 184, 0.05);
+  --echo-surface: #111318;
+  --echo-surface-2: #161920;
+  --echo-surface-3: #1d212a;
+  --echo-surface-inset: #0d0f13;
+  --echo-overlay: rgba(8, 9, 12, 0.86);
 
-  /* Ink */
-  --echo-ink: #f6f6f7;
-  --echo-ink-2: #b6b6bf;
-  --echo-ink-3: #8b8b96;
-  --echo-ink-inverse: #0b0b0d;
+  /* Ink — readable light type on charcoal */
+  --echo-ink: #f2f5f9;
+  --echo-ink-2: #aeb7c4;
+  --echo-ink-3: #7f8a99;
+  --echo-ink-inverse: #0a0c10;
 
   /* Lines */
-  --echo-border: rgba(255, 255, 255, 0.08);
-  --echo-border-strong: rgba(255, 255, 255, 0.16);
+  --echo-border: rgba(255, 255, 255, 0.07);
+  --echo-border-strong: rgba(255, 255, 255, 0.15);
 
-  /* ECHO accent (brand orange) */
-  --echo-accent: #fb923c;
-  --echo-accent-hover: #fdba74;
-  --echo-accent-active: #fed7aa;
-  --echo-accent-ink: #1a1005;
-  --echo-accent-soft: rgba(251, 146, 60, 0.13);
-  --echo-accent-soft-strong: rgba(251, 146, 60, 0.22);
-  --echo-accent-glow: rgba(251, 146, 60, 0.30);
+  /* ECHO accent — chart blue */
+  --echo-accent: #5f9dfb;
+  --echo-accent-hover: #8ab8fd;
+  --echo-accent-active: #b3d2fe;
+  --echo-accent-ink: #061020;
+  --echo-accent-soft: rgba(95, 157, 251, 0.13);
+  --echo-accent-soft-strong: rgba(95, 157, 251, 0.25);
+  --echo-accent-glow: rgba(95, 157, 251, 0.30);
 
-  /* Status tones */
-  --echo-positive: #45d483;
-  --echo-positive-soft: rgba(69, 212, 131, 0.13);
-  --echo-warning: #fbbf24;
-  --echo-warning-soft: rgba(251, 191, 36, 0.13);
-  --echo-danger: #fb7185;
-  --echo-danger-soft: rgba(251, 113, 133, 0.13);
-  --echo-info: #7aa7ff;
-  --echo-info-soft: rgba(122, 167, 255, 0.13);
+  /* Status tones — restrained */
+  --echo-positive: #37c98d;
+  --echo-positive-soft: rgba(55, 201, 141, 0.13);
+  --echo-warning: #e9a23b;
+  --echo-warning-soft: rgba(233, 162, 59, 0.13);
+  --echo-danger: #f2716c;
+  --echo-danger-soft: rgba(242, 113, 108, 0.13);
+  --echo-info: #5f9dfb;
+  --echo-info-soft: rgba(95, 157, 251, 0.13);
 
   /* Depth */
   --echo-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --echo-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 18px 40px -24px rgba(0, 0, 0, 0.85);
-  --echo-shadow-lg: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 34px 68px -34px rgba(0, 0, 0, 0.95);
-  --echo-shadow-accent: 0 10px 26px -12px var(--echo-accent-glow);
+  --echo-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 16px 36px -26px rgba(0, 0, 0, 0.85);
+  --echo-shadow-lg: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 32px 64px -36px rgba(0, 0, 0, 0.92);
+  --echo-shadow-accent: 0 10px 26px -14px var(--echo-accent-glow);
 }
 
 @layer base {
@@ -166,25 +166,25 @@
 
   /* Large display heading */
   .ed-h1 {
-    @apply font-serif text-[clamp(1.875rem,4vw,2.75rem)] font-normal leading-[1.08] tracking-[-0.015em];
+    @apply text-[clamp(1.75rem,3.4vw,2.375rem)] font-bold leading-[1.1] tracking-[-0.025em];
     color: var(--echo-ink);
   }
 
   /* Section heading */
   .ed-h2 {
-    @apply font-serif text-xl sm:text-[1.4rem] font-normal leading-snug tracking-[-0.01em];
+    @apply text-[17px] font-bold leading-snug tracking-[-0.015em];
     color: var(--echo-ink);
   }
 
   /* Small heading used inside panels */
   .ed-h3 {
-    @apply text-[15px] font-semibold tracking-[-0.01em];
+    @apply text-[14px] font-semibold tracking-[-0.01em];
     color: var(--echo-ink);
   }
 
   /* Muted descriptive copy */
   .ed-sub {
-    @apply text-sm leading-relaxed;
+    @apply text-[13px] leading-relaxed;
     color: var(--echo-ink-3);
   }
 
@@ -202,14 +202,14 @@
     background: var(--echo-surface);
     border: 1px solid var(--echo-border);
     border-radius: var(--echo-radius);
-    box-shadow: var(--echo-shadow);
+    box-shadow: var(--echo-shadow-sm);
   }
 
   .echo-card {
     background: var(--echo-surface);
     border: 1px solid var(--echo-border);
     border-radius: var(--echo-radius);
-    box-shadow: var(--echo-shadow);
+    box-shadow: var(--echo-shadow-sm);
     transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease,
       background-color 0.25s ease;
   }
@@ -218,10 +218,14 @@
     @apply p-5 sm:p-6;
   }
 
+  .echo-card--tight {
+    @apply p-4;
+  }
+
   /* Interactive card: subtle lift on hover */
   .echo-card-hover:hover {
     border-color: var(--echo-border-strong);
-    box-shadow: var(--echo-shadow-lg);
+    box-shadow: var(--echo-shadow);
     transform: translateY(-2px);
   }
 
@@ -236,7 +240,8 @@
 
   /* Primary solid action */
   .ed-btn {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-[13px] font-semibold tracking-[-0.005em] rounded-full cursor-pointer select-none;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-[13px] font-semibold tracking-[-0.005em] cursor-pointer select-none;
+    border-radius: var(--echo-radius-sm);
     background: var(--echo-accent);
     color: var(--echo-accent-ink);
     border: 1px solid transparent;
@@ -262,7 +267,8 @@
 
   /* Secondary quiet outline action */
   .ed-btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-[13px] font-semibold tracking-[-0.005em] rounded-full cursor-pointer select-none;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-[13px] font-semibold tracking-[-0.005em] cursor-pointer select-none;
+    border-radius: var(--echo-radius-sm);
     background: var(--echo-surface);
     color: var(--echo-ink);
     border: 1px solid var(--echo-border-strong);
@@ -304,14 +310,16 @@
     color: var(--echo-ink);
   }
 
-  /* Segmented control / pill toggle */
+  /* Segmented control / filter tab group */
   .echo-segment {
-    @apply inline-flex items-center gap-1 p-1 rounded-full;
+    @apply inline-flex items-center gap-1 p-1;
+    border-radius: var(--echo-radius-sm);
     background: var(--echo-surface-3);
     border: 1px solid var(--echo-border);
   }
   .echo-segment-item {
-    @apply inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold cursor-pointer whitespace-nowrap;
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold cursor-pointer whitespace-nowrap;
+    border-radius: calc(var(--echo-radius-sm) - 3px);
     color: var(--echo-ink-3);
     transition: background-color 0.2s ease, color 0.2s ease;
   }
@@ -320,7 +328,7 @@
   }
   .echo-segment-item[data-active="true"] {
     background: var(--echo-surface);
-    color: var(--echo-ink);
+    color: var(--echo-accent);
     box-shadow: var(--echo-shadow-sm);
   }
 
@@ -339,7 +347,8 @@
     color: var(--echo-ink-2);
     border-color: var(--echo-border);
   }
-  .echo-chip--accent {
+  .echo-chip--accent,
+  .echo-chip--info {
     background: var(--echo-accent-soft);
     color: var(--echo-accent);
     border-color: var(--echo-accent-soft-strong);
@@ -358,11 +367,6 @@
     background: var(--echo-danger-soft);
     color: var(--echo-danger);
     border-color: color-mix(in srgb, var(--echo-danger) 24%, transparent);
-  }
-  .echo-chip--info {
-    background: var(--echo-info-soft);
-    color: var(--echo-info);
-    border-color: color-mix(in srgb, var(--echo-info) 24%, transparent);
   }
 
   /* Small leading dot used inside chips / live indicators */
@@ -383,7 +387,8 @@
     color: var(--echo-ink-2);
     transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
   }
-  .echo-icon-tile--accent {
+  .echo-icon-tile--accent,
+  .echo-icon-tile--info {
     background: var(--echo-accent-soft);
     border-color: var(--echo-accent-soft-strong);
     color: var(--echo-accent);
@@ -403,27 +408,48 @@
     border-color: color-mix(in srgb, var(--echo-danger) 24%, transparent);
     color: var(--echo-danger);
   }
-  .echo-icon-tile--info {
-    background: var(--echo-info-soft);
-    border-color: color-mix(in srgb, var(--echo-info) 24%, transparent);
-    color: var(--echo-info);
-  }
 
   /* ---------- Metrics / KPI ---------- */
 
   .echo-kpi-label {
-    @apply text-[11px] font-semibold uppercase tracking-[0.12em];
+    @apply text-[10px] font-semibold uppercase tracking-[0.12em];
     color: var(--echo-ink-3);
   }
 
+  /* Compact KPI tile — the SpendIQ dashboard unit */
+  .echo-kpi {
+    @apply p-4;
+    background: var(--echo-surface);
+    border: 1px solid var(--echo-border);
+    border-radius: var(--echo-radius);
+    box-shadow: var(--echo-shadow-sm);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .echo-kpi:hover {
+    border-color: var(--echo-border-strong);
+    box-shadow: var(--echo-shadow);
+    transform: translateY(-2px);
+  }
   .echo-kpi-value {
-    @apply font-serif text-[1.75rem] sm:text-[2rem] font-normal leading-none tracking-[-0.02em] tabular-nums;
+    @apply text-[1.625rem] font-bold leading-none tracking-[-0.03em] tabular-nums;
     color: var(--echo-ink);
+  }
+  .echo-kpi-unit {
+    @apply text-[12px] font-semibold tracking-normal;
+    color: var(--echo-ink-3);
   }
 
   .echo-metric-value {
     @apply text-lg font-semibold tabular-nums tracking-[-0.01em];
     color: var(--echo-ink);
+  }
+
+  /* Small inset metric tile */
+  .echo-tile {
+    @apply px-3 py-2.5;
+    background: var(--echo-surface-2);
+    border: 1px solid var(--echo-border);
+    border-radius: var(--echo-radius-sm);
   }
 
   /* ---------- Progress ---------- */
@@ -442,20 +468,55 @@
   .echo-progress-bar--positive {
     background: var(--echo-positive);
   }
-  .echo-progress-bar--info {
-    background: var(--echo-info);
+  .echo-progress-bar--warning {
+    background: var(--echo-warning);
+  }
+  .echo-progress-bar--danger {
+    background: var(--echo-danger);
   }
 
   /* Thin bar used inside charts */
   .echo-bar {
-    border-radius: 6px 6px 2px 2px;
+    border-radius: 4px 4px 2px 2px;
     transition: height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* ---------- Navigation (sidebar) ---------- */
+
+  .echo-nav-item {
+    @apply w-full flex items-center gap-3 px-3 py-2.5 text-[13px] font-semibold cursor-pointer;
+    border-radius: var(--echo-radius-sm);
+    color: var(--echo-ink-2);
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .echo-nav-item:hover {
+    background: var(--echo-surface-3);
+    color: var(--echo-ink);
+  }
+  .echo-nav-item[data-active="true"] {
+    background: var(--echo-accent-soft);
+    color: var(--echo-accent);
+    border-color: var(--echo-accent-soft-strong);
+  }
+  .echo-nav-group-label {
+    @apply px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.14em];
+    color: var(--echo-ink-3);
+  }
+
+  /* ---------- Dense list row ---------- */
+
+  .echo-list-row {
+    @apply flex items-center justify-between gap-4 px-4 sm:px-5 py-3.5 transition-colors;
+  }
+  .echo-list-row:hover {
+    background: var(--echo-surface-2);
   }
 
   /* ---------- Forms ---------- */
 
   .ed-input {
-    @apply w-full px-4 py-2.5 text-sm;
+    @apply w-full px-3.5 py-2.5 text-[13px];
     background: var(--echo-surface-2);
     border: 1px solid var(--echo-border-strong);
     border-radius: var(--echo-radius-sm);
@@ -472,7 +533,7 @@
     outline: none;
     background: var(--echo-surface);
     border-color: var(--echo-accent);
-    box-shadow: 0 0 0 4px var(--echo-accent-soft);
+    box-shadow: 0 0 0 3px var(--echo-accent-soft);
   }
   .ed-input:disabled {
     opacity: 0.55;
@@ -487,14 +548,14 @@
   }
 
   .ed-td {
-    @apply px-4 py-4 text-sm align-middle;
+    @apply px-4 py-3.5 text-[13px] align-middle;
     color: var(--echo-ink);
   }
 
   /* ---------- Data / meta ---------- */
 
   .ed-stat {
-    @apply font-serif text-[2rem] sm:text-[2.5rem] font-normal leading-none tracking-[-0.02em] tabular-nums;
+    @apply text-[1.75rem] sm:text-[2rem] font-bold leading-none tracking-[-0.03em] tabular-nums;
     color: var(--echo-ink);
   }
 
@@ -537,7 +598,7 @@
 
   .echo-modal-scrim {
     @apply fixed inset-0 z-50 flex items-center justify-center p-4;
-    background: rgba(8, 8, 10, 0.55);
+    background: rgba(6, 8, 12, 0.6);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     animation: echo-fade-in 0.2s ease both;

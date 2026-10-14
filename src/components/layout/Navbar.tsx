@@ -12,6 +12,12 @@ import {
   LogOut,
   Settings,
   ChevronDown,
+  CalendarCheck,
+  ListChecks,
+  Megaphone,
+  Receipt,
+  Users,
+  ShieldCheck,
 } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 
@@ -19,6 +25,18 @@ interface NavbarProps {
   onToggleSidebar: () => void;
   isSidebarOpen: boolean;
 }
+
+type NotificationType = 'task' | 'activity' | 'voucher' | 'attendance' | 'admin' | 'group';
+
+/** Icon + tone per notification type — presentation only. */
+const NOTIF_META: Record<NotificationType, { icon: React.ReactNode; tone: string }> = {
+  task: { icon: <ListChecks className="w-3.5 h-3.5" />, tone: 'echo-icon-tile--accent' },
+  activity: { icon: <AlertCircle className="w-3.5 h-3.5" />, tone: 'echo-icon-tile--warning' },
+  voucher: { icon: <Receipt className="w-3.5 h-3.5" />, tone: 'echo-icon-tile--neutral' },
+  attendance: { icon: <CalendarCheck className="w-3.5 h-3.5" />, tone: 'echo-icon-tile--positive' },
+  admin: { icon: <ShieldCheck className="w-3.5 h-3.5" />, tone: 'echo-icon-tile--accent' },
+  group: { icon: <Users className="w-3.5 h-3.5" />, tone: 'echo-icon-tile--accent' },
+};
 
 export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }) => {
   const {
@@ -54,6 +72,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
   const profileRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
@@ -154,32 +173,30 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
     }
   };
 
+  const goHome = () => {
+    setSelectedTaskId(null);
+    setSelectedActivityId(null);
+    setSelectedVoucherId(null);
+    setActiveTab('home');
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full h-16 border-b border-[var(--echo-border)] apple-glass">
       <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 sm:gap-4">
-        {/* Left Zone: Wordmark + Home */}
+        {/* Left Zone: Wordmark + Home + Theme */}
         <div className="flex items-center gap-3 sm:gap-5 shrink-0">
-          <button
-            onClick={() => {
-              setSelectedTaskId(null);
-              setSelectedActivityId(null);
-              setSelectedVoucherId(null);
-              setActiveTab('home');
-            }}
-            className="flex items-center gap-2.5 cursor-pointer group"
-            aria-label="ECHO home"
-          >
+          <button onClick={goHome} className="flex items-center gap-2.5 cursor-pointer group" aria-label="ECHO home">
             <span
               className="echo-icon-tile echo-icon-tile--accent"
-              style={{ width: '1.875rem', height: '1.875rem', borderRadius: '10px' }}
+              style={{ width: '1.875rem', height: '1.875rem', borderRadius: '9px' }}
             >
-              <span className="font-serif text-[13px] leading-none">E</span>
+              <span className="text-[13px] font-extrabold leading-none">E</span>
             </span>
             <span className="flex flex-col items-start leading-none">
-              <span className="font-serif text-[17px] tracking-[0.14em] text-[var(--echo-ink)]">
+              <span className="text-[17px] font-extrabold tracking-[0.16em] text-[var(--echo-ink)]">
                 ECHO
               </span>
-              <span className="hidden sm:inline-block text-[9px] font-semibold uppercase tracking-[0.18em] text-[var(--echo-ink-3)] mt-1">
+              <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--echo-ink-3)] mt-1">
                 Employee Portal
               </span>
             </span>
@@ -188,12 +205,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
           <span className="hidden sm:block w-px h-5 bg-[var(--echo-border-strong)]" />
 
           <button
-            onClick={() => {
-              setSelectedTaskId(null);
-              setSelectedActivityId(null);
-              setSelectedVoucherId(null);
-              setActiveTab('home');
-            }}
+            onClick={goHome}
             className={`hidden sm:inline-flex items-center rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors cursor-pointer ${
               activeTab === 'home'
                 ? 'bg-[var(--echo-accent-soft)] text-[var(--echo-accent)]'
@@ -203,7 +215,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
             {t('home')}
           </button>
 
-          {/* Theme toggle */}
+          {/* Theme toggle — Day / Night */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle visual theme"
@@ -216,7 +228,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
 
         {/* Center Zone: Search */}
         <div ref={searchRef} className="relative flex-1 max-w-md hidden md:block">
-          <div className="flex items-center rounded-full border border-[var(--echo-border)] bg-[var(--echo-surface-2)] px-4 transition-colors focus-within:border-[var(--echo-accent)] focus-within:bg-[var(--echo-surface)] focus-within:shadow-[0_0_0_4px_var(--echo-accent-soft)]">
+          <div className="flex items-center rounded-full border border-[var(--echo-border)] bg-[var(--echo-surface-2)] px-4 transition-colors focus-within:border-[var(--echo-accent)] focus-within:bg-[var(--echo-surface)] focus-within:shadow-[0_0_0_3px_var(--echo-accent-soft)]">
             <Search className="w-3.5 h-3.5 mr-2.5 text-[var(--echo-ink-3)] shrink-0" />
             <input
               type="text"
@@ -243,7 +255,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                     <button
                       key={`${res.type}-${res.id}`}
                       onClick={() => handleSearchResultClick(res)}
-                      className="w-full p-3.5 text-left hover:bg-[var(--echo-surface-2)] transition-colors cursor-pointer group"
+                      className="w-full p-3.5 text-left hover:bg-[var(--echo-surface-2)] transition-colors cursor-pointer"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <span className="text-[13px] font-medium text-[var(--echo-ink)] truncate">
@@ -280,29 +292,36 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
             >
               <Bell className="w-4 h-4" />
               {unreadNotificationsCount > 0 && (
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[var(--echo-accent)] ring-2 ring-[var(--echo-overlay)]" />
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[var(--echo-danger)] ring-2 ring-[var(--echo-overlay)]" />
               )}
             </button>
 
+            {/* Notification Panel */}
             {isNotifOpen && (
               <div className="echo-popover absolute right-0 mt-3 w-[calc(100vw-2rem)] sm:w-96 z-50">
-                <div className="px-4 py-3.5 border-b border-[var(--echo-border)] flex items-center justify-between">
+                {/* Header */}
+                <div className="px-4 py-3.5 border-b border-[var(--echo-border)] flex items-center justify-between gap-3">
                   <span className="ed-h3">{t('notifications')}</span>
-                  <span className="ed-tag">
-                    {unreadNotificationsCount > 0
-                      ? `${unreadNotificationsCount} unread`
-                      : 'All read'}
+                  <span
+                    className={
+                      unreadNotificationsCount > 0
+                        ? 'echo-chip echo-chip--accent'
+                        : 'echo-chip'
+                    }
+                  >
+                    {unreadNotificationsCount > 0 ? `${unreadNotificationsCount} unread` : 'All read'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--echo-border)]">
+                {/* Filters + mark all read */}
+                <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-[var(--echo-border)]">
                   <div className="echo-segment">
                     <button
                       onClick={() => setNotifFilter('all')}
                       className="echo-segment-item"
                       data-active={notifFilter === 'all'}
                     >
-                      All
+                      All ({notifications.length})
                     </button>
                     <button
                       onClick={() => setNotifFilter('unread')}
@@ -316,47 +335,70 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                   {unreadNotificationsCount > 0 && (
                     <button
                       onClick={markAllNotificationsAsRead}
-                      className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer"
-                      style={{ width: '1.875rem', height: '1.875rem' }}
+                      className="ed-link shrink-0"
                       title={t('markAllAsRead')}
                     >
                       <CheckCheck className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Mark all read</span>
                     </button>
                   )}
                 </div>
 
+                {/* List */}
                 <div className="max-h-80 overflow-y-auto echo-scroll divide-y divide-[var(--echo-border)]">
                   {displayedNotifications.length === 0 ? (
-                    <div className="p-8 text-center text-[13px] text-[var(--echo-ink-3)]">
-                      No notifications to display.
+                    <div className="p-10 text-center">
+                      <span className="echo-icon-tile mx-auto mb-4">
+                        <Megaphone className="w-4 h-4" />
+                      </span>
+                      <p className="text-[13px] text-[var(--echo-ink-3)]">
+                        {notifFilter === 'unread'
+                          ? 'You are all caught up — no unread notifications.'
+                          : 'No notifications to display.'}
+                      </p>
                     </div>
                   ) : (
-                    displayedNotifications.map((notif) => (
-                      <div
-                        key={notif.id}
-                        onClick={() => handleNotificationClick(notif)}
-                        className="px-4 py-3.5 text-left hover:bg-[var(--echo-surface-2)] transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <span
-                            className={`text-[13px] font-medium truncate ${
-                              notif.read
-                                ? 'text-[var(--echo-ink-3)]'
-                                : 'text-[var(--echo-ink)]'
-                            }`}
-                          >
-                            {notif.title}
+                    displayedNotifications.map((notif) => {
+                      const meta = NOTIF_META[notif.type as NotificationType] ?? NOTIF_META.admin;
+                      return (
+                        <div
+                          key={notif.id}
+                          onClick={() => handleNotificationClick(notif)}
+                          className="flex items-start gap-3 px-4 py-3.5 hover:bg-[var(--echo-surface-2)] transition-colors cursor-pointer"
+                        >
+                          <span className={`echo-icon-tile shrink-0 ${meta.tone}`} style={{ width: '1.875rem', height: '1.875rem' }}>
+                            {meta.icon}
                           </span>
-                          <span className="ed-mono shrink-0">{notif.timestamp}</span>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-baseline justify-between gap-3">
+                              <span
+                                className={`text-[13px] truncate ${
+                                  notif.read
+                                    ? 'font-medium text-[var(--echo-ink-2)]'
+                                    : 'font-bold text-[var(--echo-ink)]'
+                                }`}
+                              >
+                                {notif.title}
+                              </span>
+                              <span className="ed-mono shrink-0">{notif.timestamp}</span>
+                            </div>
+                            <p className="text-[12px] leading-relaxed text-[var(--echo-ink-3)] mt-1 line-clamp-2">
+                              {notif.message}
+                            </p>
+                            <div className="mt-2 flex items-center gap-2">
+                              {!notif.read && (
+                                <span className="echo-chip echo-chip--accent">
+                                  <span className="echo-dot" />
+                                  Unread
+                                </span>
+                              )}
+                              <span className="ed-mono capitalize">{notif.type}</span>
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-[12px] text-[var(--echo-ink-3)] mt-1 leading-relaxed line-clamp-2">
-                          {notif.message}
-                        </p>
-                        {!notif.read && (
-                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--echo-accent)] mt-2" />
-                        )}
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -375,7 +417,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                 className="w-7 h-7 rounded-full object-cover ring-1 ring-[var(--echo-border-strong)]"
                 referrerPolicy="no-referrer"
               />
-              <span className="text-[13px] font-medium text-[var(--echo-ink)] hidden lg:inline-block">
+              <span className="text-[13px] font-semibold text-[var(--echo-ink)] hidden lg:inline-block">
                 {currentEmployee.name.split(' ')[0]}
               </span>
               <ChevronDown className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
@@ -384,7 +426,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
             {isProfileOpen && (
               <div className="echo-popover absolute right-0 mt-3 w-64 p-2 z-50">
                 <div className="px-3 py-3 mb-1 rounded-[var(--echo-radius-sm)] bg-[var(--echo-surface-2)]">
-                  <div className="font-serif text-base text-[var(--echo-ink)]">
+                  <div className="text-[15px] font-bold tracking-[-0.01em] text-[var(--echo-ink)]">
                     {currentEmployee.name}
                   </div>
                   <div className="ed-mono mt-1">
@@ -402,7 +444,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                         switchEmployee(emp.id);
                         setIsProfileOpen(false);
                       }}
-                      className={`w-full p-2 text-left flex items-center justify-between text-[13px] rounded-[10px] transition-colors cursor-pointer ${
+                      className={`w-full p-2 text-left flex items-center justify-between text-[13px] rounded-[var(--echo-radius-sm)] transition-colors cursor-pointer ${
                         emp.id === currentEmployee.id
                           ? 'bg-[var(--echo-accent-soft)] text-[var(--echo-accent)]'
                           : 'text-[var(--echo-ink-2)] hover:bg-[var(--echo-surface-2)] hover:text-[var(--echo-ink)]'
@@ -417,7 +459,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                         />
                         <span className="truncate">{emp.name}</span>
                       </div>
-                      {emp.id === currentEmployee.id && <span className="ed-tag shrink-0">Active</span>}
+                      {emp.id === currentEmployee.id && <span className="echo-chip shrink-0">Active</span>}
                     </button>
                   ))}
                 </div>
@@ -428,7 +470,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                       setActiveTab('profile-settings');
                       setIsProfileOpen(false);
                     }}
-                    className="w-full p-2 text-left text-[13px] text-[var(--echo-ink-2)] hover:bg-[var(--echo-surface-2)] hover:text-[var(--echo-ink)] flex items-center gap-2.5 rounded-[10px] transition-colors cursor-pointer"
+                    className="w-full p-2 text-left text-[13px] text-[var(--echo-ink-2)] hover:bg-[var(--echo-surface-2)] hover:text-[var(--echo-ink)] flex items-center gap-2.5 rounded-[var(--echo-radius-sm)] transition-colors cursor-pointer"
                   >
                     <Settings className="w-4 h-4" />
                     <span>{t('profileSettings')}</span>
@@ -438,7 +480,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                       signOut();
                       setIsProfileOpen(false);
                     }}
-                    className="w-full p-2 text-left text-[13px] text-[var(--echo-ink-3)] hover:bg-[var(--echo-danger-soft)] hover:text-[var(--echo-danger)] flex items-center gap-2.5 rounded-[10px] transition-colors cursor-pointer"
+                    className="w-full p-2 text-left text-[13px] text-[var(--echo-ink-3)] hover:bg-[var(--echo-danger-soft)] hover:text-[var(--echo-danger)] flex items-center gap-2.5 rounded-[var(--echo-radius-sm)] transition-colors cursor-pointer"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>{t('signOut')}</span>

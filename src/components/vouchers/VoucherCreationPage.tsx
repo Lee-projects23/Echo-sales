@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Plus, ArrowRight, X, Receipt } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { ArrowRight, Plus, Receipt, Search, X } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
 import { StatusChip } from '../common/StatusChip';
 import { Voucher } from '../../types';
+
+type VoucherFilter = 'all' | 'pending' | 'approved' | 'rejected';
 
 export const VoucherCreationPage: React.FC = () => {
   const { vouchers, createVoucher, setSelectedVoucherId, setActiveTab, t } = usePortal();
@@ -14,6 +16,9 @@ export const VoucherCreationPage: React.FC = () => {
   const [date, setDate] = useState('2026-09-23');
   const [time, setTime] = useState('02:30 PM');
   const [description, setDescription] = useState('');
+
+  const [activeFilter, setActiveFilter] = useState<VoucherFilter>('all');
+  const [query, setQuery] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +36,38 @@ export const VoucherCreationPage: React.FC = () => {
     setCustomReason('');
     setShowModal(false);
   };
+
+  const statusCounts = useMemo(
+    () => ({
+      all: vouchers.length,
+      pending: vouchers.filter((v) => v.status === 'Submitted for Admin Review').length,
+      approved: vouchers.filter((v) => v.status === 'Approved').length,
+      rejected: vouchers.filter((v) => v.status === 'Rejected').length,
+    }),
+    [vouchers]
+  );
+
+  const filters: { key: VoucherFilter; label: string }[] = [
+    { key: 'all', label: `All (${statusCounts.all})` },
+    { key: 'pending', label: `Pending (${statusCounts.pending})` },
+    { key: 'approved', label: `Approved (${statusCounts.approved})` },
+    { key: 'rejected', label: `Rejected (${statusCounts.rejected})` },
+  ];
+
+  const filteredVouchers = vouchers.filter((vch) => {
+    if (activeFilter === 'pending' && vch.status !== 'Submitted for Admin Review') return false;
+    if (activeFilter === 'approved' && vch.status !== 'Approved') return false;
+    if (activeFilter === 'rejected' && vch.status !== 'Rejected') return false;
+
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      vch.voucherCode.toLowerCase().includes(q) ||
+      vch.reason.toLowerCase().includes(q) ||
+      (vch.customReason ?? '').toLowerCase().includes(q) ||
+      vch.description.toLowerCase().includes(q)
+    );
+  });
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
@@ -53,16 +90,70 @@ export const VoucherCreationPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Voucher summary strip */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+        {[
+          { label: 'Filed', value: statusCounts.all },
+          { label: 'Pending review', value: statusCounts.pending },
+          { label: 'Approved', value: statusCounts.approved },
+          { label: 'Rejected', value: statusCounts.rejected },
+        ].map((s) => (
+          <div key={s.label} className="echo-kpi">
+            <div className="echo-kpi-label">{s.label}</div>
+            <div className="echo-kpi-value mt-2.5">{s.value}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter tabs + search */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5">
+        <div className="echo-segment flex-wrap">
+          {filters.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setActiveFilter(f.key)}
+              className="echo-segment-item"
+              data-active={activeFilter === f.key}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative w-full lg:w-72">
+          <Search className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--echo-ink-3)] pointer-events-none" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search code, reason, or detail..."
+            aria-label="Search vouchers"
+            className="ed-input pl-9 pr-9"
+          />
+          {query && (
+            <button
+              onClick={() => setQuery('')}
+              aria-label="Clear search"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--echo-ink-3)] hover:text-[var(--echo-ink)] cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Table of Vouchers */}
       <div className="echo-card overflow-hidden">
         <div className="flex items-center gap-2.5 px-5 py-4 border-b border-[var(--echo-border)] bg-[var(--echo-surface-2)]">
-          <Receipt className="w-4 h-4 text-[var(--echo-accent)]" />
+          <span className="echo-icon-tile" style={{ width: '1.75rem', height: '1.75rem' }}>
+            <Receipt className="w-3.5 h-3.5" />
+          </span>
           <span className="ed-h3">Filed Vouchers</span>
-          <span className="ed-tag ml-auto">{vouchers.length}</span>
+          <span className="echo-chip ml-auto">{filteredVouchers.length} shown</span>
         </div>
 
         <div className="overflow-x-auto echo-scroll">
-          <table className="w-full text-left min-w-[820px]">
+          <table className="w-full text-left min-w-[860px]">
             <thead>
               <tr className="border-b border-[var(--echo-border)]">
                 <th className="ed-th w-14 text-center">No.</th>
@@ -75,45 +166,55 @@ export const VoucherCreationPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--echo-border)]">
-              {vouchers.map((vch, index) => (
-                <tr key={vch.id} className="transition-colors hover:bg-[var(--echo-surface-2)]">
-                  <td className="ed-td text-center font-mono text-[12px] text-[var(--echo-ink-3)]">
-                    {index + 1}
-                  </td>
-
-                  <td className="ed-td font-mono font-medium">{vch.voucherCode}</td>
-
-                  <td className="ed-td">
-                    <div className="font-medium">{vch.reason === 'Other' && vch.customReason ? vch.customReason : vch.reason}</div>
-                    <div className="ed-mono mt-0.5 truncate max-w-xs">{vch.description}</div>
-                  </td>
-
-                  <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
-                    {vch.date}
-                  </td>
-
-                  <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
-                    {vch.time}
-                  </td>
-
-                  <td className="ed-td">
-                    <StatusChip status={vch.status} />
-                  </td>
-
-                  <td className="ed-td text-right">
-                    <button
-                      onClick={() => {
-                        setSelectedVoucherId(vch.id);
-                        setActiveTab('voucher-detail');
-                      }}
-                      className="ed-link justify-end"
-                    >
-                      <span>{t('viewDetails')}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+              {filteredVouchers.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="ed-td py-14 text-center text-[var(--echo-ink-3)]">
+                    No vouchers found matching the current filter or search.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredVouchers.map((vch, index) => (
+                  <tr key={vch.id} className="transition-colors hover:bg-[var(--echo-surface-2)]">
+                    <td className="ed-td text-center font-mono text-[12px] text-[var(--echo-ink-3)]">
+                      {index + 1}
+                    </td>
+
+                    <td className="ed-td font-mono font-medium">{vch.voucherCode}</td>
+
+                    <td className="ed-td">
+                      <div className="font-medium">
+                        {vch.reason === 'Other' && vch.customReason ? vch.customReason : vch.reason}
+                      </div>
+                      <div className="ed-mono mt-0.5 truncate max-w-xs">{vch.description}</div>
+                    </td>
+
+                    <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
+                      {vch.date}
+                    </td>
+
+                    <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
+                      {vch.time}
+                    </td>
+
+                    <td className="ed-td">
+                      <StatusChip status={vch.status} />
+                    </td>
+
+                    <td className="ed-td text-right">
+                      <button
+                        onClick={() => {
+                          setSelectedVoucherId(vch.id);
+                          setActiveTab('voucher-detail');
+                        }}
+                        className="ed-link justify-end"
+                      >
+                        <span>{t('viewDetails')}</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -124,8 +225,18 @@ export const VoucherCreationPage: React.FC = () => {
         <div className="echo-modal-scrim">
           <div className="echo-modal max-w-md space-y-6">
             <div className="flex items-center justify-between gap-3 border-b border-[var(--echo-border)] pb-4">
-              <h3 className="ed-h3">Create Operational Voucher</h3>
-              <button onClick={() => setShowModal(false)} aria-label="Close" className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer" style={{ width: '1.875rem', height: '1.875rem' }}>
+              <div className="flex items-center gap-2.5">
+                <span className="echo-icon-tile echo-icon-tile--accent" style={{ width: '1.75rem', height: '1.75rem' }}>
+                  <Receipt className="w-3.5 h-3.5" />
+                </span>
+                <h3 className="ed-h3">Create Operational Voucher</h3>
+              </div>
+              <button
+                onClick={() => setShowModal(false)}
+                aria-label="Close"
+                className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer"
+                style={{ width: '1.75rem', height: '1.75rem' }}
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>

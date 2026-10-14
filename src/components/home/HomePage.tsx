@@ -92,7 +92,7 @@ export const HomePage: React.FC<HomePageHookProps> = () => {
                 <span className="ed-mono">23 Sep 2026</span>
               </div>
 
-              <h2 className="font-serif text-2xl sm:text-3xl font-light leading-snug text-[var(--echo-ink)]">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-[-0.02em] leading-snug text-[var(--echo-ink)]">
                 {attendanceStatusLabel()}
               </h2>
 

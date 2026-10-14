@@ -93,7 +93,7 @@ export const ProfileSettingsPage: React.FC = () => {
             referrerPolicy="no-referrer"
           />
           <div className="space-y-2 min-w-0">
-            <div className="font-serif text-3xl text-[var(--echo-ink)] leading-tight">
+            <div className="text-3xl font-bold tracking-[-0.03em] text-[var(--echo-ink)] leading-tight">
               {currentEmployee.name}
             </div>
             <div className="ed-mono">

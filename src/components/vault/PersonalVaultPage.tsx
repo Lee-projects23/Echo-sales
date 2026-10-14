@@ -101,6 +101,21 @@ export const PersonalVaultPage: React.FC = () => {
         ))}
       </nav>
 
+      {/* Directory summary — derived from the current folder contents */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        {[
+          { label: 'Items', value: currentItems.length },
+          { label: 'Folders', value: currentItems.filter((i) => i.type === 'folder').length },
+          { label: 'Documents', value: currentItems.filter((i) => i.type === 'document').length },
+          { label: 'Photos', value: currentItems.filter((i) => i.type === 'photo').length },
+        ].map((s) => (
+          <div key={s.label} className="echo-kpi">
+            <div className="echo-kpi-label">{s.label}</div>
+            <div className="echo-kpi-value mt-2.5">{s.value}</div>
+          </div>
+        ))}
+      </div>
+
       {/* Finder Grid */}
       {currentItems.length === 0 ? (
         <div className="echo-empty">
