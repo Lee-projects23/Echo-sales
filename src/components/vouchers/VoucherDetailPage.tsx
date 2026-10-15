@@ -10,104 +10,126 @@ export const VoucherDetailPage: React.FC = () => {
   const voucher = vouchers.find((v) => v.id === selectedVoucherId) || vouchers[0];
 
   const MetaTile: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
-    <div className="rounded-[var(--echo-radius-sm)] border border-[var(--echo-border)] bg-[var(--echo-surface-2)] p-4">
+    <div>
       <div className="echo-kpi-label">{label}</div>
-      <div className="mt-2 text-[14px] font-medium text-[var(--echo-ink)]">{value}</div>
+      <div className="mt-3 text-[14px] font-medium text-[var(--echo-ink)]">{value}</div>
     </div>
   );
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
-      <GlobalBackButton onBack={() => setActiveTab('voucher-creation')} label="Back to Vouchers" />
+    <div className="animate-echo-fade">
+      {/* ================= Masthead ================= */}
+      <section className="em-section pt-14 sm:pt-20 pb-12">
+        <GlobalBackButton onBack={() => setActiveTab('voucher-creation')} label="Back to Vouchers" />
 
-      {/* Header */}
-      <header className="echo-card echo-card--pad lg:p-8 mt-6 mb-5">
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div className="space-y-3 min-w-0">
-            <div className="flex flex-wrap items-center gap-3">
+        <div className="mt-7 em-split items-end">
+          <div className="em-split-lead">
+            <div className="flex flex-wrap items-center gap-4 mb-7">
               <span className="ed-label font-mono">{voucher.voucherCode}</span>
-              <span className="echo-rule" />
-              <span className="ed-mono">Filed: {voucher.createdAt}</span>
+              <span className="w-10 h-px" style={{ background: 'var(--echo-border-strong)' }} />
+              <span className="ed-meta">Filed: {voucher.createdAt}</span>
             </div>
             <h1 className="ed-h1">
               {voucher.reason === 'Other' && voucher.customReason ? voucher.customReason : voucher.reason}
             </h1>
           </div>
 
-          <StatusChip status={voucher.status} className="self-start" />
-        </div>
+          <div className="em-split-side">
+            <StatusChip status={voucher.status} dot />
 
-        {/* Info Grid */}
-        <div className="mt-7 grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <MetaTile
-            label="Employee"
-            value={
-              <span className="inline-flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
-                {currentEmployee.name}
-              </span>
-            }
-          />
-          <MetaTile
-            label="Employee Code"
-            value={
-              <span className="inline-flex items-center gap-1.5 font-mono">
-                <Hash className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
-                {currentEmployee.employeeCode}
-              </span>
-            }
-          />
-          <MetaTile
-            label="Target Date"
-            value={
-              <span className="inline-flex items-center gap-1.5 font-mono">
-                <CalendarDays className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
-                {voucher.date}
-              </span>
-            }
-          />
-          <MetaTile
-            label="Time"
-            value={
-              <span className="inline-flex items-center gap-1.5 font-mono">
-                <Clock3 className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
-                {voucher.time}
-              </span>
-            }
-          />
+            <div
+              className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6 pt-7"
+              style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+            >
+              <MetaTile
+                label="Employee"
+                value={
+                  <span className="inline-flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
+                    {currentEmployee.name}
+                  </span>
+                }
+              />
+              <MetaTile
+                label="Employee Code"
+                value={
+                  <span className="inline-flex items-center gap-1.5 font-mono text-[13px]">
+                    <Hash className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
+                    {currentEmployee.employeeCode}
+                  </span>
+                }
+              />
+              <MetaTile
+                label="Target Date"
+                value={
+                  <span className="inline-flex items-center gap-1.5 font-mono text-[13px]">
+                    <CalendarDays className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
+                    {voucher.date}
+                  </span>
+                }
+              />
+              <MetaTile
+                label="Time"
+                value={
+                  <span className="inline-flex items-center gap-1.5 font-mono text-[13px]">
+                    <Clock3 className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />
+                    {voucher.time}
+                  </span>
+                }
+              />
+            </div>
+          </div>
         </div>
-      </header>
-
-      {/* Explanation */}
-      <section className="echo-card echo-card--pad mb-5">
-        <div className="flex items-center gap-2 mb-3">
-          <MessageSquare className="w-4 h-4 text-[var(--echo-accent)]" />
-          <div className="ed-label">Employee Justification</div>
-        </div>
-        <p className="text-[14px] leading-relaxed text-[var(--echo-ink-2)]">
-          {voucher.description}
-        </p>
       </section>
 
-      {/* Admin Response */}
-      <section className="echo-card echo-card--pad">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-          <div className="ed-h3 flex items-center gap-2">
-            <span className="echo-icon-tile echo-icon-tile--info" style={{ width: '1.75rem', height: '1.75rem' }}>
-              <ShieldCheck className="w-3.5 h-3.5" />
-            </span>
-            <span>Admin Decision &amp; Response</span>
+      {/* ================= Justification + admin decision ================= */}
+      <section
+        className="em-section py-14 sm:py-20"
+        style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+      >
+        <div className="em-split items-start">
+          <div className="em-split-lead">
+            <div className="flex items-center gap-3 mb-6">
+              <MessageSquare className="w-4 h-4 text-[var(--echo-accent)]" />
+              <span className="ed-label">Employee Justification</span>
+            </div>
+            <p className="text-[16px] leading-relaxed text-[var(--echo-ink-2)]">{voucher.description}</p>
           </div>
-          {voucher.adminReviewedAt && <span className="ed-mono">{voucher.adminReviewedAt}</span>}
-        </div>
 
-        <p className="text-[14px] leading-relaxed text-[var(--echo-ink-2)]">
-          {voucher.adminResponse || (
-            <span className="italic text-[var(--echo-ink-3)]">
-              Pending Operations Review. Admin response will be published here upon verification.
-            </span>
-          )}
-        </p>
+          <div className="em-split-side">
+            <div
+              className="p-6"
+              style={{
+                background: 'var(--echo-surface-2)',
+                border: 'var(--echo-rule) solid var(--echo-border)',
+                borderLeft: '2px solid var(--echo-accent)',
+              }}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+                <div className="ed-h3 flex items-center gap-2">
+                  <span className="echo-icon-tile echo-icon-tile--info" style={{ width: '1.75rem', height: '1.75rem' }}>
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                  </span>
+                  <span>Admin Decision &amp; Response</span>
+                </div>
+                {voucher.adminReviewedAt && <span className="ed-meta">{voucher.adminReviewedAt}</span>}
+              </div>
+
+              <p className="text-[14px] leading-relaxed text-[var(--echo-ink-2)]">
+                {voucher.adminResponse || (
+                  <span className="italic text-[var(--echo-ink-3)]">
+                    Pending Operations Review. Admin response will be published here upon verification.
+                  </span>
+                )}
+              </p>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-4 ed-meta">
+              <Receipt className="w-3.5 h-3.5" />
+              {voucher.voucherCode} · {voucher.status}
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );

@@ -3,7 +3,6 @@ import { ArrowRight, ListChecks, Search, X } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
 import { StatusChip } from '../common/StatusChip';
-import { TaskStatus } from '../../types';
 
 export const NewTaskPage: React.FC = () => {
   const { assignedTasks, setSelectedTaskId, setActiveTab, t } = usePortal();
@@ -52,41 +51,50 @@ export const NewTaskPage: React.FC = () => {
   });
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
-      {/* Header */}
-      <div className="mb-8">
+    <div className="animate-echo-fade">
+      {/* ================= Masthead ================= */}
+      <section className="em-section pt-14 sm:pt-20 pb-12">
         <GlobalBackButton />
-        <div className="mt-5 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-          <div>
-            <p className="ed-label mb-4">Work Orders</p>
+        <div className="mt-7 em-split items-end">
+          <div className="em-split-lead">
+            <p className="ed-label mb-7">Work Orders</p>
             <h1 className="ed-h1">{t('newTask')}</h1>
-            <p className="ed-sub mt-3 max-w-xl">
+          </div>
+          <div className="em-split-side">
+            <p className="ed-sub max-w-sm text-[14px]">
               Assigned client field tasks, required evidence verification, and review statuses.
             </p>
+            <div className="mt-7">
+              <span className="echo-chip echo-chip--accent">
+                <ListChecks className="w-3 h-3" />
+                {assignedTasks.length} work orders
+              </span>
+            </div>
           </div>
-          <span className="echo-chip echo-chip--accent self-start sm:self-auto">
-            <ListChecks className="w-3.5 h-3.5" />
-            {assignedTasks.length} work orders
-          </span>
         </div>
-      </div>
+      </section>
 
-      {/* Filter tabs + search */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5">
-        <div className="echo-segment flex-wrap">
-          {filters.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setActiveFilter(f.key)}
-              className="echo-segment-item"
-              data-active={activeFilter === f.key}
-            >
-              {f.label}
-            </button>
-          ))}
+      {/* ================= Filter + search ================= */}
+      <section
+        className="em-section pb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+        style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+      >
+        <div className="pt-8">
+          <div className="echo-segment">
+            {filters.map((f) => (
+              <button
+                key={f.key}
+                onClick={() => setActiveFilter(f.key)}
+                className="echo-segment-item"
+                data-active={activeFilter === f.key}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="relative w-full lg:w-72">
+        <div className="relative w-full lg:w-80">
           <Search className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--echo-ink-3)] pointer-events-none" />
           <input
             type="text"
@@ -100,86 +108,91 @@ export const NewTaskPage: React.FC = () => {
             <button
               onClick={() => setQuery('')}
               aria-label="Clear search"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--echo-ink-3)] hover:text-[var(--echo-ink)] cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--echo-ink-3)] hover:text-[var(--echo-ink)] cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* Task Table */}
-      <div className="echo-card overflow-hidden">
-        <div className="overflow-x-auto echo-scroll">
-          <table className="w-full text-left min-w-[860px]">
-            <thead>
-              <tr className="border-b border-[var(--echo-border)] bg-[var(--echo-surface-2)]">
-                <th className="ed-th w-14 text-center">No.</th>
-                <th className="ed-th">Client</th>
-                <th className="ed-th">Task</th>
-                <th className="ed-th">Due Date</th>
-                <th className="ed-th">Time</th>
-                <th className="ed-th">Status</th>
-                <th className="ed-th text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--echo-border)]">
-              {filteredTasks.length === 0 ? (
+      {/* ================= Editorial task table ================= */}
+      <section className="em-section pb-16">
+        <p className="ed-meta mb-5">
+          Showing {filteredTasks.length} of {assignedTasks.length} assigned tasks
+        </p>
+
+        <div style={{ borderTop: 'var(--echo-rule) solid var(--echo-ink)' }}>
+          <div className="overflow-x-auto echo-scroll">
+            <table className="w-full text-left min-w-[900px]">
+              <thead>
                 <tr>
-                  <td colSpan={7} className="ed-td py-14 text-center text-[var(--echo-ink-3)]">
-                    No tasks found matching the current filter or search.
-                  </td>
+                  <th className="ed-th w-16 text-center">No.</th>
+                  <th className="ed-th">Client</th>
+                  <th className="ed-th">Task</th>
+                  <th className="ed-th">Due Date</th>
+                  <th className="ed-th">Time</th>
+                  <th className="ed-th">Status</th>
+                  <th className="ed-th text-right">Action</th>
                 </tr>
-              ) : (
-                filteredTasks.map((task) => (
-                  <tr key={task.id} className="transition-colors hover:bg-[var(--echo-surface-2)]">
-                    <td className="ed-td text-center font-mono text-[12px] text-[var(--echo-ink-3)]">
-                      {task.taskNumber}
-                    </td>
-
-                    <td className="ed-td">
-                      <div className="font-medium">{task.clientName}</div>
-                      <div className="ed-mono mt-0.5">{task.companyName}</div>
-                    </td>
-
-                    <td className="ed-td max-w-xs truncate font-medium">{task.taskTitle}</td>
-
-                    <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
-                      {task.scheduledDate}
-                    </td>
-
-                    <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
-                      {task.scheduledTime}
-                    </td>
-
-                    <td className="ed-td">
-                      <StatusChip status={task.status} />
-                    </td>
-
-                    <td className="ed-td text-right">
-                      <button
-                        onClick={() => {
-                          setSelectedTaskId(task.id);
-                          setActiveTab('task-detail');
-                        }}
-                        className="ed-link justify-end"
-                      >
-                        <span>{t('viewFullDetails')}</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
+              </thead>
+              <tbody>
+                {filteredTasks.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-16 text-center text-[13px] text-[var(--echo-ink-3)]">
+                      No tasks found matching the current filter or search.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                ) : (
+                  filteredTasks.map((task) => (
+                    <tr
+                      key={task.id}
+                      className="transition-colors hover:bg-[var(--echo-surface-2)]"
+                      style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+                    >
+                      <td className="ed-td text-center font-mono text-[12px] text-[var(--echo-ink-3)]">
+                        {String(task.taskNumber).padStart(2, '0')}
+                      </td>
 
-      <p className="ed-mono mt-4">
-        Showing {filteredTasks.length} of {assignedTasks.length} assigned tasks
-        {activeFilter !== 'all' && ` · filtered by ${filters.find((f) => f.key === activeFilter)?.label.replace(/\s*\(\d+\)$/, '')}`}
-      </p>
+                      <td className="ed-td">
+                        <div className="font-medium">{task.clientName}</div>
+                        <div className="ed-meta mt-1.5">{task.companyName}</div>
+                      </td>
+
+                      <td className="ed-td max-w-xs truncate font-medium">{task.taskTitle}</td>
+
+                      <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
+                        {task.scheduledDate}
+                      </td>
+
+                      <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
+                        {task.scheduledTime}
+                      </td>
+
+                      <td className="ed-td">
+                        <StatusChip status={task.status} />
+                      </td>
+
+                      <td className="ed-td text-right">
+                        <button
+                          onClick={() => {
+                            setSelectedTaskId(task.id);
+                            setActiveTab('task-detail');
+                          }}
+                          className="ed-link justify-end"
+                        >
+                          <span>{t('viewFullDetails')}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

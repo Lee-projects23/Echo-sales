@@ -11,28 +11,38 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({ moduleName }) => {
   const { setActiveTab, t } = usePortal();
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-      <GlobalBackButton />
-
-      <div className="echo-card echo-card--pad lg:p-10 mt-10 text-center">
-        <span className="echo-icon-tile echo-icon-tile--warning mx-auto mb-6" style={{ width: '3rem', height: '3rem' }}>
-          <ShieldAlert className="w-6 h-6" />
-        </span>
-
-        <h2 className="ed-h1 !text-3xl">{t('accessDenied')}</h2>
-
-        <p className="ed-sub mt-4 max-w-md mx-auto leading-relaxed">
-          Your administrator has not enabled <strong className="text-[var(--echo-ink-2)]">{moduleName}</strong> access for your account.
-          Please contact your Operations Director if you require this clearance.
-        </p>
-
-        <div className="mt-8 flex items-center justify-center">
-          <button onClick={() => setActiveTab('home')} className="ed-btn">
-            <Lock className="w-4 h-4" />
-            <span>Return to Workspace</span>
-          </button>
+    <div className="animate-echo-fade">
+      <section className="em-section pt-14 sm:pt-20 pb-12">
+        <GlobalBackButton />
+        <div className="mt-7">
+          <p className="ed-label mb-7">Restricted Module</p>
+          <h1 className="ed-h1">{t('accessDenied')}</h1>
         </div>
-      </div>
+      </section>
+
+      <section
+        className="em-section pb-20"
+        style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+      >
+        <div className="mt-12 max-w-2xl">
+          <span className="echo-icon-tile echo-icon-tile--warning mb-8" style={{ width: '3rem', height: '3rem' }}>
+            <ShieldAlert className="w-6 h-6" />
+          </span>
+
+          <p className="text-[16px] leading-relaxed text-[var(--echo-ink-2)]">
+            Your administrator has not enabled <strong className="text-[var(--echo-ink)]">{moduleName}</strong>{' '}
+            access for your account. Please contact your Operations Director if you require this
+            clearance.
+          </p>
+
+          <div className="mt-10">
+            <button onClick={() => setActiveTab('home')} className="ed-btn">
+              <Lock className="w-4 h-4" />
+              <span>Return to Workspace</span>
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

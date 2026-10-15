@@ -50,19 +50,21 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const percent = (currentSeconds / Math.max(1, durationSeconds)) * 100;
 
   return (
-    <div className="echo-card echo-card--pad space-y-4">
+    <div className="echo-card echo-card--pad space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <span className="echo-icon-tile echo-icon-tile--accent">
             <Radio className="w-4 h-4" />
           </span>
           <div className="min-w-0">
-            <div className="text-[13px] font-semibold text-[var(--echo-ink)] truncate">{title}</div>
-            {recordedDate && <div className="ed-mono mt-0.5">{recordedDate}</div>}
+            <div className="text-[13px] font-bold tracking-[-0.01em] text-[var(--echo-ink)] truncate">
+              {title}
+            </div>
+            {recordedDate && <div className="ed-meta mt-1.5">{recordedDate}</div>}
           </div>
         </div>
 
-        <div className="ed-mono flex items-center gap-1.5 tabular-nums">
+        <div className="ed-meta flex items-center gap-1.5 tabular-nums">
           <span>{formatTime(currentSeconds)}</span>
           <span aria-hidden>/</span>
           <span>{durationString}</span>
@@ -80,6 +82,10 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         </button>
 
         <div className="flex-1 relative flex items-center">
+          <div
+            className="absolute left-0 top-1/2 -translate-y-1/2 h-[3px]"
+            style={{ width: `${percent}%`, background: 'var(--echo-accent)' }}
+          />
           <input
             type="range"
             min={0}
@@ -87,7 +93,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             value={currentSeconds}
             onChange={handleSeek}
             aria-label="Audio progress"
-            className="w-full h-1.5 rounded-full bg-[var(--echo-surface-3)] appearance-none cursor-pointer"
+            className="relative w-full h-[3px] appearance-none cursor-pointer"
+            style={{ accentColor: 'var(--echo-accent)' }}
           />
         </div>
 

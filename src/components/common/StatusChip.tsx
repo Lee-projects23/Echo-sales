@@ -62,8 +62,10 @@ interface StatusChipProps {
 }
 
 /**
- * Status pill used across the Employee Portal. Renders the exact same text as
- * before; only the visual treatment is upgraded.
+ * Status chip used across the Employee Portal. Renders the exact same status
+ * strings as before; only the visual treatment is upgraded. Long statuses
+ * (e.g. "Submitted for Admin Review") shorten their tracking slightly so they
+ * never wrap inside dense rows.
  */
 export const StatusChip: React.FC<StatusChipProps> = ({
   status,
@@ -72,7 +74,10 @@ export const StatusChip: React.FC<StatusChipProps> = ({
   dot = false,
   className = '',
 }) => (
-  <span className={`echo-chip echo-chip--${tone ?? statusTone(status)} ${className}`.trim()}>
+  <span
+    className={`echo-chip echo-chip--${tone ?? statusTone(status)} ${className}`.trim()}
+    style={status.length > 14 ? { letterSpacing: '0.1em' } : undefined}
+  >
     {dot && <span className="echo-dot" />}
     {icon}
     <span>{status}</span>

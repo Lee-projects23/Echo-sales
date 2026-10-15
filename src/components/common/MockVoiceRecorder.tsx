@@ -19,6 +19,7 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
   const [playbackProgress, setPlaybackProgress] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(!!existingVoiceUrl);
 
+  // Recording timer
   useEffect(() => {
     let interval: any = null;
     if (isRecording) {
@@ -29,6 +30,7 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
     return () => clearInterval(interval);
   }, [isRecording]);
 
+  // Playback timer
   useEffect(() => {
     let playInterval: any = null;
     if (isPlaying) {
@@ -82,17 +84,18 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
   };
 
   return (
-    <div className="echo-card echo-card--pad space-y-4">
+    <div className="echo-card echo-card--pad space-y-5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <span
-            className={`echo-dot ${
-              isRecording
-                ? 'bg-[var(--echo-danger)]'
+            className="echo-dot"
+            style={{
+              background: isRecording
+                ? 'var(--echo-danger)'
                 : hasRecording
-                ? 'bg-[var(--echo-positive)]'
-                : 'bg-[var(--echo-ink-3)]'
-            }`}
+                ? 'var(--echo-positive)'
+                : 'var(--echo-ink-3)',
+            }}
           />
           <span className="ed-label">
             {isRecording
@@ -102,38 +105,41 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
               : 'Field Voice Response'}
           </span>
         </div>
-        <span className="font-mono text-[12px] tabular-nums text-[var(--echo-ink)]">
+        <span className="font-mono text-[13px] tabular-nums text-[var(--echo-ink)]">
           {formatTime(recordedDuration)}
         </span>
       </div>
 
       {/* Waveform visualization */}
-      <div className="h-14 rounded-[var(--echo-radius-sm)] border border-[var(--echo-border)] bg-[var(--echo-surface-2)] px-4 flex items-center justify-center gap-1 overflow-hidden">
-        {Array.from({ length: 36 }).map((_, i) => {
+      <div
+        className="h-14 px-4 flex items-center justify-center gap-1 overflow-hidden"
+        style={{ background: 'var(--echo-surface-2)', border: 'var(--echo-rule) solid var(--echo-border)' }}
+      >
+        {Array.from({ length: 40 }).map((_, i) => {
           const activeHeight = isRecording
             ? Math.max(15, Math.sin(i * 0.4 + Date.now() / 200) * 85 + 20)
             : hasRecording
             ? Math.max(12, ((i * 17) % 70) + 15)
             : 10;
-          const isPassed = (i / 36) * 100 <= playbackProgress;
+          const isPassed = (i / 40) * 100 <= playbackProgress;
 
           return (
             <div
               key={i}
-              className={`w-px rounded-full transition-all duration-150 ${
-                isRecording
-                  ? 'bg-[var(--echo-accent)]'
-                  : isPlaying && isPassed
-                  ? 'bg-[var(--echo-accent)]'
-                  : 'bg-[var(--echo-border-strong)]'
-              }`}
-              style={{ height: `${activeHeight}%` }}
+              className="w-px rounded-full transition-all duration-150"
+              style={{
+                height: `${activeHeight}%`,
+                background:
+                  isRecording || (isPlaying && isPassed)
+                    ? 'var(--echo-accent)'
+                    : 'var(--echo-border-strong)',
+              }}
             />
           );
         })}
       </div>
 
-      {/* Control Buttons */}
+      {/* Control buttons */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
         <div className="flex flex-wrap items-center gap-2">
           {!hasRecording && !isRecording && (
@@ -144,7 +150,12 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
           )}
 
           {isRecording && (
-            <button type="button" onClick={handleStopRecording} className="ed-btn">
+            <button
+              type="button"
+              onClick={handleStopRecording}
+              className="ed-btn"
+              style={{ background: 'var(--echo-danger)' }}
+            >
               <Square className="w-4 h-4" />
               <span>Stop</span>
             </button>
@@ -170,7 +181,17 @@ export const MockVoiceRecorder: React.FC<MockVoiceRecorderProps> = ({
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitted}
-            className={`ed-btn ${isSubmitted ? 'opacity-100 pointer-events-none' : ''}`}
+            className="ed-btn"
+            style={
+              isSubmitted
+                ? {
+                    background: 'var(--echo-positive-soft)',
+                    color: 'var(--echo-positive)',
+                    borderColor: 'color-mix(in srgb, var(--echo-positive) 34%, transparent)',
+                    opacity: 1,
+                  }
+                : undefined
+            }
           >
             <Check className="w-4 h-4" />
             <span>{isSubmitted ? 'Voice Confirmed' : 'Attach Voice Note'}</span>

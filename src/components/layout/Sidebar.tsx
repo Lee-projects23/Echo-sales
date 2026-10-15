@@ -48,7 +48,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const navItemClass = (isRestricted = false) =>
     `echo-nav-item ${isRestricted ? 'opacity-70' : ''}`.trim();
 
-  /** One navigation row: icon + label, with a lock badge when access is withheld. */
   const NavRow: React.FC<{
     tab: NavigationTab;
     label: string;
@@ -75,28 +74,38 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={onClose}
-        className="fixed inset-0 z-50 bg-black/45 backdrop-blur-[2px] transition-opacity"
+        className="fixed inset-0 z-50 transition-opacity"
+        style={{ background: 'rgba(10, 9, 8, 0.55)' }}
       />
 
-      {/* Drawer */}
-      <aside className="fixed top-0 right-0 sm:left-0 sm:right-auto w-72 sm:w-80 h-full bg-[var(--echo-surface)] sm:bg-[var(--echo-bg)] border-l sm:border-l-0 sm:border-r border-[var(--echo-border)] z-50 flex flex-col shadow-[var(--echo-shadow-lg)] sm:shadow-none animate-echo-drawer-right sm:animate-echo-drawer-left">
+      <aside
+        className="fixed top-0 right-0 sm:left-0 sm:right-auto w-72 sm:w-[20rem] h-full z-50 flex flex-col animate-echo-drawer-right sm:animate-echo-drawer-left"
+        style={{
+          background: 'var(--echo-bg)',
+          borderLeft: 'var(--echo-rule) solid var(--echo-border)',
+          boxShadow: 'var(--echo-shadow-lg)',
+        }}
+      >
         {/* Header */}
-        <div className="px-5 py-5 border-b border-[var(--echo-border)] flex items-center justify-between gap-3">
+        <div
+          className="px-6 py-6 flex items-center justify-between gap-3"
+          style={{ borderBottom: 'var(--echo-rule) solid var(--echo-border)' }}
+        >
           <div className="flex items-center gap-3 min-w-0">
             <img
               src={currentEmployee.avatarUrl}
               alt={currentEmployee.name}
-              className="w-10 h-10 rounded-full object-cover ring-1 ring-[var(--echo-border-strong)] shrink-0"
+              className="w-10 h-10 object-cover grayscale-[0.2] shrink-0"
+              style={{ border: 'var(--echo-rule) solid var(--echo-border-strong)' }}
               referrerPolicy="no-referrer"
             />
             <div className="min-w-0">
-              <div className="text-[14px] font-bold tracking-[-0.01em] text-[var(--echo-ink)] truncate">
+              <div className="text-[13px] font-bold tracking-[-0.01em] text-[var(--echo-ink)] truncate">
                 {currentEmployee.name}
               </div>
-              <div className="ed-mono truncate mt-0.5">{currentEmployee.employeeCode}</div>
+              <div className="ed-meta truncate mt-1">{currentEmployee.employeeCode}</div>
             </div>
           </div>
 
@@ -109,13 +118,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Navigation Groups */}
-        <div className="flex-1 overflow-y-auto echo-scroll px-3 py-5 space-y-6">
-          {/* Main */}
-          <div>
+        {/* Navigation groups */}
+        <nav className="flex-1 overflow-y-auto echo-scroll py-6">
+          <div className="mb-7">
             <GroupLabel>Operations</GroupLabel>
-
-            <div className="space-y-0.5">
+            <div>
               <NavRow tab="home" label={t('home')} icon={<Home className={iconClass} />} />
               <NavRow
                 tab="dashboard"
@@ -140,32 +147,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Personal */}
-          <div>
+          <div className="mb-7">
             <GroupLabel>Personal</GroupLabel>
-
-            <div className="space-y-0.5">
+            <div>
               <NavRow
                 tab="personal-vault"
                 label={t('personalVault')}
                 icon={<FolderLock className={iconClass} />}
                 restricted={!currentEmployee.permissions.personalVault}
               />
-
               <NavRow
                 tab="photo-gallery"
                 label={t('photoGallery')}
                 icon={<ImageIcon className={iconClass} />}
                 restricted={!currentEmployee.permissions.photoGallery}
               />
-
               <NavRow
                 tab="company-group"
                 label={t('companyGroup')}
                 icon={<Users className={iconClass} />}
                 restricted={!currentEmployee.permissions.companyGroup}
               />
-
               <NavRow
                 tab="voucher-creation"
                 label={t('voucherCreation')}
@@ -175,34 +177,34 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Settings */}
           <div>
             <GroupLabel>Settings</GroupLabel>
-
-            <div className="space-y-0.5">
+            <div>
               <NavRow tab="language" label={t('language')} icon={<Globe className={iconClass} />} />
               <NavRow
                 tab="profile-settings"
                 label={t('profileSettings')}
                 icon={<UserCheck className={iconClass} />}
               />
-
               <button
                 onClick={() => {
                   onClose();
                   signOut();
                 }}
-                className="echo-nav-item hover:!bg-[var(--echo-danger-soft)] hover:!text-[var(--echo-danger)]"
+                className="echo-nav-item hover:!text-[var(--echo-danger)]"
               >
                 <LogOut className={iconClass} />
                 <span>{t('signOut')}</span>
               </button>
             </div>
           </div>
-        </div>
+        </nav>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-[var(--echo-border)] flex items-center justify-between ed-mono">
+        <div
+          className="px-6 py-5 flex items-center justify-between ed-meta"
+          style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+        >
           <span>ECHO OS v3.2</span>
           <span>Companion to Admin</span>
         </div>

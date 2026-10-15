@@ -70,57 +70,75 @@ export const VoucherCreationPage: React.FC = () => {
   });
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
-      {/* Header */}
-      <div className="mb-8">
+    <div className="animate-echo-fade">
+      {/* ================= Masthead ================= */}
+      <section className="em-section pt-14 sm:pt-20 pb-12">
         <GlobalBackButton />
-        <div className="mt-5 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-          <div>
-            <p className="ed-label mb-4">Formal Requests</p>
+        <div className="mt-7 em-split items-end">
+          <div className="em-split-lead">
+            <p className="ed-label mb-7">Formal Requests</p>
             <h1 className="ed-h1">{t('voucherCreation')}</h1>
-            <p className="ed-sub mt-3 max-w-xl">
+          </div>
+          <div className="em-split-side">
+            <p className="ed-sub max-w-sm text-[14px]">
               Formal requests for shift permissions, leave approvals, expense advances, or incident notices.
             </p>
+            <div className="mt-7">
+              <button onClick={() => setShowModal(true)} className="ed-btn">
+                <Plus className="w-4 h-4" />
+                <span>Create New Voucher</span>
+              </button>
+            </div>
           </div>
-
-          <button onClick={() => setShowModal(true)} className="ed-btn shrink-0">
-            <Plus className="w-4 h-4" />
-            <span>Create New Voucher</span>
-          </button>
         </div>
-      </div>
+      </section>
 
-      {/* Voucher summary strip */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        {[
-          { label: 'Filed', value: statusCounts.all },
-          { label: 'Pending review', value: statusCounts.pending },
-          { label: 'Approved', value: statusCounts.approved },
-          { label: 'Rejected', value: statusCounts.rejected },
-        ].map((s) => (
-          <div key={s.label} className="echo-kpi">
-            <div className="echo-kpi-label">{s.label}</div>
-            <div className="echo-kpi-value mt-2.5">{s.value}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Filter tabs + search */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5">
-        <div className="echo-segment flex-wrap">
-          {filters.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setActiveFilter(f.key)}
-              className="echo-segment-item"
-              data-active={activeFilter === f.key}
-            >
-              {f.label}
-            </button>
+      {/* ================= Voucher ledger figures ================= */}
+      <section
+        className="em-invert em-section py-12"
+        style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+      >
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-9">
+          {[
+            { label: 'Filed', value: statusCounts.all },
+            { label: 'Pending review', value: statusCounts.pending },
+            { label: 'Approved', value: statusCounts.approved },
+            { label: 'Rejected', value: statusCounts.rejected },
+          ].map((s) => (
+            <div key={s.label}>
+              <div className="echo-kpi-label">{s.label}</div>
+              <div
+                className="mt-5 font-serif text-[clamp(2.5rem,5vw,3.5rem)] leading-[0.88] tracking-[-0.03em] tabular-nums"
+                style={{ color: 'var(--echo-invert-ink)' }}
+              >
+                {s.value}
+              </div>
+            </div>
           ))}
         </div>
+      </section>
 
-        <div className="relative w-full lg:w-72">
+      {/* ================= Filter + search ================= */}
+      <section
+        className="em-section py-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+        style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+      >
+        <div className="pt-8">
+          <div className="echo-segment">
+            {filters.map((f) => (
+              <button
+                key={f.key}
+                onClick={() => setActiveFilter(f.key)}
+                className="echo-segment-item"
+                data-active={activeFilter === f.key}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative w-full lg:w-80">
           <Search className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--echo-ink-3)] pointer-events-none" />
           <input
             type="text"
@@ -134,29 +152,30 @@ export const VoucherCreationPage: React.FC = () => {
             <button
               onClick={() => setQuery('')}
               aria-label="Clear search"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--echo-ink-3)] hover:text-[var(--echo-ink)] cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--echo-ink-3)] hover:text-[var(--echo-ink)] cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* Table of Vouchers */}
-      <div className="echo-card overflow-hidden">
-        <div className="flex items-center gap-2.5 px-5 py-4 border-b border-[var(--echo-border)] bg-[var(--echo-surface-2)]">
-          <span className="echo-icon-tile" style={{ width: '1.75rem', height: '1.75rem' }}>
-            <Receipt className="w-3.5 h-3.5" />
-          </span>
+      {/* ================= Voucher table ================= */}
+      <section className="em-section pb-16">
+        <div
+          className="flex items-center gap-3 py-4"
+          style={{ borderTop: 'var(--echo-rule) solid var(--echo-ink)', borderBottom: 'var(--echo-rule) solid var(--echo-ink)' }}
+        >
+          <Receipt className="w-4 h-4 text-[var(--echo-ink-3)]" />
           <span className="ed-h3">Filed Vouchers</span>
           <span className="echo-chip ml-auto">{filteredVouchers.length} shown</span>
         </div>
 
         <div className="overflow-x-auto echo-scroll">
-          <table className="w-full text-left min-w-[860px]">
+          <table className="w-full text-left min-w-[880px]">
             <thead>
-              <tr className="border-b border-[var(--echo-border)]">
-                <th className="ed-th w-14 text-center">No.</th>
+              <tr>
+                <th className="ed-th w-16 text-center">No.</th>
                 <th className="ed-th">Code</th>
                 <th className="ed-th">Reason</th>
                 <th className="ed-th">Date</th>
@@ -165,18 +184,22 @@ export const VoucherCreationPage: React.FC = () => {
                 <th className="ed-th text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--echo-border)]">
+            <tbody>
               {filteredVouchers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="ed-td py-14 text-center text-[var(--echo-ink-3)]">
+                  <td colSpan={7} className="py-16 text-center text-[13px] text-[var(--echo-ink-3)]">
                     No vouchers found matching the current filter or search.
                   </td>
                 </tr>
               ) : (
                 filteredVouchers.map((vch, index) => (
-                  <tr key={vch.id} className="transition-colors hover:bg-[var(--echo-surface-2)]">
+                  <tr
+                    key={vch.id}
+                    className="transition-colors hover:bg-[var(--echo-surface-2)]"
+                    style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+                  >
                     <td className="ed-td text-center font-mono text-[12px] text-[var(--echo-ink-3)]">
-                      {index + 1}
+                      {String(index + 1).padStart(2, '0')}
                     </td>
 
                     <td className="ed-td font-mono font-medium">{vch.voucherCode}</td>
@@ -185,7 +208,7 @@ export const VoucherCreationPage: React.FC = () => {
                       <div className="font-medium">
                         {vch.reason === 'Other' && vch.customReason ? vch.customReason : vch.reason}
                       </div>
-                      <div className="ed-mono mt-0.5 truncate max-w-xs">{vch.description}</div>
+                      <div className="ed-meta mt-1.5 truncate max-w-xs">{vch.description}</div>
                     </td>
 
                     <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
@@ -218,13 +241,16 @@ export const VoucherCreationPage: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
-      {/* Create Voucher Modal */}
+      {/* ================= Create voucher modal ================= */}
       {showModal && (
         <div className="echo-modal-scrim">
-          <div className="echo-modal max-w-md space-y-6">
-            <div className="flex items-center justify-between gap-3 border-b border-[var(--echo-border)] pb-4">
+          <div className="echo-modal max-w-md">
+            <div
+              className="flex items-center justify-between gap-3 pb-5 mb-6"
+              style={{ borderBottom: 'var(--echo-rule) solid var(--echo-border)' }}
+            >
               <div className="flex items-center gap-2.5">
                 <span className="echo-icon-tile echo-icon-tile--accent" style={{ width: '1.75rem', height: '1.75rem' }}>
                   <Receipt className="w-3.5 h-3.5" />
@@ -309,7 +335,7 @@ export const VoucherCreationPage: React.FC = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-2">
+              <div className="flex items-center justify-end gap-3 pt-3">
                 <button type="button" onClick={() => setShowModal(false)} className="ed-btn-ghost">
                   Cancel
                 </button>

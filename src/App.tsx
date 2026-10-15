@@ -1,8 +1,9 @@
-import React, { Component, ErrorInfo, ReactNode, useState } from 'react';
+import React, { Component, ErrorInfo, ReactNode, useEffect, useState } from 'react';
 import { PortalProvider, usePortal } from './context/PortalContext';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
 import { WelcomeScreen } from './components/auth/WelcomeScreen';
+import { LoginPage } from './components/auth/LoginPage';
 import { HomePage } from './components/home/HomePage';
 import { DashboardPage } from './components/dashboard/DashboardPage';
 import { AttendancePage } from './components/attendance/AttendancePage';
@@ -27,6 +28,34 @@ interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
 }
+
+const INTRO_SEEN_KEY = 'echo_intro_seen';
+const AUTH_KEY = 'echo_portal_auth';
+
+const introAlreadySeen = () => {
+  try {
+    return sessionStorage.getItem(INTRO_SEEN_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
+const markIntroSeen = () => {
+  try {
+    sessionStorage.setItem(INTRO_SEEN_KEY, '1');
+  } catch {
+    // Restricted storage — the intro simply plays again next session.
+  }
+};
+
+/** True when this browser has previously completed a sign-in. */
+const wasSignedIn = () => {
+  try {
+    return localStorage.getItem(AUTH_KEY) === 'true';
+  } catch {
+    return false;
+  }
+};
 
 class PortalErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
@@ -54,8 +83,8 @@ class PortalErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySta
   render() {
     if (this.state.hasError) {
       return (
-        <div className="echo-ambient min-h-screen text-[var(--echo-ink)] flex items-center justify-center p-6">
-          <div className="echo-modal max-w-md w-full p-8 sm:p-10 text-center space-y-6">
+        <div className="echo-ambient min-h-screen flex items-center justify-center p-6" style={{ color: 'var(--echo-ink)' }}>
+          <div className="echo-card echo-card--pad max-w-md w-full p-8 sm:p-10 text-center space-y-6">
             <div className="echo-icon-tile echo-icon-tile--warning mx-auto">
               <AlertTriangle className="w-5 h-5" />
             </div>
@@ -78,13 +107,47 @@ class PortalErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
+type EntryStage = 'intro' | 'login' | 'app';
+
 const AppContent: React.FC = () => {
-  const { hasEnteredWorkspace, isAuthenticated, activeTab } = usePortal();
+  const { hasEnteredWorkspace, isAuthenticated, activeTab, signOut } = usePortal();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // If user hasn't completed welcome flow or isn't logged in, show WelcomeScreen
-  if (!hasEnteredWorkspace || !isAuthenticated) {
-    return <WelcomeScreen onEnter={() => {}} />;
+  // Entry sequence: ECHO wordmark intro → login page → employee home.
+  // The intro plays once per browser session. It then hands off to the
+  // workspace for an employee who has previously signed in, or to the login
+  // page for a visitor who has never completed a sign-in.
+  const [entryStage, setEntryStage] = useState<EntryStage>(() =>
+    introAlreadySeen() ? (wasSignedIn() ? 'app' : 'login') : 'intro'
+  );
+
+  // Signing out returns to the login page (never the intro again).
+  useEffect(() => {
+    if (entryStage === 'app' && (!isAuthenticated || !hasEnteredWorkspace)) {
+      setEntryStage('login');
+    }
+  }, [entryStage, isAuthenticated, hasEnteredWorkspace]);
+
+  if (entryStage === 'intro') {
+    return (
+      <WelcomeScreen
+        onEnter={() => {
+          markIntroSeen();
+          setEntryStage(wasSignedIn() ? 'app' : 'login');
+        }}
+      />
+    );
+  }
+
+  if (entryStage === 'login') {
+    return (
+      <LoginPage
+        onEnter={() => {
+          markIntroSeen();
+          setEntryStage('app');
+        }}
+      />
+    );
   }
 
   // Active page renderer
@@ -124,7 +187,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="echo-ambient min-h-screen text-[var(--echo-ink)] flex flex-col font-sans transition-colors duration-300">
+    <div className="echo-ambient min-h-screen flex flex-col font-sans transition-colors duration-300">
       {/* Top Navbar */}
       <Navbar
         isSidebarOpen={isSidebarOpen}
@@ -138,13 +201,11 @@ const AppContent: React.FC = () => {
       />
 
       {/* Main Workspace Viewport */}
-      <main className="flex-1 pb-16">
-        {renderCurrentPage()}
-      </main>
+      <main className="flex-1 pb-20">{renderCurrentPage()}</main>
 
       {/* Footer */}
       <footer className="border-t border-[var(--echo-border)]">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[var(--echo-ink-3)]">
+        <div className="mx-auto px-[var(--echo-gutter)] py-7 flex flex-col sm:flex-row items-center justify-between gap-3 ed-meta">
           <span>ECHO Operational Companion · Synchronized with Admin Core</span>
           <span>Secure Connection · 2026</span>
         </div>

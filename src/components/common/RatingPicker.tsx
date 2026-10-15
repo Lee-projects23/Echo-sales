@@ -9,10 +9,13 @@ interface RatingPickerProps {
 
 export const RatingPicker: React.FC<RatingPickerProps> = ({ value, onChange, disabled = false }) => {
   return (
-    <div className="echo-card echo-card--pad space-y-4">
-      <div className="flex items-center justify-between gap-3 border-b border-[var(--echo-border)] pb-3">
+    <div className="echo-card echo-card--pad space-y-5">
+      <div
+        className="flex items-center justify-between gap-3 pb-4"
+        style={{ borderBottom: 'var(--echo-rule) solid var(--echo-border)' }}
+      >
         <label className="ed-label">Rate Completion</label>
-        <span className="text-[11px] font-mono text-[var(--echo-ink-3)]">
+        <span className="ed-meta">
           Submitted Mark: <strong className="text-[var(--echo-ink)]">{value || 0} / 5</strong>
         </span>
       </div>
@@ -25,22 +28,32 @@ export const RatingPicker: React.FC<RatingPickerProps> = ({ value, onChange, dis
             disabled={disabled}
             onClick={() => onChange(star)}
             aria-label={`Rate ${star} of 5`}
-            className={`w-10 h-10 rounded-[var(--echo-radius-sm)] border flex items-center justify-center transition-all ${
+            className={`w-11 h-11 flex items-center justify-center transition-all ${
               disabled
                 ? 'cursor-not-allowed opacity-60'
                 : 'cursor-pointer hover:-translate-y-0.5'
             } ${
               star <= value
-                ? 'bg-[var(--echo-accent)] text-[var(--echo-accent-ink)] border-transparent shadow-[var(--echo-shadow-accent)]'
-                : 'border-[var(--echo-border-strong)] text-[var(--echo-ink-3)] hover:text-[var(--echo-ink)] hover:border-[var(--echo-ink-3)]'
+                ? 'text-[var(--echo-accent-ink)]'
+                : 'text-[var(--echo-ink-3)]'
             }`}
+            style={
+              star <= value
+                ? { background: 'var(--echo-accent)', border: 'var(--echo-rule) solid transparent' }
+                : {
+                    background: 'var(--echo-surface-2)',
+                    border: 'var(--echo-rule) solid var(--echo-border-strong)',
+                  }
+            }
           >
             <Star className={`w-4 h-4 ${star <= value ? 'fill-current' : ''}`} />
           </button>
         ))}
       </div>
+
       <p className="text-[12px] leading-relaxed text-[var(--echo-ink-3)]">
-        Rate your completion thoroughness on a 1–5 scale. This score is recorded directly into your task submission log.
+        Rate your completion thoroughness on a 1–5 scale. This score is recorded directly into your
+        task submission log.
       </p>
     </div>
   );

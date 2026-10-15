@@ -56,101 +56,131 @@ export const PersonalVaultPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 animate-echo-fade">
-      {/* Header */}
-      <div className="mb-6">
+    <div className="animate-echo-fade">
+      {/* ================= Masthead ================= */}
+      <section className="em-section pt-14 sm:pt-20 pb-12">
         <GlobalBackButton />
-        <div className="mt-5 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-          <div>
-            <p className="ed-label mb-4">Private Locker</p>
+        <div className="mt-7 em-split items-end">
+          <div className="em-split-lead">
+            <p className="ed-label mb-7">Private Locker</p>
             <h1 className="ed-h1">{t('personalVault')}</h1>
-            <p className="ed-sub mt-3 max-w-xl">
+          </div>
+          <div className="em-split-side">
+            <p className="ed-sub max-w-sm text-[14px]">
               Private encrypted employee document store and certifications locker.
             </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <button onClick={() => setShowNewFolderModal(true)} className="ed-btn-ghost">
-              <FolderPlus className="w-4 h-4" />
-              <span>New Folder</span>
-            </button>
-            <button onClick={() => handleMockUpload('document')} className="ed-btn">
-              <Upload className="w-4 h-4" />
-              <span>Upload File</span>
-            </button>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <button onClick={() => setShowNewFolderModal(true)} className="ed-btn-ghost">
+                <FolderPlus className="w-4 h-4" />
+                <span>New Folder</span>
+              </button>
+              <button onClick={() => handleMockUpload('document')} className="ed-btn">
+                <Upload className="w-4 h-4" />
+                <span>Upload File</span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Breadcrumb */}
-      <nav className="echo-card echo-card--pad mb-6 flex flex-wrap items-center gap-2 !py-3">
-        {breadcrumbList.map((crumb, idx) => (
-          <React.Fragment key={crumb.id || 'root'}>
-            {idx > 0 && <ChevronRight className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />}
-            <button
-              onClick={() => setCurrentFolderId(crumb.id)}
-              className={`rounded-full px-3 py-1 text-[12px] font-semibold transition-colors cursor-pointer ${
-                crumb.id === currentFolderId
-                  ? 'bg-[var(--echo-accent-soft)] text-[var(--echo-accent)]'
-                  : 'text-[var(--echo-ink-3)] hover:bg-[var(--echo-surface-2)] hover:text-[var(--echo-ink)]'
-              }`}
-            >
-              {crumb.name}
-            </button>
-          </React.Fragment>
-        ))}
-      </nav>
+      {/* ================= Breadcrumb ================= */}
+      <section
+        className="em-section py-6"
+        style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+      >
+        <nav className="flex flex-wrap items-center gap-3">
+          {breadcrumbList.map((crumb, idx) => (
+            <React.Fragment key={crumb.id || 'root'}>
+              {idx > 0 && <ChevronRight className="w-3.5 h-3.5 text-[var(--echo-ink-3)]" />}
+              <button
+                onClick={() => setCurrentFolderId(crumb.id)}
+                className={`text-[11px] font-bold uppercase tracking-[0.14em] transition-colors cursor-pointer ${
+                  crumb.id === currentFolderId
+                    ? 'text-[var(--echo-accent)]'
+                    : 'text-[var(--echo-ink-3)] hover:text-[var(--echo-ink)]'
+                }`}
+              >
+                {crumb.name}
+              </button>
+            </React.Fragment>
+          ))}
+        </nav>
+      </section>
 
-      {/* Directory summary — derived from the current folder contents */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        {[
-          { label: 'Items', value: currentItems.length },
-          { label: 'Folders', value: currentItems.filter((i) => i.type === 'folder').length },
-          { label: 'Documents', value: currentItems.filter((i) => i.type === 'document').length },
-          { label: 'Photos', value: currentItems.filter((i) => i.type === 'photo').length },
-        ].map((s) => (
-          <div key={s.label} className="echo-kpi">
-            <div className="echo-kpi-label">{s.label}</div>
-            <div className="echo-kpi-value mt-2.5">{s.value}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Finder Grid */}
-      {currentItems.length === 0 ? (
-        <div className="echo-empty">
-          <span className="echo-icon-tile mb-5">
-            <FolderOpen className="w-5 h-5" />
-          </span>
-          <p className="ed-h2">This folder is empty</p>
-          <p className="ed-sub mt-2 max-w-md">
-            Upload personal certifications, safety badges, or create new organization folders.
-          </p>
+      {/* ================= Directory figures ================= */}
+      <section
+        className="em-invert em-section py-12"
+        style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+      >
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-9">
+          {[
+            { label: 'Items', value: currentItems.length },
+            { label: 'Folders', value: currentItems.filter((i) => i.type === 'folder').length },
+            { label: 'Documents', value: currentItems.filter((i) => i.type === 'document').length },
+            { label: 'Photos', value: currentItems.filter((i) => i.type === 'photo').length },
+          ].map((s) => (
+            <div key={s.label}>
+              <div className="echo-kpi-label">{s.label}</div>
+              <div
+                className="mt-5 font-serif text-[clamp(2.5rem,5vw,3.5rem)] leading-[0.88] tracking-[-0.03em] tabular-nums"
+                style={{ color: 'var(--echo-invert-ink)' }}
+              >
+                {s.value}
+              </div>
+            </div>
+          ))}
         </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {currentItems.map((item) => (
-            <div
-              key={item.id}
-              className="echo-card echo-card-hover group cursor-pointer flex flex-col justify-between p-4 relative"
-              onClick={() => {
-                if (item.type === 'folder') {
-                  setCurrentFolderId(item.id);
-                } else {
-                  setSelectedFileForPreview(item);
-                }
-              }}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <span className="echo-icon-tile">
+      </section>
+
+      {/* ================= Document library ================= */}
+      <section
+        className="em-section py-14 sm:py-20"
+        style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+      >
+        {currentItems.length === 0 ? (
+          <div className="echo-empty">
+            <span className="echo-icon-tile mb-5">
+              <FolderOpen className="w-5 h-5" />
+            </span>
+            <p className="ed-h2">This folder is empty</p>
+            <p className="ed-sub mt-3 max-w-md">
+              Upload personal certifications, safety badges, or create new organization folders.
+            </p>
+          </div>
+        ) : (
+          <ul style={{ borderTop: 'var(--echo-rule) solid var(--echo-ink)' }}>
+            {currentItems.map((item) => (
+              <li
+                key={item.id}
+                className="group flex items-center gap-5 py-6 cursor-pointer transition-colors hover:bg-[var(--echo-surface-2)]"
+                style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+                onClick={() => {
+                  if (item.type === 'folder') {
+                    setCurrentFolderId(item.id);
+                  } else {
+                    setSelectedFileForPreview(item);
+                  }
+                }}
+              >
+                <span className="echo-icon-tile shrink-0">
                   {item.type === 'folder' ? (
-                    <Folder className="w-5 h-5" />
+                    <Folder className="w-4 h-4" style={{ color: 'var(--echo-accent)' }} />
                   ) : item.type === 'photo' ? (
-                    <ImageIcon className="w-5 h-5" />
+                    <ImageIcon className="w-4 h-4" />
                   ) : (
-                    <FileText className="w-5 h-5" />
+                    <FileText className="w-4 h-4" />
                   )}
                 </span>
+
+                <div className="min-w-0 flex-1">
+                  <div className="text-[15px] font-medium tracking-[-0.01em] text-[var(--echo-ink)] truncate">
+                    {item.name}
+                  </div>
+                  <div className="ed-meta mt-2">
+                    {item.type === 'folder' ? 'Folder' : item.size || 'Document'} · Updated{' '}
+                    {item.updatedAt}
+                  </div>
+                </div>
 
                 <button
                   type="button"
@@ -159,33 +189,31 @@ export const PersonalVaultPage: React.FC = () => {
                     deleteVaultItem(item.id);
                   }}
                   aria-label={`Delete ${item.name}`}
-                  className="rounded-full p-1.5 text-[var(--echo-ink-3)] opacity-0 group-hover:opacity-100 hover:bg-[var(--echo-danger-soft)] hover:text-[var(--echo-danger)] transition-all cursor-pointer"
+                  className="shrink-0 opacity-0 group-hover:opacity-100 p-2 text-[var(--echo-ink-3)] hover:text-[var(--echo-danger)] transition-all cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
-              </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
-              <div className="mt-5">
-                <div className="text-[14px] font-medium text-[var(--echo-ink)] truncate">
-                  {item.name}
-                </div>
-                <div className="ed-mono mt-1.5 flex items-center justify-between gap-2">
-                  <span>{item.type === 'folder' ? 'Folder' : item.size}</span>
-                  <span>{item.updatedAt}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* New Folder Modal */}
+      {/* ================= New folder modal ================= */}
       {showNewFolderModal && (
         <div className="echo-modal-scrim">
-          <div className="echo-modal max-w-sm space-y-5">
-            <div className="flex items-center justify-between">
+          <div className="echo-modal max-w-sm">
+            <div
+              className="flex items-center justify-between gap-3 pb-5 mb-6"
+              style={{ borderBottom: 'var(--echo-rule) solid var(--echo-border)' }}
+            >
               <h3 className="ed-h3">Create New Folder</h3>
-              <button onClick={() => setShowNewFolderModal(false)} aria-label="Close" className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer" style={{ width: '1.875rem', height: '1.875rem' }}>
+              <button
+                onClick={() => setShowNewFolderModal(false)}
+                aria-label="Close"
+                className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer"
+                style={{ width: '1.75rem', height: '1.75rem' }}
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -214,37 +242,45 @@ export const PersonalVaultPage: React.FC = () => {
         </div>
       )}
 
-      {/* File Preview Modal */}
+      {/* ================= File preview modal ================= */}
       {selectedFileForPreview && (
         <div className="echo-modal-scrim">
-          <div className="echo-modal max-w-lg space-y-5">
-            <div className="flex items-center justify-between gap-3 border-b border-[var(--echo-border)] pb-4">
+          <div className="echo-modal max-w-lg">
+            <div
+              className="flex items-center justify-between gap-3 pb-5 mb-6"
+              style={{ borderBottom: 'var(--echo-rule) solid var(--echo-border)' }}
+            >
               <div className="flex items-center gap-2.5 min-w-0">
-                <span className="echo-icon-tile">
-                  <File className="w-4 h-4" />
+                <span className="echo-icon-tile" style={{ width: '1.75rem', height: '1.75rem' }}>
+                  <File className="w-3.5 h-3.5" />
                 </span>
                 <span className="ed-h3 truncate">{selectedFileForPreview.name}</span>
               </div>
-              <button onClick={() => setSelectedFileForPreview(null)} aria-label="Close" className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer" style={{ width: '1.875rem', height: '1.875rem' }}>
+              <button
+                onClick={() => setSelectedFileForPreview(null)}
+                aria-label="Close"
+                className="echo-icon-tile hover:text-[var(--echo-ink)] transition-colors cursor-pointer"
+                style={{ width: '1.75rem', height: '1.75rem' }}
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="py-10 flex flex-col items-center justify-center text-center space-y-3">
-              <span className="echo-icon-tile" style={{ width: '3.5rem', height: '3.5rem' }}>
+            <div className="py-12 flex flex-col items-center justify-center text-center">
+              <span className="echo-icon-tile mb-6" style={{ width: '3.5rem', height: '3.5rem' }}>
                 {selectedFileForPreview.type === 'photo' ? (
                   <ImageIcon className="w-6 h-6" />
                 ) : (
                   <FileText className="w-6 h-6" />
                 )}
               </span>
-              <div className="text-[14px] font-medium text-[var(--echo-ink)]">Encrypted Vault Asset</div>
-              <p className="ed-mono">
+              <div className="text-[15px] font-medium text-[var(--echo-ink)]">Encrypted Vault Asset</div>
+              <p className="ed-meta mt-3">
                 Size: {selectedFileForPreview.size || '1.4 MB'} · Verified SHA-256 Checksum
               </p>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end pt-5" style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}>
               <button type="button" onClick={() => setSelectedFileForPreview(null)} className="ed-btn">
                 Close Preview
               </button>
