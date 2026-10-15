@@ -29,24 +29,7 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-const INTRO_SEEN_KEY = 'echo_intro_seen';
 const AUTH_KEY = 'echo_portal_auth';
-
-const introAlreadySeen = () => {
-  try {
-    return sessionStorage.getItem(INTRO_SEEN_KEY) === '1';
-  } catch {
-    return false;
-  }
-};
-
-const markIntroSeen = () => {
-  try {
-    sessionStorage.setItem(INTRO_SEEN_KEY, '1');
-  } catch {
-    // Restricted storage — the intro simply plays again next session.
-  }
-};
 
 /** True when this browser has previously completed a sign-in. */
 const wasSignedIn = () => {
@@ -114,14 +97,14 @@ const AppContent: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Entry sequence: ECHO wordmark intro → login page → employee home.
-  // The intro plays once per browser session. It then hands off to the
-  // workspace for an employee who has previously signed in, or to the login
-  // page for a visitor who has never completed a sign-in.
-  const [entryStage, setEntryStage] = useState<EntryStage>(() =>
-    introAlreadySeen() ? (wasSignedIn() ? 'app' : 'login') : 'intro'
-  );
+  // The intro is part of the real startup lifecycle: every fresh load of the
+  // public entry route for an unauthenticated visitor (direct navigation,
+  // refresh, production) plays it, then hands off to the login page. A
+  // browser that has signed in before skips straight to the workspace so an
+  // existing session is never broken.
+  const [entryStage, setEntryStage] = useState<EntryStage>(() => (wasSignedIn() ? 'app' : 'intro'));
 
-  // Signing out returns to the login page (never the intro again).
+  // Signing out returns to the login page (the intro never replays mid-session).
   useEffect(() => {
     if (entryStage === 'app' && (!isAuthenticated || !hasEnteredWorkspace)) {
       setEntryStage('login');
@@ -132,7 +115,6 @@ const AppContent: React.FC = () => {
     return (
       <WelcomeScreen
         onEnter={() => {
-          markIntroSeen();
           setEntryStage(wasSignedIn() ? 'app' : 'login');
         }}
       />
@@ -140,14 +122,7 @@ const AppContent: React.FC = () => {
   }
 
   if (entryStage === 'login') {
-    return (
-      <LoginPage
-        onEnter={() => {
-          markIntroSeen();
-          setEntryStage('app');
-        }}
-      />
-    );
+    return <LoginPage onEnter={() => setEntryStage('app')} />;
   }
 
   // Active page renderer

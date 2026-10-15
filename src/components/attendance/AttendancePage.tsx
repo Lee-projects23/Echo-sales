@@ -16,21 +16,41 @@ import { usePortal } from '../../context/PortalContext';
 import { GlobalBackButton } from '../common/GlobalBackButton';
 import { StatusChip } from '../common/StatusChip';
 
-const MonthNavButton: React.FC<{ direction: 'prev' | 'next'; onClick: () => void }> = ({
-  direction,
-  onClick,
-}) => (
-  <button
-    onClick={onClick}
-    aria-label={direction === 'prev' ? 'Previous month' : 'Next month'}
-    className="echo-icon-tile hover:text-[var(--echo-ink)] hover:border-[var(--echo-border-strong)] transition-colors cursor-pointer"
-  >
-    {direction === 'prev' ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-  </button>
-);
+const pad = (n: number) => String(n).padStart(2, '0');
+
+/** Parse a YYYY-MM-DD key as a UTC instant so date labels never drift with
+    the viewer's timezone offset. */
+const utcDate = (key: string) => {
+  const [y, m, d] = key.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+};
+
+const MONTHS_PER_YEAR = 12;
+/** Compare "YYYY-MM" keys lexicographically-safe via numeric parts. */
+const monthIndex = (key: string) => {
+  const [y, m] = key.split('-').map(Number);
+  return y * MONTHS_PER_YEAR + m;
+};
+const shiftMonth = (key: string, delta: number) => {
+  const [y, m] = key.split('-').map(Number);
+  const total = y * MONTHS_PER_YEAR + (m - 1) + delta;
+  const ny = Math.floor(total / MONTHS_PER_YEAR);
+  const nm = (total % MONTHS_PER_YEAR) + 1;
+  return `${ny}-${pad(nm)}`;
+};
+const monthLabel = (key: string) => {
+  const [, m] = key.split('-').map(Number);
+  const [y] = key.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+};
 
 export const AttendancePage: React.FC = () => {
   const {
+    currentEmployee,
     todayAttendance,
     attendance,
     handleCheckIn,
@@ -41,20 +61,74 @@ export const AttendancePage: React.FC = () => {
     t,
   } = usePortal();
 
-  const [currentMonth, setCurrentMonth] = useState('September 2026');
+  // The month selector scopes the summary figures and the history table.
+  // It starts on the month of today's real record and cannot move past it.
+  const todayKey = todayAttendance.date;
+  const todayMonthKey = todayKey.slice(0, 7);
+  const [monthKey, setMonthKey] = useState(todayMonthKey);
 
-  const totalDays = attendance.length;
-  const presentDays = attendance.filter((a) => a.status === 'Present' || a.status === 'Checked In').length;
-  const lateDays = attendance.filter((a) => a.status === 'Late').length;
-  const absentDays = attendance.filter((a) => a.status === 'Absent').length;
-  const punctualityRate = Math.round((presentDays / Math.max(1, totalDays)) * 100);
-  const attendanceRate = Math.round(((presentDays + lateDays) / Math.max(1, totalDays)) * 100);
+  // Past months stay explorable (record-less months render an honest empty
+  // state — never fabricated absences). Navigation stops at the current month.
+  const MIN_MONTH_KEY = '2020-01';
+  const canGoPrev = monthIndex(monthKey) > monthIndex(MIN_MONTH_KEY);
+  const canGoNext = monthIndex(monthKey) < monthIndex(todayMonthKey);
+
+  const monthRecords = attendance
+    .filter((a) => a.date.slice(0, 7) === monthKey)
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  const totalDays = monthRecords.length;
+  const presentDays = monthRecords.filter(
+    (a) => a.status === 'Present' || a.status === 'Checked In' || a.status === 'Checked Out'
+  ).length;
+  const lateDays = monthRecords.filter((a) => a.status === 'Late').length;
+  const absentDays = monthRecords.filter((a) => a.status === 'Absent').length;
+  const hasRecords = totalDays > 0;
+  const punctualityRate = hasRecords ? Math.round((presentDays / totalDays) * 100) : null;
+  const attendanceRate = hasRecords ? Math.round(((presentDays + lateDays) / totalDays) * 100) : null;
 
   const summaryStats: { label: string; value: number; total: number; tone: string }[] = [
     { label: 'Present', value: presentDays, total: totalDays, tone: 'echo-progress-bar--positive' },
     { label: 'Late', value: lateDays, total: totalDays, tone: 'echo-progress-bar--warning' },
     { label: 'Absent', value: absentDays, total: totalDays, tone: 'echo-progress-bar--danger' },
   ];
+
+  const todayDateLabel = utcDate(todayKey).toLocaleDateString('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+
+  const monthNavButton = (direction: 'prev' | 'next') => {
+    const enabled = direction === 'prev' ? canGoPrev : canGoNext;
+    return (
+      <button
+        onClick={() => enabled && setMonthKey((k) => shiftMonth(k, direction === 'prev' ? -1 : 1))}
+        disabled={!enabled}
+        aria-label={direction === 'prev' ? 'Previous month' : 'Next month'}
+        aria-disabled={!enabled}
+        title={
+          enabled
+            ? direction === 'prev'
+              ? 'Previous month'
+              : 'Next month'
+            : direction === 'prev'
+              ? 'Cannot navigate before 2020'
+              : 'Cannot move past the current month'
+        }
+        className="echo-icon-tile transition-colors"
+        style={
+          enabled
+            ? undefined
+            : { color: 'var(--echo-ink-3)', cursor: 'not-allowed', opacity: 1 }
+        }
+      >
+        {direction === 'prev' ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      </button>
+    );
+  };
 
   return (
     <div className="animate-echo-fade">
@@ -70,12 +144,26 @@ export const AttendancePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="echo-segment self-start lg:self-auto">
-            <MonthNavButton direction="prev" onClick={() => setCurrentMonth('August 2026')} />
-            <span className="inline-flex items-center px-4 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--echo-ink)] whitespace-nowrap">
-              {currentMonth}
-            </span>
-            <MonthNavButton direction="next" onClick={() => setCurrentMonth('September 2026')} />
+          <div className="flex flex-col items-start lg:items-end gap-6">
+            {/* Employee information */}
+            <div className="text-left lg:text-right">
+              <div className="text-[15px] font-bold tracking-[-0.01em] text-[var(--echo-ink)]">
+                {currentEmployee.name}
+              </div>
+              <div className="ed-meta mt-2">
+                {currentEmployee.employeeCode} · {currentEmployee.designation}
+              </div>
+              <div className="ed-meta mt-1.5">{currentEmployee.department}</div>
+            </div>
+
+            {/* Month selector — scopes the summary and the history table */}
+            <div className="echo-segment self-start lg:self-auto">
+              {monthNavButton('prev')}
+              <span className="inline-flex items-center px-4 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--echo-ink)] whitespace-nowrap">
+                {monthLabel(monthKey)}
+              </span>
+              {monthNavButton('next')}
+            </div>
           </div>
         </div>
       </section>
@@ -90,13 +178,15 @@ export const AttendancePage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-4 mb-9">
               <span className="ed-label">Today's Attendance</span>
               <span className="w-10 h-px" style={{ background: 'var(--echo-invert-rule-strong)' }} />
-              <span className="ed-meta">Wednesday, 23 September 2026</span>
+              <span className="ed-meta">{todayDateLabel}</span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-5 mb-8">
+            <div className="flex flex-wrap items-center gap-4 mb-8">
               <StatusChip status={todayAttendance.status} dot />
               <span className="ed-meta">
-                Punctuality {punctualityRate}% · {presentDays}/{totalDays} on time
+                {hasRecords
+                  ? `${monthLabel(monthKey)} · punctuality ${punctualityRate}% · ${presentDays}/${totalDays} on time`
+                  : `${monthLabel(monthKey)} · no records logged`}
               </span>
             </div>
 
@@ -124,7 +214,7 @@ export const AttendancePage: React.FC = () => {
                 <div className="ed-meta mb-4">Working Hours</div>
                 <div
                   className="font-serif text-[clamp(3rem,8vw,5.5rem)] leading-[0.85] tracking-[-0.035em] tabular-nums"
-                  style={{ color: 'var(--echo-accent)' }}
+                  style={{ color: 'var(--echo-invert-accent)' }}
                 >
                   {todayAttendance.hours || (todayAttendance.checkIn ? 'In Progress' : '—')}
                 </div>
@@ -158,54 +248,77 @@ export const AttendancePage: React.FC = () => {
           </div>
 
           <div className="em-split-side w-full">
-            {/* Primary control */}
-            {todayAttendance.status === 'Not Checked In' ? (
-              <button onClick={handleCheckIn} className="ed-btn w-full !py-4">
-                <Clock className="w-4 h-4" />
-                <span>Record Check In (8:58 AM)</span>
-              </button>
-            ) : todayAttendance.status === 'Checked In' || todayAttendance.status === 'Late' ? (
-              canCheckOut ? (
-                <div className="space-y-5">
-                  <button onClick={() => handleCheckOut()} className="ed-btn w-full !py-4">
-                    <Clock className="w-4 h-4" />
-                    <span>Check Out — Available (6:04 PM)</span>
-                  </button>
-                  <p className="ed-meta inline-flex items-center gap-2">
-                    <CheckCircle className="w-3.5 h-3.5" style={{ color: 'var(--echo-positive)' }} />
-                    Regular Tasks: {regularTasksCompletedToday} / {regularTasksTotalToday} completed
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-5">
-                  <p className="text-[13px] leading-relaxed" style={{ color: 'var(--echo-invert-ink-2)' }}>
-                    Complete all required tasks before checking out.
-                  </p>
-                  <button
-                    onClick={() => handleCheckOut()}
-                    disabled
-                    className="ed-btn w-full !py-4"
-                    title="Check Out — Locked"
-                  >
-                    <ShieldAlert className="w-4 h-4" />
-                    <span>Check Out — Locked</span>
-                  </button>
-                  <p className="ed-meta inline-flex items-center gap-2">
-                    <Lock className="w-3 h-3" />
-                    {regularTasksCompletedToday} / {regularTasksTotalToday} tasks complete
-                  </p>
-                </div>
-              )
-            ) : (
-              <div className="echo-chip echo-chip--positive !py-2.5 !px-4">
-                <CheckCircle className="w-3.5 h-3.5" />
-                <span>Logged and verified with Admin Operations Monitor</span>
+            {/* Primary control — a panel of the same section, not a floating block */}
+            <div className="echo-inset p-5 sm:p-6">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <span className="ed-label">Clock Action</span>
+                <span className="ed-meta">
+                  {todayAttendance.status === 'Not Checked In'
+                    ? 'Awaiting check-in'
+                    : todayAttendance.checkOut
+                      ? 'Shift closed'
+                      : 'Shift open'}
+                </span>
               </div>
-            )}
 
-            {/* Attendance summary — integrated figures */}
+              {todayAttendance.status === 'Not Checked In' ? (
+                <button onClick={handleCheckIn} className="ed-btn w-full !py-4">
+                  <Clock className="w-4 h-4" />
+                  <span>Record Check In (8:58 AM)</span>
+                </button>
+              ) : todayAttendance.status === 'Checked In' || todayAttendance.status === 'Late' ? (
+                canCheckOut ? (
+                  <div className="space-y-5">
+                    <button onClick={() => handleCheckOut()} className="ed-btn w-full !py-4">
+                      <Clock className="w-4 h-4" />
+                      <span>Check Out — Available (6:04 PM)</span>
+                    </button>
+                    <p className="ed-meta inline-flex items-center gap-2">
+                      <CheckCircle className="w-3.5 h-3.5" />
+                      Regular Tasks: {regularTasksCompletedToday} / {regularTasksTotalToday} completed
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-5">
+                    <p
+                      className="text-[13px] leading-relaxed"
+                      style={{ color: 'var(--echo-invert-ink-2)' }}
+                    >
+                      Complete all required tasks before checking out. Check-out unlocks once every
+                      regular task for today is marked completed.
+                    </p>
+                    <button
+                      onClick={() => handleCheckOut()}
+                      disabled
+                      className="ed-btn ed-btn--locked w-full !py-4"
+                      title="Check Out — Locked until all regular tasks are complete"
+                    >
+                      <ShieldAlert className="w-4 h-4" />
+                      <span>Check Out — Locked</span>
+                    </button>
+                    <p className="ed-meta inline-flex items-center gap-2">
+                      <Lock className="w-3 h-3" />
+                      {regularTasksCompletedToday} / {regularTasksTotalToday} tasks complete
+                    </p>
+                  </div>
+                )
+              ) : (
+                <div className="space-y-4">
+                  <div className="echo-chip echo-chip--positive !py-2.5 !px-4">
+                    <CheckCircle className="w-3.5 h-3.5" />
+                    <span>Shift recorded</span>
+                  </div>
+                  <p className="text-[13px] leading-relaxed" style={{ color: 'var(--echo-invert-ink-2)' }}>
+                    Logged and verified with Admin Operations Monitor.
+                    {todayAttendance.hours ? ` Working hours: ${todayAttendance.hours}.` : ''}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Attendance summary — integrated figures for the selected month */}
             <div
-              className="mt-12 pt-9"
+              className="mt-10 pt-9"
               style={{ borderTop: 'var(--echo-rule) solid var(--echo-invert-rule)' }}
             >
               <div className="flex items-center justify-between gap-4 mb-8">
@@ -213,33 +326,42 @@ export const AttendancePage: React.FC = () => {
                   <CalendarDays className="w-3.5 h-3.5" />
                   <h2 className="ed-h3">Attendance Summary</h2>
                 </div>
-                <span className="echo-chip echo-chip--accent">{attendanceRate}% present or late</span>
+                <span className="echo-chip echo-chip--accent">
+                  {attendanceRate === null ? 'No records' : `${attendanceRate}% present or late`}
+                </span>
               </div>
 
-              <div className="space-y-7">
-                {summaryStats.map((s) => {
-                  const pct = s.total > 0 ? Math.round((s.value / s.total) * 100) : 0;
-                  return (
-                    <div key={s.label}>
-                      <div className="flex items-baseline justify-between gap-4 mb-3">
-                        <span className="ed-meta">{s.label}</span>
-                        <span
-                          className="font-mono text-[15px] font-bold tabular-nums"
-                          style={{ color: 'var(--echo-invert-ink)' }}
-                        >
-                          {s.value}
-                        </span>
+              {hasRecords ? (
+                <div className="space-y-7">
+                  {summaryStats.map((s) => {
+                    const pct = s.total > 0 ? Math.round((s.value / s.total) * 100) : 0;
+                    return (
+                      <div key={s.label}>
+                        <div className="flex items-baseline justify-between gap-4 mb-3">
+                          <span className="ed-meta">{s.label}</span>
+                          <span
+                            className="font-mono text-[15px] font-bold tabular-nums"
+                            style={{ color: 'var(--echo-invert-ink)' }}
+                          >
+                            {s.value}
+                          </span>
+                        </div>
+                        <div className="echo-progress">
+                          <div className={`echo-progress-bar ${s.tone}`} style={{ width: `${pct}%` }} />
+                        </div>
+                        <div className="ed-meta mt-2.5">
+                          {pct}% of {s.total} logged days
+                        </div>
                       </div>
-                      <div className="echo-progress">
-                        <div className={`echo-progress-bar ${s.tone}`} style={{ width: `${pct}%` }} />
-                      </div>
-                      <div className="ed-meta mt-2.5">
-                        {pct}% of {s.total} logged days
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-[13px] leading-relaxed" style={{ color: 'var(--echo-invert-ink-2)' }}>
+                  No attendance records exist for {monthLabel(monthKey)}. Months without records are
+                  shown as empty — missing records are never counted as absences.
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -251,7 +373,10 @@ export const AttendancePage: React.FC = () => {
         style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
       >
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-9">
-          <h2 className="ed-h2">Attendance History</h2>
+          <div>
+            <span className="ed-label">Attendance History</span>
+            <h2 className="ed-h2 mt-4">{monthLabel(monthKey)}</h2>
+          </div>
           <div className="ed-meta flex flex-wrap items-center gap-x-6 gap-y-2">
             <span>
               Present: <strong className="font-bold text-[var(--echo-ink)]">{presentDays}</strong>
@@ -264,7 +389,10 @@ export const AttendancePage: React.FC = () => {
             </span>
             <span aria-hidden>·</span>
             <span>
-              Punctuality: <strong className="font-bold text-[var(--echo-ink)]">{punctualityRate}%</strong>
+              Punctuality:{' '}
+              <strong className="font-bold text-[var(--echo-ink)]">
+                {punctualityRate === null ? '—' : `${punctualityRate}%`}
+              </strong>
             </span>
           </div>
         </div>
@@ -282,27 +410,38 @@ export const AttendancePage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {attendance.map((rec) => (
-                  <tr
-                    key={rec.id}
-                    className="transition-colors hover:bg-[var(--echo-surface-2)]"
-                    style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
-                  >
-                    <td className="ed-td font-medium">{rec.dateFormatted}</td>
-                    <td className="ed-td">
-                      <StatusChip status={rec.status} />
-                    </td>
-                    <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
-                      {rec.checkIn || '—'}
-                    </td>
-                    <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
-                      {rec.checkOut || '—'}
-                    </td>
-                    <td className="ed-td font-mono text-[12px] text-right text-[var(--echo-ink)] tabular-nums">
-                      {rec.hours || '—'}
+                {monthRecords.length === 0 ? (
+                  <tr style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}>
+                    <td className="ed-td" colSpan={5}>
+                      <div className="py-8 text-[13px] text-[var(--echo-ink-3)]">
+                        No attendance records for {monthLabel(monthKey)}. Use the month selector
+                        above to review other periods.
+                      </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  monthRecords.map((rec) => (
+                    <tr
+                      key={rec.id}
+                      className="transition-colors hover:bg-[var(--echo-surface-2)]"
+                      style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
+                    >
+                      <td className="ed-td font-medium">{rec.dateFormatted}</td>
+                      <td className="ed-td">
+                        <StatusChip status={rec.status} />
+                      </td>
+                      <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
+                        {rec.checkIn || '—'}
+                      </td>
+                      <td className="ed-td font-mono text-[12px] text-[var(--echo-ink-3)]">
+                        {rec.checkOut || '—'}
+                      </td>
+                      <td className="ed-td font-mono text-[12px] text-right text-[var(--echo-ink)] tabular-nums">
+                        {rec.hours || '—'}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

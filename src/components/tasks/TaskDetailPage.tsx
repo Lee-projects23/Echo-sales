@@ -300,7 +300,7 @@ export const TaskDetailPage: React.FC = () => {
       {/* ================= Required checklist ================= */}
       <section
         className="em-section py-14 sm:py-20"
-        style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)', background: 'var(--echo-bg-2)' }}
+        style={{ borderTop: 'var(--echo-rule) solid var(--echo-border)' }}
       >
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-10">
           <div>

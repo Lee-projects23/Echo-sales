@@ -58,6 +58,33 @@
   --echo-invert-rule: rgba(245, 240, 230, 0.18);
   --echo-invert-rule-strong: rgba(245, 240, 230, 0.34);
 
+  /* Coordinated accent + status tones for inverted bands.
+     The band is charcoal in Day Mode, so crimson and status hues lift
+     to stay legible; actions use a restrained deep red. */
+  --echo-invert-accent: #d95f72;
+  --echo-invert-accent-ink: #16080c;
+  --echo-invert-btn-bg: #a52433;
+  --echo-invert-btn-ink: #faf7f0;
+  --echo-invert-positive: #7fa98a;
+  --echo-invert-warning: #c79a4e;
+  --echo-invert-danger: #e57373;
+
+  /* Analytics console — the dense, data-focused surface used by the
+     dashboard in both themes. Near-black with cream ink and lifted hues. */
+  --echo-console-bg: #16130f;
+  --echo-console-surface: #1e1a16;
+  --echo-console-surface-2: #272220;
+  --echo-console-ink: #f2ece1;
+  --echo-console-ink-2: #c0b6a6;
+  --echo-console-ink-3: #978c7c;
+  --echo-console-rule: rgba(242, 236, 225, 0.15);
+  --echo-console-rule-strong: rgba(242, 236, 225, 0.3);
+  --echo-console-accent: #d95f72;
+  --echo-console-positive: #7fa98a;
+  --echo-console-warning: #c79a4e;
+  --echo-console-danger: #e57373;
+  --echo-console-neutral: rgba(242, 236, 225, 0.24);
+
   /* Operational status tones — muted, still distinguishable */
   --echo-positive: #3d6a4a;
   --echo-positive-soft: rgba(61, 106, 74, 0.1);
@@ -121,6 +148,30 @@
   --echo-invert-ink-2: #4a423a;
   --echo-invert-rule: rgba(20, 17, 14, 0.18);
   --echo-invert-rule-strong: rgba(20, 17, 14, 0.34);
+
+  /* The band is cream in Night Mode, so the deep reds return for contrast. */
+  --echo-invert-accent: #8e1d2b;
+  --echo-invert-accent-ink: #faf7f0;
+  --echo-invert-btn-bg: #8e1d2b;
+  --echo-invert-btn-ink: #faf7f0;
+  --echo-invert-positive: #3d6a4a;
+  --echo-invert-warning: #8f4a08;
+  --echo-invert-danger: #8e1d2b;
+
+  /* The console stays near-black in Night Mode, tuned to sit above the page. */
+  --echo-console-bg: #0e0c0a;
+  --echo-console-surface: #161311;
+  --echo-console-surface-2: #1e1a17;
+  --echo-console-ink: #f2ece1;
+  --echo-console-ink-2: #c0b6a6;
+  --echo-console-ink-3: #978c7c;
+  --echo-console-rule: rgba(242, 236, 225, 0.15);
+  --echo-console-rule-strong: rgba(242, 236, 225, 0.3);
+  --echo-console-accent: #d95f72;
+  --echo-console-positive: #7fa98a;
+  --echo-console-warning: #c79a4e;
+  --echo-console-danger: #e57373;
+  --echo-console-neutral: rgba(242, 236, 225, 0.24);
 
   --echo-positive: #7fa98a;
   --echo-positive-soft: rgba(127, 169, 138, 0.14);
@@ -330,6 +381,29 @@
   .em-invert {
     background: var(--echo-invert-bg);
     color: var(--echo-invert-ink);
+
+    /* Base tokens re-scope to the band, so every shared primitive and any
+       token-driven utility (text-[var(--echo-ink)], bg-[var(--echo-surface)],
+       border-[var(--echo-border)] …) inherits the band's palette instead of
+       forcing a light surface into a dark section or vice versa. */
+    --echo-bg: var(--echo-invert-bg);
+    --echo-bg-2: var(--echo-invert-bg);
+    --echo-surface: var(--echo-invert-surface);
+    --echo-surface-2: var(--echo-invert-surface);
+    --echo-surface-3: var(--echo-invert-rule-strong);
+    --echo-surface-inset: var(--echo-invert-surface);
+    --echo-ink: var(--echo-invert-ink);
+    --echo-ink-2: var(--echo-invert-ink-2);
+    --echo-ink-3: var(--echo-invert-ink-2);
+    --echo-border: var(--echo-invert-rule);
+    --echo-border-strong: var(--echo-invert-rule-strong);
+    --echo-accent: var(--echo-invert-accent);
+    --echo-accent-hover: color-mix(in srgb, var(--echo-invert-accent) 84%, white);
+    --echo-accent-active: color-mix(in srgb, var(--echo-invert-accent) 84%, black);
+    --echo-accent-ink: var(--echo-invert-accent-ink);
+    --echo-positive: var(--echo-invert-positive);
+    --echo-warning: var(--echo-invert-warning);
+    --echo-danger: var(--echo-invert-danger);
   }
   .em-invert .ed-label,
   .em-invert .em-eyebrow { color: var(--echo-invert-ink-2); }
@@ -345,6 +419,100 @@
   .em-invert .em-section-title { color: var(--echo-invert-ink); }
   .em-invert .echo-inset { background: var(--echo-invert-surface); border-color: var(--echo-invert-rule); }
   .em-invert .echo-progress { background: var(--echo-invert-rule); border-color: var(--echo-invert-rule); }
+
+  /* Every shared primitive re-tokenized for the inverted band, so no page
+     alternates light and dark surfaces by accident. */
+  .em-invert .ed-meta,
+  .em-invert .em-meta,
+  .em-invert .echo-kpi-label,
+  .em-invert .em-metric-label { color: var(--echo-invert-ink-2); }
+
+  .em-invert .echo-kpi-value,
+  .em-invert .em-metric-value,
+  .em-invert .echo-metric-value,
+  .em-invert .ed-stat,
+  .em-invert .ed-td { color: var(--echo-invert-ink); }
+
+  .em-invert .ed-th { color: var(--echo-invert-ink-2); }
+
+  .em-invert .echo-icon-tile {
+    background: var(--echo-invert-surface);
+    border-color: var(--echo-invert-rule);
+    color: var(--echo-invert-ink-2);
+  }
+
+  .em-invert .echo-chip,
+  .em-invert .echo-chip--neutral {
+    background: var(--echo-invert-surface);
+    color: var(--echo-invert-ink-2);
+    border-color: var(--echo-invert-rule);
+  }
+
+  .em-invert .echo-progress-bar { background: var(--echo-invert-accent); }
+  .em-invert .echo-progress-bar--positive { background: var(--echo-invert-positive); }
+  .em-invert .echo-progress-bar--warning { background: var(--echo-invert-warning); }
+  .em-invert .echo-progress-bar--danger { background: var(--echo-invert-danger); }
+
+  .em-invert .ed-input {
+    background: var(--echo-invert-surface);
+    border-color: var(--echo-invert-rule-strong);
+    color: var(--echo-invert-ink);
+  }
+  .em-invert .ed-input::placeholder { color: var(--echo-invert-ink-2); }
+
+  .em-invert .echo-empty {
+    background: transparent;
+    border-color: var(--echo-invert-rule-strong);
+    color: var(--echo-invert-ink-2);
+  }
+
+  /* Tone helpers (chips, icon tiles) use the band-safe status hues so
+     badges keep AA contrast on charcoal and on cream alike. */
+  .em-invert .echo-chip--accent,
+  .em-invert .echo-chip--info,
+  .em-invert .echo-icon-tile--accent,
+  .em-invert .echo-icon-tile--info {
+    background: color-mix(in srgb, var(--echo-invert-accent) 15%, transparent);
+    color: var(--echo-invert-accent);
+    border-color: color-mix(in srgb, var(--echo-invert-accent) 42%, transparent);
+  }
+  .em-invert .echo-chip--positive,
+  .em-invert .echo-icon-tile--positive {
+    background: color-mix(in srgb, var(--echo-invert-positive) 15%, transparent);
+    color: var(--echo-invert-positive);
+    border-color: color-mix(in srgb, var(--echo-invert-positive) 42%, transparent);
+  }
+  .em-invert .echo-chip--warning,
+  .em-invert .echo-icon-tile--warning {
+    background: color-mix(in srgb, var(--echo-invert-warning) 15%, transparent);
+    color: var(--echo-invert-warning);
+    border-color: color-mix(in srgb, var(--echo-invert-warning) 42%, transparent);
+  }
+  .em-invert .echo-chip--danger,
+  .em-invert .echo-icon-tile--danger {
+    background: color-mix(in srgb, var(--echo-invert-danger) 15%, transparent);
+    color: var(--echo-invert-danger);
+    border-color: color-mix(in srgb, var(--echo-invert-danger) 42%, transparent);
+  }
+
+  .em-invert .ed-link,
+  .em-invert .em-link { color: var(--echo-invert-accent); }
+  .em-invert .ed-link:hover,
+  .em-invert .em-link:hover { color: color-mix(in srgb, var(--echo-invert-accent) 82%, white); }
+
+  .em-invert .ed-textbtn { color: var(--echo-invert-ink-2); }
+  .em-invert .ed-textbtn:hover { color: var(--echo-invert-ink); }
+
+  .em-invert .echo-segment {
+    background: var(--echo-invert-surface);
+    border-color: var(--echo-invert-rule);
+  }
+  .em-invert .echo-segment-item { color: var(--echo-invert-ink-2); }
+  .em-invert .echo-segment-item:hover { color: var(--echo-invert-ink); }
+  .em-invert .echo-segment-item[data-active="true"] {
+    background: var(--echo-invert-ink);
+    color: var(--echo-invert-bg);
+  }
 
   /* Asymmetric two-column composition */
   .em-split {
@@ -405,6 +573,63 @@
   .em-btn-ghost:disabled {
     opacity: 0.4;
     pointer-events: none;
+  }
+
+  /* Actions inside an inverted band (the attendance hero) draw from the
+     band's own deep-red action tone instead of the page accent, so the
+     control reads as part of the section rather than a pasted rectangle. */
+  .em-invert .ed-btn,
+  .em-invert .em-btn {
+    background: var(--echo-invert-btn-bg);
+    color: var(--echo-invert-btn-ink);
+    border-color: transparent;
+  }
+  .em-invert .ed-btn:hover:not(:disabled),
+  .em-invert .em-btn:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--echo-invert-btn-bg) 86%, white);
+  }
+  .em-invert .ed-btn:active:not(:disabled),
+  .em-invert .em-btn:active:not(:disabled) {
+    background: color-mix(in srgb, var(--echo-invert-btn-bg) 82%, black);
+  }
+
+  .em-invert .ed-btn-ghost,
+  .em-invert .em-btn-ghost {
+    color: var(--echo-invert-ink);
+    border-color: var(--echo-invert-rule-strong);
+  }
+  .em-invert .ed-btn-ghost:hover:not(:disabled),
+  .em-invert .em-btn-ghost:hover:not(:disabled) {
+    background: var(--echo-invert-surface);
+    border-color: var(--echo-invert-ink-2);
+  }
+
+  /* Locked / disabled actions: muted but still legible (AA), clearly
+     distinguishable from active controls, with no half-transparent mush. */
+  .ed-btn--locked,
+  .em-btn--locked {
+    background: transparent;
+    color: var(--echo-ink-2);
+    border: var(--echo-rule) solid var(--echo-border-strong);
+    opacity: 1;
+    pointer-events: auto;
+    cursor: not-allowed;
+  }
+  .em-invert .ed-btn--locked,
+  .em-invert .em-btn--locked,
+  .em-invert .ed-btn:disabled,
+  .em-invert .em-btn:disabled {
+    background: transparent;
+    color: var(--echo-invert-ink-2);
+    border-color: var(--echo-invert-rule-strong);
+    opacity: 1;
+    pointer-events: auto;
+    cursor: not-allowed;
+  }
+  .ed-btn--locked .ed-meta,
+  .em-btn--locked .ed-meta {
+    color: inherit;
+    opacity: 0.85;
   }
 
   .ed-link,
@@ -642,6 +867,7 @@
   }
 
   .ed-mono,
+  .ed-meta,
   .em-meta {
     @apply font-mono text-[10px] uppercase tracking-[0.14em];
     color: var(--echo-ink-3);
@@ -703,6 +929,229 @@
   .em-figure:hover img {
     transform: scale(1.03);
     filter: grayscale(35%) contrast(1.04);
+  }
+
+  /* ---------- Analytics console — the dashboard's data canvas ---------- */
+  /* Near-black in both themes; Day Mode reads as a charcoal console set
+     into the ivory page, Night Mode as a lifted panel above it. */
+
+  .echo-console {
+    background: var(--echo-console-bg);
+    color: var(--echo-console-ink);
+    border: var(--echo-rule) solid var(--echo-console-rule-strong);
+    border-radius: var(--echo-radius);
+
+    /* Same re-scoping contract as .em-invert: token-driven primitives and
+       utilities inside the console resolve against the console palette. */
+    --echo-bg: var(--echo-console-bg);
+    --echo-bg-2: var(--echo-console-bg);
+    --echo-surface: var(--echo-console-surface);
+    --echo-surface-2: var(--echo-console-surface-2);
+    --echo-surface-3: var(--echo-console-surface-2);
+    --echo-surface-inset: var(--echo-console-surface);
+    --echo-ink: var(--echo-console-ink);
+    --echo-ink-2: var(--echo-console-ink-2);
+    --echo-ink-3: var(--echo-console-ink-3);
+    --echo-border: var(--echo-console-rule);
+    --echo-border-strong: var(--echo-console-rule-strong);
+    --echo-accent: var(--echo-console-accent);
+    --echo-accent-hover: color-mix(in srgb, var(--echo-console-accent) 84%, white);
+    --echo-accent-active: color-mix(in srgb, var(--echo-console-accent) 84%, black);
+    --echo-accent-ink: var(--echo-console-bg);
+    --echo-positive: var(--echo-console-positive);
+    --echo-warning: var(--echo-console-warning);
+    --echo-danger: var(--echo-console-danger);
+  }
+
+  .echo-console .ed-label,
+  .echo-console .em-eyebrow,
+  .echo-console .echo-kpi-label,
+  .echo-console .em-metric-label,
+  .echo-console .ed-meta,
+  .echo-console .em-meta,
+  .echo-console .ed-mono { color: var(--echo-console-ink-3); }
+
+  .echo-console .ed-sub { color: var(--echo-console-ink-2); }
+
+  .echo-console .ed-h1,
+  .echo-console .ed-h2,
+  .echo-console .ed-h3,
+  .echo-console .em-display,
+  .echo-console .em-section-title,
+  .echo-console .echo-kpi-value,
+  .echo-console .em-metric-value,
+  .echo-console .echo-metric-value,
+  .echo-console .ed-stat,
+  .echo-console .ed-td,
+  .echo-console .ed-th { color: var(--echo-console-ink); }
+
+  .echo-console .ed-th { color: var(--echo-console-ink-3); }
+
+  .echo-console .echo-card,
+  .echo-console .echo-inset,
+  .echo-console .echo-tile,
+  .echo-console .ed-panel {
+    background: var(--echo-console-surface);
+    border-color: var(--echo-console-rule);
+    color: var(--echo-console-ink);
+  }
+
+  .echo-console .echo-progress {
+    background: var(--echo-console-surface-2);
+    border-color: var(--echo-console-rule);
+  }
+  .echo-console .echo-progress-bar { background: var(--echo-console-accent); }
+  .echo-console .echo-progress-bar--positive { background: var(--echo-console-positive); }
+  .echo-console .echo-progress-bar--warning { background: var(--echo-console-warning); }
+  .echo-console .echo-progress-bar--danger { background: var(--echo-console-danger); }
+
+  .echo-console .echo-chip,
+  .echo-console .echo-chip--neutral {
+    background: var(--echo-console-surface-2);
+    color: var(--echo-console-ink-2);
+    border-color: var(--echo-console-rule);
+  }
+  .echo-console .echo-chip--accent,
+  .echo-console .echo-chip--info {
+    background: color-mix(in srgb, var(--echo-console-accent) 15%, transparent);
+    color: var(--echo-console-accent);
+    border-color: color-mix(in srgb, var(--echo-console-accent) 42%, transparent);
+  }
+  .echo-console .echo-chip--positive {
+    background: color-mix(in srgb, var(--echo-console-positive) 15%, transparent);
+    color: var(--echo-console-positive);
+    border-color: color-mix(in srgb, var(--echo-console-positive) 42%, transparent);
+  }
+  .echo-console .echo-chip--warning {
+    background: color-mix(in srgb, var(--echo-console-warning) 15%, transparent);
+    color: var(--echo-console-warning);
+    border-color: color-mix(in srgb, var(--echo-console-warning) 42%, transparent);
+  }
+  .echo-console .echo-chip--danger {
+    background: color-mix(in srgb, var(--echo-console-danger) 15%, transparent);
+    color: var(--echo-console-danger);
+    border-color: color-mix(in srgb, var(--echo-console-danger) 42%, transparent);
+  }
+
+  .echo-console .echo-icon-tile {
+    background: var(--echo-console-surface-2);
+    border-color: var(--echo-console-rule);
+    color: var(--echo-console-ink-2);
+  }
+  .echo-console .echo-icon-tile--accent,
+  .echo-console .echo-icon-tile--info {
+    background: color-mix(in srgb, var(--echo-console-accent) 15%, transparent);
+    color: var(--echo-console-accent);
+    border-color: color-mix(in srgb, var(--echo-console-accent) 42%, transparent);
+  }
+  .echo-console .echo-icon-tile--positive {
+    background: color-mix(in srgb, var(--echo-console-positive) 15%, transparent);
+    color: var(--echo-console-positive);
+    border-color: color-mix(in srgb, var(--echo-console-positive) 42%, transparent);
+  }
+  .echo-console .echo-icon-tile--warning {
+    background: color-mix(in srgb, var(--echo-console-warning) 15%, transparent);
+    color: var(--echo-console-warning);
+    border-color: color-mix(in srgb, var(--echo-console-warning) 42%, transparent);
+  }
+  .echo-console .echo-icon-tile--danger {
+    background: color-mix(in srgb, var(--echo-console-danger) 15%, transparent);
+    color: var(--echo-console-danger);
+    border-color: color-mix(in srgb, var(--echo-console-danger) 42%, transparent);
+  }
+
+  .echo-console .echo-segment {
+    background: var(--echo-console-surface);
+    border-color: var(--echo-console-rule);
+  }
+  .echo-console .echo-segment-item { color: var(--echo-console-ink-3); }
+  .echo-console .echo-segment-item:hover { color: var(--echo-console-ink); }
+  .echo-console .echo-segment-item[data-active="true"] {
+    background: var(--echo-console-ink);
+    color: var(--echo-console-bg);
+  }
+
+  .echo-console .echo-list-row:hover { background: var(--echo-console-surface); }
+
+  .echo-console .ed-link,
+  .echo-console .em-link { color: var(--echo-console-accent); }
+  .echo-console .ed-link:hover,
+  .echo-console .em-link:hover { color: color-mix(in srgb, var(--echo-console-accent) 82%, white); }
+
+  .echo-console .ed-textbtn { color: var(--echo-console-ink-3); }
+  .echo-console .ed-textbtn:hover { color: var(--echo-console-ink); }
+
+  .echo-console .echo-empty {
+    background: transparent;
+    border-color: var(--echo-console-rule-strong);
+    color: var(--echo-console-ink-2);
+  }
+
+  /* ---------- Attendance calendar cells ---------- */
+  /* Selection is an outline, never a status color, so "picked" and
+     "present/absent/late" are never confused. */
+
+  .echo-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .echo-cal-dow {
+    @apply pb-1.5 text-center text-[9px] font-bold uppercase tracking-[0.14em];
+    color: var(--echo-console-ink-3);
+  }
+
+  .echo-cal-cell {
+    @apply relative flex flex-col items-center justify-center gap-1 select-none;
+    aspect-ratio: 1 / 1;
+    min-height: 2rem;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--echo-console-ink-2);
+    background: transparent;
+    border: var(--echo-rule) solid transparent;
+    border-radius: var(--echo-radius-sm);
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+  .echo-cal-cell:hover:not([data-static="true"]) {
+    background: var(--echo-console-surface-2);
+  }
+  .echo-cal-cell[data-status="present"] { color: var(--echo-console-positive); }
+  .echo-cal-cell[data-status="late"] { color: var(--echo-console-warning); }
+  .echo-cal-cell[data-status="absent"] { color: var(--echo-console-danger); }
+  .echo-cal-cell[data-status="pending"] { color: var(--echo-console-ink); }
+  .echo-cal-cell[data-status="none"] { color: var(--echo-console-ink-3); }
+  .echo-cal-cell[data-status="future"] {
+    color: var(--echo-console-ink-3);
+    opacity: 0.42;
+    cursor: default;
+  }
+  .echo-cal-cell[data-status="weekend"]:not([data-static="true"]) { opacity: 0.72; }
+
+  /* Today keeps a quiet inner hairline; selection is a full outline. */
+  .echo-cal-cell[data-today="true"] {
+    box-shadow: inset 0 0 0 1px var(--echo-console-rule-strong);
+  }
+  .echo-cal-cell[data-selected="true"] {
+    border-color: var(--echo-console-ink);
+    background: var(--echo-console-surface-2);
+    color: var(--echo-console-ink);
+  }
+
+  .echo-cal-mark {
+    @apply block rounded-full;
+    width: 3px;
+    height: 3px;
+    background: currentColor;
+  }
+  .echo-cal-cell[data-status="none"] .echo-cal-mark,
+  .echo-cal-cell[data-status="weekend"] .echo-cal-mark { opacity: 0.4; }
+  .echo-cal-cell[data-status="pending"] .echo-cal-mark {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px currentColor;
   }
 }
 
